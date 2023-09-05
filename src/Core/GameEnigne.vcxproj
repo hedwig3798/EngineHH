@@ -71,6 +71,9 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LibraryWPath>$(SolutionDir)lib\MathHeader;$(LibraryWPath)</LibraryWPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -137,6 +140,12 @@ copy $(ProjectDir)*.h $(SolutionDir)Releaselib\$(AssemblyName)Header\.
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>$(SolutionDir)x64\Debug\Math.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>if not exist "$(SolutionDir)lib" mkdir "$(SolutionDir)lib"
+if not exist "$(SolutionDir)lib\$(AssemblyName)Header" mkdir "$(SolutionDir)lib\$(AssemblyName)Header"
+copy $(SolutionDir)x64\$(Configuration)\*.lib $(SolutionDir)lib\.
+copy $(ProjectDir)*.h $(SolutionDir)lib\$(AssemblyName)Header\.</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -161,12 +170,7 @@ copy $(ProjectDir)*.h $(SolutionDir)Releaselib\$(AssemblyName)Header\.
     <ClInclude Include="AABB.h" />
     <ClInclude Include="AABBNode.h" />
     <ClInclude Include="AABBTree.h" />
-    <ClInclude Include="Animation.h" />
-    <ClInclude Include="Animator.h" />
-    <ClInclude Include="Bar.h" />
-    <ClInclude Include="BoardPhase.h" />
     <ClInclude Include="BoxCollider.h" />
-    <ClInclude Include="Button.h" />
     <ClInclude Include="CircleCollider.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="CollisionManager.h" />
@@ -174,16 +178,13 @@ copy $(ProjectDir)*.h $(SolutionDir)Releaselib\$(AssemblyName)Header\.
     <ClInclude Include="define.h" />
     <ClInclude Include="KeyManager.h" />
     <ClInclude Include="ManagerSet.h" />
-    <ClInclude Include="MouseEvent.h" />
     <ClInclude Include="Object.h" />
-    <ClInclude Include="headers.h" />
     <ClInclude Include="ObjectPool.h" />
-    <ClInclude Include="Panel.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="PathManager.h" />
+    <ClInclude Include="pch.h" />
     <ClInclude Include="ResourceManager.h" />
-    <ClInclude Include="Rigidbody.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="TimeManager.h" />
@@ -193,27 +194,19 @@ copy $(ProjectDir)*.h $(SolutionDir)Releaselib\$(AssemblyName)Header\.
     <ClCompile Include="AABB.cpp" />
     <ClCompile Include="AABBNode.cpp" />
     <ClCompile Include="AABBTree.cpp" />
-    <ClCompile Include="Animation.cpp" />
-    <ClCompile Include="Animator.cpp" />
-    <ClCompile Include="Bar.cpp" />
-    <ClCompile Include="BoardPhase.cpp" />
     <ClCompile Include="BoxCollider.cpp" />
-    <ClCompile Include="Button.cpp" />
     <ClCompile Include="CircleCollider.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="KeyManager.cpp" />
     <ClCompile Include="ManagerSet.cpp" />
-    <ClCompile Include="MouseEvent.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="ObjectPool.cpp" />
-    <ClCompile Include="Panel.cpp" />
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="PathManager.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
-    <ClCompile Include="Rigidbody.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="TimeManager.cpp" />

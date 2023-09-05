@@ -3,7 +3,6 @@
 #include "Collider.h"
 class Collider;
 class SceneManager;
-class GraphicsEngine;
 class AABBTree;
 
 /// <summry>

@@ -1,5 +1,5 @@
 #include "ResourceManager.h"
-#include "GraphicsEngine.h"
+
 ResourceManager::ResourceManager()
 	: grapicsEngine(nullptr)
 {
@@ -32,7 +32,7 @@ void ResourceManager::LoadImage(const std::string& _key, const std::wstring& _pa
 	}
 
 	// 그래픽 엔진에서 이미지 로드 후 아이디 받아오기
-	this->imageMap.insert({ _key, this->grapicsEngine->LoadSpriteSheet(_path.c_str()) });
+	// this->imageMap.insert({ _key, this->grapicsEngine->LoadSpriteSheet(_path.c_str()) });
 }
 
 /// <summary>

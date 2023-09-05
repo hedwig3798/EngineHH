@@ -1,7 +1,6 @@
 #pragma once
-#include "headers.h"
+#include "pch.h"
 #include "Component.h"
-#include "GraphicsEngine.h"
 #include "Collider.h"
 #include "BoxCollider.h"
 /// <summary>

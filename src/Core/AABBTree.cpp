@@ -307,32 +307,32 @@ void AABBTree::Clear()
 /// <param name="_graphicsEngine">그래픽 엔진</param>
 void AABBTree::DebugRender(GraphicsEngine* _graphicsEngine)
 {
-	std::queue<AABBNode*> q;
-
-	if (this->root)
-		q.push(this->root);
-
-	while (!q.empty())
-	{
-		AABBNode* node = q.front();
-		q.pop();
-
-		// 랜더링
-
-		if (node->IsLeaf())
-		{
-			_graphicsEngine->ColorSet(D2D1::ColorF::Red);
-			_graphicsEngine->DrawEmptyRect(node->aabb.minPoint.x, node->aabb.minPoint.y, node->aabb.maxPoint.x, node->aabb.maxPoint.y);
-		}
-		else
-		{
-			_graphicsEngine->ColorSet(D2D1::ColorF::Red);
-			_graphicsEngine->DrawEmptyRect(node->aabb.minPoint.x, node->aabb.minPoint.y, node->aabb.maxPoint.x, node->aabb.maxPoint.y);;
-			q.push(node->children[0]);
-			q.push(node->children[1]);
-		}
-
-	}
+// 	std::queue<AABBNode*> q;
+// 
+// 	if (this->root)
+// 		q.push(this->root);
+// 
+// 	while (!q.empty())
+// 	{
+// 		AABBNode* node = q.front();
+// 		q.pop();
+// 
+// 		// 랜더링
+// 
+// 		if (node->IsLeaf())
+// 		{
+// 			_graphicsEngine->ColorSet(D2D1::ColorF::Red);
+// 			_graphicsEngine->DrawEmptyRect(node->aabb.minPoint.x, node->aabb.minPoint.y, node->aabb.maxPoint.x, node->aabb.maxPoint.y);
+// 		}
+// 		else
+// 		{
+// 			_graphicsEngine->ColorSet(D2D1::ColorF::Red);
+// 			_graphicsEngine->DrawEmptyRect(node->aabb.minPoint.x, node->aabb.minPoint.y, node->aabb.maxPoint.x, node->aabb.maxPoint.y);;
+// 			q.push(node->children[0]);
+// 			q.push(node->children[1]);
+// 		}
+// 
+// 	}
 }
 
 // RayCastResult AABBTree::RayCast(const Vector2& _direct, const Vector2& _center, float _maxDistance /*= 0.f*/) const

@@ -19,16 +19,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BigInt.h" />
-    <ClInclude Include="Grid.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="headers.h" />
     <ClInclude Include="random.h" />
     <ClInclude Include="Vector2.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BigInt.cpp" />
-    <ClCompile Include="Grid.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="random.cpp" />
     <ClCompile Include="Vector2.cpp" />
@@ -145,6 +141,12 @@ copy $(ProjectDir)*.h $(SolutionDir)Releaselib\$(AssemblyName)Header\.
       </SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>if not exist "$(SolutionDir)lib" mkdir "$(SolutionDir)lib"
+if not exist "$(SolutionDir)lib\$(AssemblyName)Header" mkdir "$(SolutionDir)lib\$(AssemblyName)Header"
+copy $(SolutionDir)x64\$(Configuration)\*.lib $(SolutionDir)lib\.
+copy $(ProjectDir)*.h $(SolutionDir)lib\$(AssemblyName)Header\.</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>

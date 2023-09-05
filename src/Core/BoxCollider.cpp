@@ -89,11 +89,6 @@ void BoxCollider::Render(GraphicsEngine* _graphicsEngine)
 /// <param name="_graphicsEngine">그래픽 엔진</param>
 void BoxCollider::DebugRender(GraphicsEngine* _graphicsEngine)
 {
-	_graphicsEngine->DrawEmptyRect(
-		(int)(this->globalVertices[0].x),
-		(int)(this->globalVertices[0].y),
-		(int)(this->globalVertices[2].x),
-		(int)(this->globalVertices[2].y));
 }
 
 /// <summary>

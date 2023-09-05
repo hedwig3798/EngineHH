@@ -23,8 +23,6 @@ void PathManager::Initalize()
 
 	// 리소스 위치로 이동
 	resDirName = L"\\4_Resources\\";
-	OutputDebugString((headPath.c_str() + resDirName).c_str());
-	OutputDebugString(L"\n");
 }
 
 /// <summary>

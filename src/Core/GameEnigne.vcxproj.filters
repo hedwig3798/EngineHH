@@ -19,9 +19,6 @@
     <Filter Include="Managers\Time">
       <UniqueIdentifier>{5a8f6472-3e9b-4787-8289-1170f299b3ae}</UniqueIdentifier>
     </Filter>
-    <Filter Include="headers">
-      <UniqueIdentifier>{890491fd-d883-4d9e-9e3e-c2512d0f017d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Object">
       <UniqueIdentifier>{7e759b7c-e339-4000-9b63-ead6a4d9155c}</UniqueIdentifier>
     </Filter>
@@ -46,15 +43,6 @@
     <Filter Include="Managers\ManagerSet">
       <UniqueIdentifier>{0bc24bfe-2b44-48c4-be2d-d0ee80922821}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Component\UI">
-      <UniqueIdentifier>{4ba4620d-32fa-47dd-981f-8ce62dc0c413}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\UI">
-      <UniqueIdentifier>{e1d2f070-fb99-40b8-98c7-a5f94e7d6e4d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Managers\Collsion\QuadTree">
-      <UniqueIdentifier>{4000dc47-48f7-48f9-b61a-6ff94abb812a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="AABBTree">
       <UniqueIdentifier>{50cc5086-8241-4650-88ea-f8138499d24a}</UniqueIdentifier>
     </Filter>
@@ -63,9 +51,6 @@
     </Filter>
     <Filter Include="Managers\Resource">
       <UniqueIdentifier>{7b1ee465-8461-49b3-af97-5930e727102b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Component\Animation">
-      <UniqueIdentifier>{92015a73-9080-499b-99dd-07cccff0ed30}</UniqueIdentifier>
     </Filter>
     <Filter Include="Component\Particle">
       <UniqueIdentifier>{66583e48-ce97-4750-b1ae-23d6de71b7f6}</UniqueIdentifier>
@@ -76,8 +61,8 @@
     <Filter Include="Object\Particle">
       <UniqueIdentifier>{d499f4bd-15d3-4bc1-b285-a263d34697ed}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Animatior">
-      <UniqueIdentifier>{91bef47a-5044-4ea1-b453-90b5a79a23fa}</UniqueIdentifier>
+    <Filter Include="pch">
+      <UniqueIdentifier>{cfd6bcca-72d9-407a-958f-27e577a09b32}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -95,9 +80,6 @@
     </ClCompile>
     <ClCompile Include="Collider.cpp">
       <Filter>Component\Collider</Filter>
-    </ClCompile>
-    <ClCompile Include="Rigidbody.cpp">
-      <Filter>Component\Rigidbody</Filter>
     </ClCompile>
     <ClCompile Include="Transform.cpp">
       <Filter>Component\Transform</Filter>
@@ -120,18 +102,6 @@
     <ClCompile Include="Scene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="MouseEvent.cpp">
-      <Filter>Component\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="Bar.cpp">
-      <Filter>Object\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="Button.cpp">
-      <Filter>Object\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="Panel.cpp">
-      <Filter>Object\UI</Filter>
-    </ClCompile>
     <ClCompile Include="AABBNode.cpp">
       <Filter>AABBTree</Filter>
     </ClCompile>
@@ -141,17 +111,11 @@
     <ClCompile Include="AABB.cpp">
       <Filter>AABBTree</Filter>
     </ClCompile>
-    <ClCompile Include="BoardPhase.cpp">
-      <Filter>AABBTree</Filter>
-    </ClCompile>
     <ClCompile Include="PathManager.cpp">
       <Filter>Managers\Path</Filter>
     </ClCompile>
     <ClCompile Include="ResourceManager.cpp">
       <Filter>Managers\Resource</Filter>
-    </ClCompile>
-    <ClCompile Include="Animation.cpp">
-      <Filter>Component\Animation</Filter>
     </ClCompile>
     <ClCompile Include="ObjectPool.cpp">
       <Filter>ObjectPool</Filter>
@@ -162,16 +126,10 @@
     <ClCompile Include="Particle.cpp">
       <Filter>Object\Particle</Filter>
     </ClCompile>
-    <ClCompile Include="Animator.cpp">
-      <Filter>Animatior</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TimeManager.h">
       <Filter>Managers\Time</Filter>
-    </ClInclude>
-    <ClInclude Include="headers.h">
-      <Filter>headers</Filter>
     </ClInclude>
     <ClInclude Include="KeyManager.h">
       <Filter>Managers\Key</Filter>
@@ -185,14 +143,8 @@
     <ClInclude Include="Collider.h">
       <Filter>Component\Collider</Filter>
     </ClInclude>
-    <ClInclude Include="Rigidbody.h">
-      <Filter>Component\Rigidbody</Filter>
-    </ClInclude>
     <ClInclude Include="Transform.h">
       <Filter>Component\Transform</Filter>
-    </ClInclude>
-    <ClInclude Include="define.h">
-      <Filter>headers</Filter>
     </ClInclude>
     <ClInclude Include="BoxCollider.h">
       <Filter>Component\Collider\Box</Filter>
@@ -212,25 +164,10 @@
     <ClInclude Include="Scene.h">
       <Filter>Scene</Filter>
     </ClInclude>
-    <ClInclude Include="MouseEvent.h">
-      <Filter>Component\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="Bar.h">
-      <Filter>Object\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="Button.h">
-      <Filter>Object\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="Panel.h">
-      <Filter>Object\UI</Filter>
-    </ClInclude>
     <ClInclude Include="AABBNode.h">
       <Filter>AABBTree</Filter>
     </ClInclude>
     <ClInclude Include="AABBTree.h">
-      <Filter>AABBTree</Filter>
-    </ClInclude>
-    <ClInclude Include="BoardPhase.h">
       <Filter>AABBTree</Filter>
     </ClInclude>
     <ClInclude Include="AABB.h">
@@ -242,9 +179,6 @@
     <ClInclude Include="ResourceManager.h">
       <Filter>Managers\Resource</Filter>
     </ClInclude>
-    <ClInclude Include="Animation.h">
-      <Filter>Component\Animation</Filter>
-    </ClInclude>
     <ClInclude Include="ObjectPool.h">
       <Filter>ObjectPool</Filter>
     </ClInclude>
@@ -254,8 +188,9 @@
     <ClInclude Include="Particle.h">
       <Filter>Object\Particle</Filter>
     </ClInclude>
-    <ClInclude Include="Animator.h">
-      <Filter>Animatior</Filter>
+    <ClInclude Include="pch.h">
+      <Filter>pch</Filter>
     </ClInclude>
+    <ClInclude Include="define.h" />
   </ItemGroup>
 </Project>
