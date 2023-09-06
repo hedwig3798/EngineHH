@@ -1,138 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Component">
-      <UniqueIdentifier>{58dd5df7-7f63-4df8-925f-cbc344db5ecf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Component\Rigidbody">
-      <UniqueIdentifier>{8c8b1dc4-0c1e-4b18-8bf1-bd471d9b2f4f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Component\Collider">
-      <UniqueIdentifier>{916e6669-a639-4820-a7ed-5478e5afff98}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Managers">
-      <UniqueIdentifier>{267af8e7-aad9-47c7-8922-e1b8f85b1afe}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Managers\Key">
-      <UniqueIdentifier>{821d3022-c90b-4905-9c6d-e10888e922f2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Managers\Time">
-      <UniqueIdentifier>{5a8f6472-3e9b-4787-8289-1170f299b3ae}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object">
-      <UniqueIdentifier>{7e759b7c-e339-4000-9b63-ead6a4d9155c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Component\Transform">
-      <UniqueIdentifier>{6a8dcefb-a995-4491-a039-32f6cc402335}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Component\Collider\Box">
-      <UniqueIdentifier>{2c81483d-3254-404e-a814-fc2fe4fe802b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Component\Collider\Circle">
-      <UniqueIdentifier>{c224bf20-47e1-402e-a5dd-d019a1395505}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Managers\Collsion">
-      <UniqueIdentifier>{a4f1bdc0-5dd0-45bb-aaf6-9cc07ab9fd64}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Managers\Scene">
-      <UniqueIdentifier>{98b47eae-e644-4634-aa25-2eafa938bde4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Scene">
-      <UniqueIdentifier>{cb267632-5bec-4069-8428-e1db23068b80}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Managers\ManagerSet">
-      <UniqueIdentifier>{0bc24bfe-2b44-48c4-be2d-d0ee80922821}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AABBTree">
-      <UniqueIdentifier>{50cc5086-8241-4650-88ea-f8138499d24a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Managers\Path">
-      <UniqueIdentifier>{6b9e8368-6067-46bb-9937-035a9536926f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Managers\Resource">
-      <UniqueIdentifier>{7b1ee465-8461-49b3-af97-5930e727102b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Component\Particle">
-      <UniqueIdentifier>{66583e48-ce97-4750-b1ae-23d6de71b7f6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ObjectPool">
-      <UniqueIdentifier>{14053d4f-758b-45e3-b92d-2ec60fd44e54}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Particle">
-      <UniqueIdentifier>{d499f4bd-15d3-4bc1-b285-a263d34697ed}</UniqueIdentifier>
-    </Filter>
     <Filter Include="pch">
       <UniqueIdentifier>{cfd6bcca-72d9-407a-958f-27e577a09b32}</UniqueIdentifier>
     </Filter>
+    <Filter Include="MonoBehaviour">
+      <UniqueIdentifier>{ea9b7dcf-dcfd-4cde-aa90-589f415a21c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object">
+      <UniqueIdentifier>{ac5c9176-2b00-436e-a8a6-b46622ecd747}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component">
+      <UniqueIdentifier>{8167925a-555a-4f95-8704-8e8b7679d496}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="TimeManager.cpp">
-      <Filter>Managers\Time</Filter>
-    </ClCompile>
-    <ClCompile Include="KeyManager.cpp">
-      <Filter>Managers\Key</Filter>
-    </ClCompile>
-    <ClCompile Include="Object.cpp">
-      <Filter>Object</Filter>
-    </ClCompile>
-    <ClCompile Include="Component.cpp">
-      <Filter>Component</Filter>
-    </ClCompile>
-    <ClCompile Include="Collider.cpp">
-      <Filter>Component\Collider</Filter>
-    </ClCompile>
-    <ClCompile Include="Transform.cpp">
-      <Filter>Component\Transform</Filter>
-    </ClCompile>
-    <ClCompile Include="BoxCollider.cpp">
-      <Filter>Component\Collider\Box</Filter>
-    </ClCompile>
-    <ClCompile Include="CollisionManager.cpp">
-      <Filter>Managers\Collsion</Filter>
-    </ClCompile>
-    <ClCompile Include="SceneManager.cpp">
-      <Filter>Managers\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="CircleCollider.cpp">
-      <Filter>Component\Collider\Circle</Filter>
-    </ClCompile>
-    <ClCompile Include="ManagerSet.cpp">
-      <Filter>Managers\ManagerSet</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="AABBNode.cpp">
-      <Filter>AABBTree</Filter>
-    </ClCompile>
-    <ClCompile Include="AABBTree.cpp">
-      <Filter>AABBTree</Filter>
-    </ClCompile>
-    <ClCompile Include="AABB.cpp">
-      <Filter>AABBTree</Filter>
-    </ClCompile>
-    <ClCompile Include="PathManager.cpp">
-      <Filter>Managers\Path</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceManager.cpp">
-      <Filter>Managers\Resource</Filter>
-    </ClCompile>
-    <ClCompile Include="ObjectPool.cpp">
-      <Filter>ObjectPool</Filter>
-    </ClCompile>
-    <ClCompile Include="ParticleSystem.cpp">
-      <Filter>Component\Particle</Filter>
-    </ClCompile>
-    <ClCompile Include="Particle.cpp">
-      <Filter>Object\Particle</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="TimeManager.h">
-      <Filter>Managers\Time</Filter>
+    <ClInclude Include="pch.h">
+      <Filter>pch</Filter>
     </ClInclude>
-    <ClInclude Include="KeyManager.h">
-      <Filter>Managers\Key</Filter>
+    <ClInclude Include="define.h">
+      <Filter>pch</Filter>
+    </ClInclude>
+    <ClInclude Include="MonoBehaviour.h">
+      <Filter>MonoBehaviour</Filter>
     </ClInclude>
     <ClInclude Include="Object.h">
       <Filter>Object</Filter>
@@ -140,57 +30,16 @@
     <ClInclude Include="Component.h">
       <Filter>Component</Filter>
     </ClInclude>
-    <ClInclude Include="Collider.h">
-      <Filter>Component\Collider</Filter>
-    </ClInclude>
-    <ClInclude Include="Transform.h">
-      <Filter>Component\Transform</Filter>
-    </ClInclude>
-    <ClInclude Include="BoxCollider.h">
-      <Filter>Component\Collider\Box</Filter>
-    </ClInclude>
-    <ClInclude Include="CollisionManager.h">
-      <Filter>Managers\Collsion</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneManager.h">
-      <Filter>Managers\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="CircleCollider.h">
-      <Filter>Component\Collider\Circle</Filter>
-    </ClInclude>
-    <ClInclude Include="ManagerSet.h">
-      <Filter>Managers\ManagerSet</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="AABBNode.h">
-      <Filter>AABBTree</Filter>
-    </ClInclude>
-    <ClInclude Include="AABBTree.h">
-      <Filter>AABBTree</Filter>
-    </ClInclude>
-    <ClInclude Include="AABB.h">
-      <Filter>AABBTree</Filter>
-    </ClInclude>
-    <ClInclude Include="PathManager.h">
-      <Filter>Managers\Path</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceManager.h">
-      <Filter>Managers\Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="ObjectPool.h">
-      <Filter>ObjectPool</Filter>
-    </ClInclude>
-    <ClInclude Include="ParticleSystem.h">
-      <Filter>Component\Particle</Filter>
-    </ClInclude>
-    <ClInclude Include="Particle.h">
-      <Filter>Object\Particle</Filter>
-    </ClInclude>
-    <ClInclude Include="pch.h">
-      <Filter>pch</Filter>
-    </ClInclude>
-    <ClInclude Include="define.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="MonoBehaviour.cpp">
+      <Filter>MonoBehaviour</Filter>
+    </ClCompile>
+    <ClCompile Include="Object.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Component.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

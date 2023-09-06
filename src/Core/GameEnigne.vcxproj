@@ -167,50 +167,16 @@ copy $(ProjectDir)*.h $(SolutionDir)lib\$(AssemblyName)Header\.</Command>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="AABB.h" />
-    <ClInclude Include="AABBNode.h" />
-    <ClInclude Include="AABBTree.h" />
-    <ClInclude Include="BoxCollider.h" />
-    <ClInclude Include="CircleCollider.h" />
-    <ClInclude Include="Collider.h" />
-    <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="define.h" />
-    <ClInclude Include="KeyManager.h" />
-    <ClInclude Include="ManagerSet.h" />
+    <ClInclude Include="MonoBehaviour.h" />
     <ClInclude Include="Object.h" />
-    <ClInclude Include="ObjectPool.h" />
-    <ClInclude Include="Particle.h" />
-    <ClInclude Include="ParticleSystem.h" />
-    <ClInclude Include="PathManager.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="ResourceManager.h" />
-    <ClInclude Include="Scene.h" />
-    <ClInclude Include="SceneManager.h" />
-    <ClInclude Include="TimeManager.h" />
-    <ClInclude Include="Transform.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AABB.cpp" />
-    <ClCompile Include="AABBNode.cpp" />
-    <ClCompile Include="AABBTree.cpp" />
-    <ClCompile Include="BoxCollider.cpp" />
-    <ClCompile Include="CircleCollider.cpp" />
-    <ClCompile Include="Collider.cpp" />
-    <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="Component.cpp" />
-    <ClCompile Include="KeyManager.cpp" />
-    <ClCompile Include="ManagerSet.cpp" />
+    <ClCompile Include="MonoBehaviour.cpp" />
     <ClCompile Include="Object.cpp" />
-    <ClCompile Include="ObjectPool.cpp" />
-    <ClCompile Include="Particle.cpp" />
-    <ClCompile Include="ParticleSystem.cpp" />
-    <ClCompile Include="PathManager.cpp" />
-    <ClCompile Include="ResourceManager.cpp" />
-    <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="SceneManager.cpp" />
-    <ClCompile Include="TimeManager.cpp" />
-    <ClCompile Include="Transform.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
