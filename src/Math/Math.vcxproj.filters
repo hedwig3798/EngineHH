@@ -7,19 +7,13 @@
     <Filter Include="Matrix">
       <UniqueIdentifier>{951f798b-586c-414f-a09c-8bd38e96cb6d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Random">
-      <UniqueIdentifier>{14007039-91e9-4ba2-9216-c1f7fcbd565d}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Vector2.cpp">
       <Filter>Vector2</Filter>
     </ClCompile>
-    <ClCompile Include="Matrix.cpp">
+    <ClCompile Include="H4x4Matrix.cpp">
       <Filter>Matrix</Filter>
-    </ClCompile>
-    <ClCompile Include="random.cpp">
-      <Filter>Random</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -27,11 +21,9 @@
       <Filter>Vector2</Filter>
     </ClInclude>
     <ClInclude Include="headers.h" />
-    <ClInclude Include="Matrix.h">
+    <ClInclude Include="Vertex.h" />
+    <ClInclude Include="H4x4Matrix.h">
       <Filter>Matrix</Filter>
-    </ClInclude>
-    <ClInclude Include="random.h">
-      <Filter>Random</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

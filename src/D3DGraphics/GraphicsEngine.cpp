@@ -41,6 +41,15 @@ void GraphicsEngine::RenderClearView()
 	this->swapChain->Present(0, 0);
 }
 
+void GraphicsEngine::RenderVertexLine(const std::vector<Vertex>& _vertexs)
+{
+	this->d3d11DeviceContext->IASetPrimitiveTopology(
+		D3D11_PRIMITIVE_TOPOLOGY_LINELIST
+	);
+
+
+}
+
 /// <summary>
 /// D3D11 디바이스와 디바이스 컨텍스트 생성
 /// </summary>

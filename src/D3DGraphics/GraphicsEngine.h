@@ -1,6 +1,8 @@
 #pragma once
 #include <d3d11.h>
 #include <assert.h>
+#include <vector>
+
 #pragma comment(lib,"d3d11.lib")
 
 /// <summary>
@@ -12,6 +14,12 @@
 /// Dx11을 이용한 3D 그래픽 엔진
 /// </summary>
 
+
+struct Vertex
+{
+	float x, y, z;
+	float color[4];
+};
 
 class GraphicsEngine
 {
@@ -47,6 +55,7 @@ public:
 
 	void Initialize(HWND _hwnd);
 	void RenderClearView();
+	void RenderVertexLine(const std::vector<Vertex>& _vertexs);
 
 private:
 	void CreateD3D11DeviceContext();

@@ -24,6 +24,7 @@
     <ProjectGuid>{005c7857-f304-4a09-8a3e-8cb5af3c9cc9}</ProjectGuid>
     <RootNamespace>D3D</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>D3DDemo</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -134,6 +135,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="D3D.h" />
+    <ClInclude Include="DemoObject.h" />
     <ClInclude Include="DemoProcess.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Resource.h" />
@@ -141,6 +143,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="D3D.cpp" />
+    <ClCompile Include="DemoObject.cpp" />
     <ClCompile Include="DemoProcess.cpp" />
   </ItemGroup>
   <ItemGroup>

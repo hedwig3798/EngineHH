@@ -7,12 +7,12 @@
 
 #include "headers.h"
 #include "Vector2.h"
-#include "Matrix.h"
+#include "4x4Matrix.h"
 namespace Mathematics
 {
 	// 사각형 꼭지점 좌표 변환
-	void TransformRectangleVertices(Vector2 _rect[4], const Matrix& _target);
-	void TransformVertices(Vector2& _point, const Matrix& _target);
+	void TransformRectangleVertices(Vector2 _rect[4], const D4x4Matrix & _target);
+	void TransformVertices(Vector2& _point, const D4x4Matrix & _target);
 
 	// 스칼라 내적
 	float DotProduct(const Vector2& _a, const Vector2& _b);

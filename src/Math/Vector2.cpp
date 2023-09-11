@@ -1,6 +1,5 @@
 #include "Vector2.h"
-#include "Mathematics.h"
-#include "Matrix.h"
+#include "H4x4Matrix.h"
 
 Vector2::Vector2(float _a /*= 0*/, float _b /*= 0*/)
 	: x(_a)
@@ -29,7 +28,7 @@ void Vector2::operator+=(const Vector2& _other)
 	this->y += _other.y;
 }
 
-void Vector2::operator*=(const Matrix& _vector)
+void Vector2::operator*=(const H4x4Matrix& _vector)
 {
 	(*this) = (*this) * _vector;
 }
@@ -104,7 +103,7 @@ void Vector2::operator*=(const float& _other)
 	this->y *= _other;
 }
 
-Vector2 Vector2::operator*(const Matrix& _matrix) const
+Vector2 Vector2::operator*(const H4x4Matrix& _matrix) const
 {
 	return _matrix * (*this);
 }

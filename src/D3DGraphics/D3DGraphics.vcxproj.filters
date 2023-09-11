@@ -6,9 +6,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GraphicsEngine.h" />
+    <ClCompile Include="GraphicsEngine.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GraphicsEngine.cpp" />
+    <ClInclude Include="GraphicsEngine.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

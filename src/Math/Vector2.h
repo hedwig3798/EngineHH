@@ -10,7 +10,7 @@
 /// 2D 벡터 연산을 위한 클래스
 /// </summary>
 
-class Matrix;
+class H4x4Matrix;
 
 class Vector2
 {
@@ -31,7 +31,7 @@ public:
 
 	Vector2 operator-(const Vector2& _other) const;
 
-	Vector2 operator*(const Matrix& _vector) const;
+	Vector2 operator*(const H4x4Matrix& _vector) const;
 	float operator*(const Vector2& _other) const;
 	Vector2 operator*(const float& _other) const;
 
@@ -43,7 +43,7 @@ public:
 	void operator-=(const Vector2& _other);
 
 	void operator*=(const float& _other);
-	void operator*=(const Matrix& _vector);
+	void operator*=(const H4x4Matrix& _vector);
 
 	Vector2 operator-();
 	Vector2 operator-() const;

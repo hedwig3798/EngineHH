@@ -16,6 +16,9 @@
     <Filter Include="DemoProcess">
       <UniqueIdentifier>{000e1dd4-946a-4d60-9aa6-306d09c31563}</UniqueIdentifier>
     </Filter>
+    <Filter Include="DemoObject">
+      <UniqueIdentifier>{74cb4a02-544e-4134-bb85-f7979d889cf4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -27,11 +30,14 @@
     <ClInclude Include="Resource.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="D3D.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="DemoProcess.h">
       <Filter>DemoProcess</Filter>
+    </ClInclude>
+    <ClInclude Include="DemoObject.h">
+      <Filter>DemoObject</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D.h">
+      <Filter>Entry Point</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -40,6 +46,9 @@
     </ClCompile>
     <ClCompile Include="DemoProcess.cpp">
       <Filter>DemoProcess</Filter>
+    </ClCompile>
+    <ClCompile Include="DemoObject.cpp">
+      <Filter>DemoObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
