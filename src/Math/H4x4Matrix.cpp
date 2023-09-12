@@ -1,5 +1,6 @@
 #include "H4x4Matrix.h"
 #include "Vector2.h"
+#include <iostream>
 
 /// <summary>
 /// 최초 생성시 4x4 정방항등행렬
@@ -163,34 +164,35 @@ void H4x4Matrix::SetScale(const Vector2& _scale, const Vector2& _center)
 float H4x4Matrix::GetDetermination()
 {
 	// 최초 이전 단계 지지 요소
-	float p = 1;
+	float p1 = this->matrix[0][0];
+	float p2 = 1;
 
 	H4x4Matrix temp;
+	H4x4Matrix original;
 	temp.matrix = this->matrix;
+	original.matrix = this->matrix;
 
 	// 행렬의 모든 요소를 3번 지나야된다.
 	// k = 기준점, i = 열, j = 열
 	for (int k = 0; k < 4; k++)
 	{
-		if (k != 0) 
-		{
-			p = temp[k][k];
-		}
+		p2 = p1;
+		p1 = temp.matrix[k][k];
 		// 행렬 순회
 		for (int i = 0; i < 4; i++)
 		{
-			// 현재 기준점과 같은 
-			if (i == k) 
+			if (i == k)
 			{
 				continue;
 			}
-
+			original.matrix = temp.matrix;
 			for (int j = 0; j < 4; j++)
 			{
 				temp[i][j] = 
-					((temp.matrix[k][k] * temp.matrix[i][j]) -
-					(temp.matrix[k][j] * temp.matrix[i][k])) / p;
+					((original.matrix[k][k] * original.matrix[i][j]) -
+					(original.matrix[k][j] * original.matrix[i][k])) / p2;
 			}
+			
 		}
 	}
 	return temp[3][3];
