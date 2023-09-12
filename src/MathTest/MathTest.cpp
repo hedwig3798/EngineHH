@@ -9,9 +9,9 @@ int main()
 
 	test.matrix = {
 		{1, 2, 3, 4},
-		{5, 12, 7, 8},
-		{9, 23, 4 ,54},
-		{34, 34, 34, 23}
+		{5, 6, 7, 8},
+		{9, 1, 2 ,3},
+		{4, 5, 5, 7}
 	};
 
 	for (int i = 0; i < 4; i++)
@@ -25,4 +25,16 @@ int main()
 	cout << endl;
 
 	cout << test.GetDetermination();
+	cout << endl;
+	test.Inverse();
+
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			cout << test.matrix[i][j] << " ";
+		}
+		cout << endl;
+	}
+	cout << endl;
 }

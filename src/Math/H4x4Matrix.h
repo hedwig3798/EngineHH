@@ -41,7 +41,7 @@ public:
 	// 행력식 구하기
 	float GetDetermination();
 	// 역행렬화
-	void SetInverse();
+	void Inverse();
 	// 역행렬을 만들어서 제공
 	H4x4Matrix GetInverse() const;
 

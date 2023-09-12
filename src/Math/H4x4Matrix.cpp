@@ -201,9 +201,16 @@ float H4x4Matrix::GetDetermination()
 /// <summary>
 /// 현재 행렬을 역행렬화
 /// </summary>
-void H4x4Matrix::SetInverse()
+void H4x4Matrix::Inverse()
 {
-
+	float det = GetDetermination();
+	for(auto& mat : this->matrix) 
+	{
+		for(auto& num : mat) 
+		{
+			num /= det;
+		}
+	}
 }
 
 /// <summary>
@@ -213,6 +220,8 @@ void H4x4Matrix::SetInverse()
 H4x4Matrix H4x4Matrix::GetInverse() const
 {
 	H4x4Matrix temp;
+	temp.matrix = this->matrix;
+	temp.Inverse();
 	return temp;
 }
 
