@@ -74,6 +74,14 @@ void Vector4::Normalize()
 	this->w /= norm;
 }
 
+Vector3 Vector4::Cross3(const Vector4& _other)
+{
+	Vector3 a = Vector3(*this);
+	Vector3 b = Vector3(_other);
+
+	return a.Cross(b);
+}
+
 bool Vector4::operator==(const Vector4& _other) const
 {
 	return this->x == _other.x && this->y == _other.y && this->z == _other.z && this->w == _other.w;

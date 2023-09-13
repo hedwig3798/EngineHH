@@ -56,5 +56,6 @@ public:
 	float Length() const;
 	float Dot(const Vector2& _other) const;
 	void Normalize();
+	Vector2 Cross(const Vector2& _other);
 };
 

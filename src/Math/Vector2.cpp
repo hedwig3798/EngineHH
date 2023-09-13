@@ -133,3 +133,8 @@ void Vector2::Normalize()
 	x = 0.f;
 	y = 0.f;
 }
+
+Vector2 Vector2::Cross(const Vector2& _other)
+{
+	return Vector2(this->x * _other.y, _other.x * this->y);
+}
