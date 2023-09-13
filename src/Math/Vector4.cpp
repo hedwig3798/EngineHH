@@ -1,6 +1,6 @@
 #include "Vector4.h"
 #include "Vector3.h"
-
+#include "H4x4Matrix.h"
 Vector4::Vector4(float _a /*= 0.f*/, float _b /*= 0.f*/, float _c /*= 0.f*/, float _d /*= 0.f*/)
 	: x(_a)
 	, y(_b)
@@ -37,6 +37,19 @@ Vector4 Vector4::operator+(const Vector4& _other) const
 void Vector4::operator*=(const float& _other)
 {
 	*this = *this * _other;
+}
+
+Vector4 Vector4::operator*(const H4x4Matrix& _other) const
+{
+	Vector4 result;
+	for (int i = 0; i < 4; i++)
+	{
+		result.x += _other[0][i];
+		result.y += _other[1][i];
+		result.z += _other[2][i];
+		result.w += _other[3][i];
+	}
+	return result;
 }
 
 Vector4 Vector4::operator-(const Vector4& _other) const

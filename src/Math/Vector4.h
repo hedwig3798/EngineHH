@@ -13,6 +13,7 @@
 
 class Vector2;
 class Vector3;
+class H4x4Matrix;
 
 class Vector4
 {
@@ -37,6 +38,7 @@ public:
 
 	float operator*(const Vector4& _other) const;
 	Vector4 operator*(const float& _other) const;
+	Vector4 operator*(const H4x4Matrix& _other) const;
 
 	Vector4 operator/(const float& _other) const;
 
