@@ -7,11 +7,22 @@
 /// </summary>
 /// <param name="_size"></param>
 H4x4Matrix::H4x4Matrix()
-	: matrix(4, std::vector<float>(4))
+	: matrix{}
 {
 	Setidentity();
 }
 
+
+H4x4Matrix::H4x4Matrix(const H4x4Matrix& _other)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			this->matrix[i][j] = _other[i][j];
+		}
+	}
+}
 
 H4x4Matrix::~H4x4Matrix()
 {
@@ -22,9 +33,9 @@ H4x4Matrix::~H4x4Matrix()
 /// </summary>
 void H4x4Matrix::Setidentity()
 {
-	for (size_t i = 0; i < this->matrix.size(); i++)
+	for (size_t i = 0; i < 4; i++)
 	{
-		for (size_t j = 0; j < this->matrix[i].size(); j++)
+		for (size_t j = 0; j < 4; j++)
 		{
 			matrix[i][j] = 0;
 			if (i == j)
@@ -169,15 +180,15 @@ float H4x4Matrix::GetDetermination()
 
 	H4x4Matrix temp;
 	H4x4Matrix original;
-	temp.matrix = this->matrix;
-	original.matrix = this->matrix;
+	temp = *this;
+	original = *this;
 
 	// 행렬의 모든 요소를 3번 지나야된다.
 	// k = 기준점, i = 열, j = 열
 	for (int k = 0; k < 4; k++)
 	{
 		p2 = p1;
-		p1 = temp.matrix[k][k];
+		p1 = temp[k][k];
 		// 행렬 순회
 		for (int i = 0; i < 4; i++)
 		{
@@ -185,12 +196,12 @@ float H4x4Matrix::GetDetermination()
 			{
 				continue;
 			}
-			original.matrix = temp.matrix;
+			original = temp;
 			for (int j = 0; j < 4; j++)
 			{
 				temp[i][j] = 
-					((original.matrix[k][k] * original.matrix[i][j]) -
-					(original.matrix[k][j] * original.matrix[i][k])) / p2;
+					((original[k][k] * original[i][j]) -
+					(original[k][j] * original[i][k])) / p2;
 			}
 			
 		}
@@ -220,32 +231,32 @@ void H4x4Matrix::Inverse()
 H4x4Matrix H4x4Matrix::GetInverse() const
 {
 	H4x4Matrix temp;
-	temp.matrix = this->matrix;
+	temp = *this;
 	temp.Inverse();
 	return temp;
 }
 
+
+
 #pragma region operator
 
-std::vector<float>& H4x4Matrix::operator[](int _index)
+float* H4x4Matrix::operator[](int _index)
 {
 	return this->matrix[_index];
 }
 
-const std::vector<float>& H4x4Matrix::operator[](int _index) const
+const float* H4x4Matrix::operator[](int _index) const
 {
 	return this->matrix[_index];
 }
 
 H4x4Matrix H4x4Matrix::operator+(const H4x4Matrix& _other)
 {
-	assert(this->matrix.size() == _other.matrix.size() && "diffrent matrix size");
-
 	H4x4Matrix temp;
 
-	for (int i = 0; i < this->matrix.size(); i++)
+	for (int i = 0; i < 4; i++)
 	{
-		for (int j = 0; j < this->matrix.size(); j++)
+		for (int j = 0; j < 4; j++)
 		{
 			temp[i][j] = (*this)[i][j] + _other[i][j];
 		}
@@ -257,9 +268,9 @@ H4x4Matrix H4x4Matrix::operator+(const H4x4Matrix& _other)
 H4x4Matrix H4x4Matrix::operator+(const int _other)
 {
 	H4x4Matrix temp;
-	for (int i = 0; i < this->matrix.size(); i++)
+	for (int i = 0; i < 4; i++)
 	{
-		for (int j = 0; j < this->matrix.size(); j++)
+		for (int j = 0; j < 4; j++)
 		{
 			temp[i][j] = (*this)[i][j] + _other;
 		}
@@ -269,15 +280,13 @@ H4x4Matrix H4x4Matrix::operator+(const int _other)
 
 H4x4Matrix H4x4Matrix::operator*(const H4x4Matrix& _other)
 {
-	assert(this->matrix.size() == _other.matrix.size() && "diffrent matrix size to muliply");
-
 	H4x4Matrix result = _other;
-	for (int i = 0; i < this->matrix.size(); i++)
+	for (int i = 0; i < 4; i++)
 	{
-		for (int j = 0; j < this->matrix.size(); j++)
+		for (int j = 0; j < 4; j++)
 		{
 			float acc = 0.0f;
-			for (int k = 0; k < this->matrix.size(); k++)
+			for (int k = 0; k <4 ; k++)
 			{
 				acc += _other[i][k] * (*this)[k][j];
 			}
@@ -287,12 +296,12 @@ H4x4Matrix H4x4Matrix::operator*(const H4x4Matrix& _other)
 	return result;
 }
 
-H4x4Matrix H4x4Matrix::operator*(const int _other)
+H4x4Matrix H4x4Matrix::operator*(const float _other)
 {
 	H4x4Matrix temp;
-	for (int i = 0; i < this->matrix.size(); i++)
+	for (int i = 0; i < 4; i++)
 	{
-		for (int j = 0; j < this->matrix.size(); j++)
+		for (int j = 0; j < 4; j++)
 		{
 			temp[i][j] = (*this)[i][j] * _other;
 		}

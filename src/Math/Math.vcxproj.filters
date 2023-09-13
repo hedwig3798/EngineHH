@@ -1,29 +1,41 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Vector2">
-      <UniqueIdentifier>{63a7d77d-14fd-4f4a-aa80-27b326e584fd}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Matrix">
       <UniqueIdentifier>{951f798b-586c-414f-a09c-8bd38e96cb6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vector">
+      <UniqueIdentifier>{63a7d77d-14fd-4f4a-aa80-27b326e584fd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Vector2.cpp">
-      <Filter>Vector2</Filter>
+      <Filter>Vector</Filter>
     </ClCompile>
     <ClCompile Include="H4x4Matrix.cpp">
       <Filter>Matrix</Filter>
     </ClCompile>
+    <ClCompile Include="Vector3.cpp">
+      <Filter>Vector</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector4.cpp">
+      <Filter>Vector</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Vector2.h">
-      <Filter>Vector2</Filter>
+      <Filter>Vector</Filter>
     </ClInclude>
     <ClInclude Include="headers.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="H4x4Matrix.h">
       <Filter>Matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3.h">
+      <Filter>Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector4.h">
+      <Filter>Vector</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

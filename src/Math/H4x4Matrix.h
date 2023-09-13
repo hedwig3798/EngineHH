@@ -17,12 +17,12 @@ class Vector2;
 class H4x4Matrix
 {
 public:
-	std::vector<std::vector<float>> matrix;
+	float matrix[4][4];
 
 public:
 	H4x4Matrix();
 	~H4x4Matrix();
-
+	H4x4Matrix(const H4x4Matrix& _other);
 	// 항등행렬 만들기
 	void Setidentity();
 
@@ -46,14 +46,14 @@ public:
 	H4x4Matrix GetInverse() const;
 
 	// 행렬 연산들
-	std::vector<float>& operator[](int _index);
-	const std::vector<float>& operator[](int _index) const;
+	float* operator[](int _index);
+	const float* operator[](int _index) const;
 
 	H4x4Matrix operator+(const H4x4Matrix& _other);
 	H4x4Matrix operator+(const int _other);
 
 	H4x4Matrix operator*(const H4x4Matrix& _other);
-	H4x4Matrix operator*(const int _other);
+	H4x4Matrix operator*(const float _other);
 	Vector2 operator*(const Vector2& _matrix) const;
 
 	void operator*=(const H4x4Matrix& _other);

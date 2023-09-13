@@ -1,5 +1,7 @@
 #include "Vector2.h"
 #include "H4x4Matrix.h"
+#include "Vector3.h"
+#include "Vector4.h"
 
 Vector2::Vector2(float _a /*= 0*/, float _b /*= 0*/)
 	: x(_a)
@@ -11,6 +13,18 @@ Vector2::Vector2(int _a, int _b)
 	: x((float)_a)
 	, y((float)_b)
 {
+}
+
+Vector2::Vector2(const Vector3& _vec3)
+{
+	this->x = _vec3.x;
+	this->y = _vec3.y;
+}
+
+Vector2::Vector2(const Vector4& _vec4)
+{
+	this->x = _vec4.x;
+	this->y = _vec4.y;
 }
 
 Vector2::~Vector2()
@@ -26,11 +40,6 @@ void Vector2::operator+=(const Vector2& _other)
 {
 	this->x += _other.x;
 	this->y += _other.y;
-}
-
-void Vector2::operator*=(const H4x4Matrix& _vector)
-{
-	(*this) = (*this) * _vector;
 }
 
 
@@ -67,26 +76,6 @@ Vector2 Vector2::operator-() const
 	return { -this->x, -this->y };
 }
 
-bool Vector2::operator<(const Vector2& _other) const
-{
-	return (this->x < _other.x && this->y < _other.y);
-}
-
-bool Vector2::operator<=(const Vector2& _other) const
-{
-	return (this->x <= _other.x && this->y <= _other.y);
-}
-
-bool Vector2::operator>(const Vector2& _other) const
-{
-	return (this->x > _other.x && this->y > _other.y);
-}
-
-bool Vector2::operator>=(const Vector2& _other) const
-{
-	return (this->x >= _other.x && this->y >= _other.y);
-}
-
 float Vector2::operator*(const Vector2& _other) const
 {
 	return (this->x * _other.x + this->y * _other.y);
@@ -101,11 +90,6 @@ void Vector2::operator*=(const float& _other)
 {
 	this->x *= _other;
 	this->y *= _other;
-}
-
-Vector2 Vector2::operator*(const H4x4Matrix& _matrix) const
-{
-	return _matrix * (*this);
 }
 
 bool Vector2::operator==(const Vector2& _other) const
@@ -136,7 +120,7 @@ float Vector2::Dot(const Vector2& _other) const
 /// ¿œπ›»≠
 /// </summary>
 /// <returns>¿œπ›»≠ º∫∞¯ ø©∫Œ</returns>
-bool Vector2::Normalize()
+void Vector2::Normalize()
 {
 	const float SquareSum = x * x + y * y;
 	const float Tolerance = 1.e-8f;
@@ -145,45 +129,7 @@ bool Vector2::Normalize()
 		const float Scale = 1.f / sqrtf(SquareSum);
 		x *= Scale;
 		y *= Scale;
-		return true;
 	}
 	x = 0.f;
 	y = 0.f;
-	return false;
-}
-
-/// <summary>
-/// 0∫§≈Õ ª˝º∫
-/// </summary>
-/// <returns>0∫§≈Õ</returns>
-Vector2 Vector2::Zero()
-{
-	return Vector2(0.f, 0.f);
-}
-
-/// <summary>
-/// 1∫§≈Õ ª˝º∫
-/// </summary>
-/// <returns>1∫§≈Õ</returns>
-Vector2 Vector2::One()
-{
-	return Vector2(1.f, 1.f);
-}
-
-/// <summary>
-/// x ¥‹¿ß∫§≈Õ
-/// </summary>
-/// <returns>x ¥‹¿ß∫§≈Õ</returns>
-Vector2 Vector2::UnitX()
-{
-	return Vector2(1.f, 0.f);
-}
-
-/// <summary>
-/// y ¥‹¿ß∫§≈Õ
-/// </summary>
-/// <returns>y ¥‹¿ß∫§≈Õ</returns>
-Vector2 Vector2::UnitY()
-{
-	return Vector2(0.f, 1.f);
 }
