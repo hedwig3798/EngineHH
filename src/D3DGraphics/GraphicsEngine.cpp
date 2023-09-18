@@ -10,6 +10,9 @@ GraphicsEngine::GraphicsEngine()
 	, m4xMsaaQuality(-1)
 	, depthStancilBuffer(nullptr)
 	, depthStancilView(nullptr)
+	, inputLayout(nullptr)
+	, defaultVs(nullptr)
+	, defaultPs(nullptr)
 {
 }
 
@@ -29,6 +32,8 @@ void GraphicsEngine::Initialize(HWND _hwnd)
 	CreateChainValue();
 	CreateRenderTargetView();
 	CreateDepthStencilBufferAndView();
+	CreateInputLayer();
+
 }
 
 /// <summary>
@@ -46,8 +51,6 @@ void GraphicsEngine::RenderVertexLine(const std::vector<Vertex>& _vertexs)
 	this->d3d11DeviceContext->IASetPrimitiveTopology(
 		D3D11_PRIMITIVE_TOPOLOGY_LINELIST
 	);
-
-
 }
 
 /// <summary>
@@ -57,6 +60,7 @@ void GraphicsEngine::CreateD3D11DeviceContext()
 {
 	// D3D11 디바이스 생성
 	HRESULT hr;
+
 	hr = D3D11CreateDevice(
 		0, // 기본 어뎁터
 		D3D_DRIVER_TYPE_HARDWARE,
@@ -249,12 +253,79 @@ void GraphicsEngine::BindView()
 }
 
 /// <summary>
+/// Input Layer를 생성한다
+/// </summary>
+void GraphicsEngine::CreateInputLayer()
+{
+	HRESULT hr = S_OK;
+
+	D3D11_INPUT_ELEMENT_DESC defaultInputLayerDECS[] =
+	{
+		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0}
+	};
+
+	ID3DBlob* vsByteCode;
+	ID3DBlob* psByteCode;
+	ID3DBlob* compileError;
+	// TODO : 상대경로로 바꾸기
+	hr = D3DCompileFromFile(
+		L"C:\\Users\\User\\project\\Engine\\EngineHH\\src\\D3DGraphics\\VertexShader.hlsl",
+		nullptr,
+		D3D_COMPILE_STANDARD_FILE_INCLUDE,
+		"VShader",
+		"vs_4_0",
+		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
+		0,
+		&vsByteCode,
+		&compileError
+	);
+	assert(hr == S_OK && "cannot Compile Vertex Shader");
+
+	// TODO : 상대경로로 바꾸기
+	hr = D3DCompileFromFile(
+		L"C:\\Users\\User\\project\\Engine\\EngineHH\\src\\D3DGraphics\\PixelShader.hlsl",
+		nullptr,
+		D3D_COMPILE_STANDARD_FILE_INCLUDE,
+		"SimplePixelShader",
+		"ps_4_0",
+		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
+		0,
+		&psByteCode,
+		&compileError
+	);
+	assert(hr == S_OK && "cannot Compile Pixel Shader");
+
+// 	// 주소를 저장한다
+// 	this->d3d11Device->CreateVertexShader(vsByteCode->GetBufferPointer(), vsByteCode->GetBufferSize(), NULL, &defaultVs);
+// 	this->d3d11Device->CreatePixelShader(psByteCode->GetBufferPointer(), psByteCode->GetBufferSize(), NULL, &defaultPs);
+// 
+// 	// 셰이더 세팅 ??
+// 	this->d3d11DeviceContext->VSSetShader(defaultVs, 0, 0);
+// 	this->d3d11DeviceContext->PSSetShader(defaultPs, 0, 0);
+
+	hr = this->d3d11Device->CreateInputLayout(
+		defaultInputLayerDECS,
+		2,
+		vsByteCode->GetBufferPointer(),
+		vsByteCode->GetBufferSize(),
+		&inputLayout
+	);
+	assert(hr == S_OK && "cannot create inpur layer");
+
+	this->d3d11DeviceContext->IASetInputLayout(this->inputLayout);
+
+}
+
+/// <summary>
 /// 렌더 타겟 뷰 초기화
 /// </summary>
 void GraphicsEngine::ClearRenderTargetView()
 {
 	// 임시 색 ( R G B A )
-	float bgRed[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
+	float bgRed[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+
+
 
 	// 렌더 타겟을 지정한 색으로 초기화
 	this->d3d11DeviceContext->ClearRenderTargetView(

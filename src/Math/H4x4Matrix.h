@@ -1,6 +1,7 @@
 #pragma once
 #include "headers.h"
 #include <d3d11.h>
+#include <DirectXMath.h>
 
 /// <summary>
 /// 행렬 클래스
@@ -18,7 +19,7 @@ class H4x4Matrix
 {
 public:
 	float matrix[4][4];
-
+	DirectX::XMMATRIX a = DirectX::XMMATRIX();
 public:
 	H4x4Matrix();
 	~H4x4Matrix();

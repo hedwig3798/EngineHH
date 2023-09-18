@@ -1,25 +1,16 @@
 #pragma once
-#include <d3d11.h>
-#include <assert.h>
-#include <vector>
+#include "pch.h"
+#include "Vertex.h"
 
-#pragma comment(lib,"d3d11.lib")
 
 /// <summary>
 /// D3D 그래픽 엔진
 /// 작성자 : 김형환
 /// 최초 작성일 : 2023/09/06
-/// 최종 수정일 : 2023/09/06
+/// 최종 수정일 : 2023/09/18
 /// 
 /// Dx11을 이용한 3D 그래픽 엔진
 /// </summary>
-
-
-struct Vertex
-{
-	float x, y, z;
-	float color[4];
-};
 
 class GraphicsEngine
 {
@@ -49,6 +40,10 @@ private:
 	ID3D11Texture2D* depthStancilBuffer;
 	ID3D11DepthStencilView* depthStancilView;
 
+	ID3D11InputLayout* inputLayout;
+	ID3D11VertexShader* defaultVs;
+	ID3D11PixelShader* defaultPs;
+	
 public:
 	GraphicsEngine();
 	~GraphicsEngine();
@@ -63,6 +58,7 @@ private:
 	void CreateRenderTargetView();
 	void CreateDepthStencilBufferAndView();
 	void BindView();
+	void CreateInputLayer();
 
 	void ClearRenderTargetView();
 	void ClearDepthStencilView();

@@ -4,15 +4,25 @@
     <Filter Include="Engine">
       <UniqueIdentifier>{2067870f-7aeb-495f-bb4d-12fb18174fea}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Vertex">
+      <UniqueIdentifier>{bc783b55-bd17-43b0-8bd0-1dbd4eb88998}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GraphicsEngine.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
+    <ClCompile Include="Vertex.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GraphicsEngine.h">
       <Filter>Engine</Filter>
     </ClInclude>
+    <ClInclude Include="Vertex.h" />
+    <ClInclude Include="pch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="VertexShader.hlsl" />
+    <FxCompile Include="PixelShader.hlsl" />
   </ItemGroup>
 </Project>
