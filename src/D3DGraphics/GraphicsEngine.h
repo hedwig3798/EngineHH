@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "Vertex.h"
+#include "color.h"
 
 
 /// <summary>
@@ -43,7 +44,21 @@ private:
 	ID3D11InputLayout* inputLayout;
 	ID3D11VertexShader* defaultVs;
 	ID3D11PixelShader* defaultPs;
-	
+
+	Vertex tempVertex[8] =
+	{
+		{DirectX::XMFLOAT3{-1.0f, -1.0f, -1.0f}, COLORS::White},
+		{DirectX::XMFLOAT3{-1.0f, 1.0f, -1.0f}, COLORS::Black},
+		{DirectX::XMFLOAT3{1.0f, 1.0f, -1.0f}, COLORS::Red},
+		{DirectX::XMFLOAT3{1.0f, -1.0f, -1.0f}, COLORS::Green},
+		{DirectX::XMFLOAT3{-1.0f, -1.0f, 1.0f}, COLORS::Blue},
+		{DirectX::XMFLOAT3{-1.0f, 1.0f, 1.0f}, COLORS::Yellow},
+		{DirectX::XMFLOAT3{1.0f, 1.0f, 1.0f}, COLORS::Cyan},
+		{DirectX::XMFLOAT3{1.0f, -1.0f, 1.0f}, COLORS::Magenta},
+	};
+
+	std::vector<ID3D11Buffer*> vertexBuffers;
+
 public:
 	GraphicsEngine();
 	~GraphicsEngine();
@@ -51,6 +66,7 @@ public:
 	void Initialize(HWND _hwnd);
 	void RenderClearView();
 	void RenderVertexLine(const std::vector<Vertex>& _vertexs);
+	void RenderTestThing();
 
 private:
 	void CreateD3D11DeviceContext();
@@ -62,5 +78,6 @@ private:
 
 	void ClearRenderTargetView();
 	void ClearDepthStencilView();
+	void InputVertexBuffer(Vertex* _verteies, size_t _size);
 };
 

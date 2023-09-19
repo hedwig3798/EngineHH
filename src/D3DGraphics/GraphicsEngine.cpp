@@ -54,6 +54,14 @@ void GraphicsEngine::RenderVertexLine(const std::vector<Vertex>& _vertexs)
 }
 
 /// <summary>
+/// 임시 오브젝트 렌더
+/// </summary>
+void GraphicsEngine::RenderTestThing()
+{
+	
+}
+
+/// <summary>
 /// D3D11 디바이스와 디바이스 컨텍스트 생성
 /// </summary>
 void GraphicsEngine::CreateD3D11DeviceContext()
@@ -325,8 +333,6 @@ void GraphicsEngine::ClearRenderTargetView()
 	// 임시 색 ( R G B A )
 	float bgRed[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
-
-
 	// 렌더 타겟을 지정한 색으로 초기화
 	this->d3d11DeviceContext->ClearRenderTargetView(
 		this->renderTargetView,
@@ -346,4 +352,33 @@ void GraphicsEngine::ClearDepthStencilView()
 		1.0f,
 		0
 	);
+}
+
+/// <summary>
+/// 정점 버퍼에 정점 추가
+/// </summary>
+void GraphicsEngine::InputVertexBuffer(Vertex* _verteies, size_t _size)
+{
+	HRESULT hr = S_OK;
+
+	D3D11_BUFFER_DESC vb;
+
+	vb.Usage = D3D11_USAGE_IMMUTABLE;
+	vb.ByteWidth = _size;
+	vb.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vb.CPUAccessFlags = 0;
+	vb.StructureByteStride = 0;
+
+	D3D11_SUBRESOURCE_DATA initData;
+	initData.pSysMem = _verteies;
+
+	ID3D11Buffer* newBuffer;	
+
+	this->d3d11Device->CreateBuffer(
+		&vb,
+		&initData,
+		&newBuffer
+	);
+
+	this->vertexBuffers.push_back(newBuffer);
 }

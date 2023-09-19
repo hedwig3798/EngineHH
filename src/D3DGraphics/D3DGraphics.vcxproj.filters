@@ -7,19 +7,29 @@
     <Filter Include="Vertex">
       <UniqueIdentifier>{bc783b55-bd17-43b0-8bd0-1dbd4eb88998}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Color">
+      <UniqueIdentifier>{7dbea27b-5a96-4afe-a7ef-3623dfbeab3b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GraphicsEngine.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="Vertex.cpp" />
+    <ClCompile Include="Vertex.cpp">
+      <Filter>Vertex</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GraphicsEngine.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Vertex.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Vertex.h">
+      <Filter>Vertex</Filter>
+    </ClInclude>
+    <ClInclude Include="color.h">
+      <Filter>Color</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl" />
