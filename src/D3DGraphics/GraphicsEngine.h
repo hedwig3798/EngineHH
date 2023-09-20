@@ -2,6 +2,7 @@
 #include "pch.h"
 #include "Vertex.h"
 #include "color.h"
+#include "pipeline.h"
 
 
 /// <summary>
@@ -16,6 +17,14 @@
 class GraphicsEngine
 {
 private:
+
+	struct MatrixBufferType
+	{
+		DirectX::XMMATRIX world;
+		DirectX::XMMATRIX view;
+		DirectX::XMMATRIX proj;
+	};
+
 	// D3D 기능 레벨
 	D3D_FEATURE_LEVEL featureLevel;
 
@@ -41,23 +50,7 @@ private:
 	ID3D11Texture2D* depthStancilBuffer;
 	ID3D11DepthStencilView* depthStancilView;
 
-	ID3D11InputLayout* inputLayout;
-	ID3D11VertexShader* defaultVs;
-	ID3D11PixelShader* defaultPs;
-
-	Vertex tempVertex[8] =
-	{
-		{DirectX::XMFLOAT3{-1.0f, -1.0f, -1.0f}, COLORS::White},
-		{DirectX::XMFLOAT3{-1.0f, 1.0f, -1.0f}, COLORS::Black},
-		{DirectX::XMFLOAT3{1.0f, 1.0f, -1.0f}, COLORS::Red},
-		{DirectX::XMFLOAT3{1.0f, -1.0f, -1.0f}, COLORS::Green},
-		{DirectX::XMFLOAT3{-1.0f, -1.0f, 1.0f}, COLORS::Blue},
-		{DirectX::XMFLOAT3{-1.0f, 1.0f, 1.0f}, COLORS::Yellow},
-		{DirectX::XMFLOAT3{1.0f, 1.0f, 1.0f}, COLORS::Cyan},
-		{DirectX::XMFLOAT3{1.0f, -1.0f, 1.0f}, COLORS::Magenta},
-	};
-
-	std::vector<ID3D11Buffer*> vertexBuffers;
+	ID3D11Buffer* matrixBuffer;
 
 public:
 	GraphicsEngine();
@@ -65,8 +58,19 @@ public:
 
 	void Initialize(HWND _hwnd);
 	void RenderClearView();
-	void RenderVertexLine(const std::vector<Vertex>& _vertexs);
-	void RenderTestThing();
+	void RenderTestThing(PipeLine& _pipline);
+	void endDraw();
+	void begineDraw();
+
+	void ClearRenderTargetView();
+	void ClearDepthStencilView();
+
+	void CreateInputLayer(ID3D11InputLayout* _inputLayout, ID3D11VertexShader* _vertexShader, ID3D11PixelShader* _pixelShader);
+	void CreateVertexBuffer(Vertex* _verteies, size_t _size, ID3D11Buffer* _vertexbuffer);
+	void CreateIndexBuffer(UINT* _indices, size_t _size, ID3D11Buffer* _indexbuffer);
+	void CreateRasterizerState(ID3D11RasterizerState* _rasterizerState);
+
+	void SetParameter(DirectX::XMMATRIX _w, DirectX::XMMATRIX _v, DirectX::XMMATRIX _p);
 
 private:
 	void CreateD3D11DeviceContext();
@@ -74,10 +78,6 @@ private:
 	void CreateRenderTargetView();
 	void CreateDepthStencilBufferAndView();
 	void BindView();
-	void CreateInputLayer();
 
-	void ClearRenderTargetView();
-	void ClearDepthStencilView();
-	void InputVertexBuffer(Vertex* _verteies, size_t _size);
 };
 

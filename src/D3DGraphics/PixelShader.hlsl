@@ -1,10 +1,11 @@
-struct PixelShaderInput
+
+struct VertexOut
 {
-    float4 pos : SV_POSITION;
-    float4 color : COLOR;
+    float4 PosH : SV_POSITION;
+    float4 Color : COLOR;
 };
 
-float4 SimplePixelShader(PixelShaderInput input) : SV_TARGET
+float4 PS (VertexOut pin) : SV_Target
 {
-    return input.color;
+    return pin.Color;
 }

@@ -1,4 +1,5 @@
 #include "GraphicsEngine.h"
+#include <minwinbase.h>
 
 GraphicsEngine::GraphicsEngine()
 	: featureLevel{}
@@ -10,9 +11,7 @@ GraphicsEngine::GraphicsEngine()
 	, m4xMsaaQuality(-1)
 	, depthStancilBuffer(nullptr)
 	, depthStancilView(nullptr)
-	, inputLayout(nullptr)
-	, defaultVs(nullptr)
-	, defaultPs(nullptr)
+	, matrixBuffer(nullptr)
 {
 }
 
@@ -32,8 +31,6 @@ void GraphicsEngine::Initialize(HWND _hwnd)
 	CreateChainValue();
 	CreateRenderTargetView();
 	CreateDepthStencilBufferAndView();
-	CreateInputLayer();
-
 }
 
 /// <summary>
@@ -43,22 +40,24 @@ void GraphicsEngine::RenderClearView()
 {
 	ClearRenderTargetView();
 	ClearDepthStencilView();
-	this->swapChain->Present(0, 0);
-}
-
-void GraphicsEngine::RenderVertexLine(const std::vector<Vertex>& _vertexs)
-{
-	this->d3d11DeviceContext->IASetPrimitiveTopology(
-		D3D11_PRIMITIVE_TOPOLOGY_LINELIST
-	);
 }
 
 /// <summary>
 /// 임시 오브젝트 렌더
 /// </summary>
-void GraphicsEngine::RenderTestThing()
+void GraphicsEngine::RenderTestThing(PipeLine& _pipline)
 {
-	
+	this->d3d11DeviceContext->IASetInputLayout(_pipline.inputLayout);
+	this->d3d11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+
+	this->d3d11DeviceContext->IAGetVertexBuffers(0, 1, &_pipline.vertexBuffer, &stride, &offset);
+	this->d3d11DeviceContext->IASetIndexBuffer(_pipline.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	this->d3d11DeviceContext->VSSetShader(_pipline.vertexShader, nullptr, 0);
+	this->d3d11DeviceContext->PSSetShader(_pipline.pixelShader, nullptr, 0);
+	this->d3d11DeviceContext->DrawIndexed(36, 0, 0);
 }
 
 /// <summary>
@@ -263,40 +262,41 @@ void GraphicsEngine::BindView()
 /// <summary>
 /// Input Layer를 생성한다
 /// </summary>
-void GraphicsEngine::CreateInputLayer()
+void GraphicsEngine::CreateInputLayer(ID3D11InputLayout* _inputLayout, ID3D11VertexShader* _vertexShader, ID3D11PixelShader* _pixelShader)
 {
 	HRESULT hr = S_OK;
 
 	D3D11_INPUT_ELEMENT_DESC defaultInputLayerDECS[] =
 	{
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0}
+		{"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
 	};
 
 	ID3DBlob* vsByteCode;
 	ID3DBlob* psByteCode;
 	ID3DBlob* compileError;
+
 	// TODO : 상대경로로 바꾸기
 	hr = D3DCompileFromFile(
 		L"C:\\Users\\User\\project\\Engine\\EngineHH\\src\\D3DGraphics\\VertexShader.hlsl",
 		nullptr,
 		D3D_COMPILE_STANDARD_FILE_INCLUDE,
-		"VShader",
-		"vs_4_0",
+		"VS",
+		"vs_5_0",
 		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
 		0,
 		&vsByteCode,
 		&compileError
 	);
 	assert(hr == S_OK && "cannot Compile Vertex Shader");
-
+	
 	// TODO : 상대경로로 바꾸기
 	hr = D3DCompileFromFile(
 		L"C:\\Users\\User\\project\\Engine\\EngineHH\\src\\D3DGraphics\\PixelShader.hlsl",
 		nullptr,
 		D3D_COMPILE_STANDARD_FILE_INCLUDE,
-		"SimplePixelShader",
-		"ps_4_0",
+		"PS",
+		"ps_5_0",
 		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
 		0,
 		&psByteCode,
@@ -304,25 +304,27 @@ void GraphicsEngine::CreateInputLayer()
 	);
 	assert(hr == S_OK && "cannot Compile Pixel Shader");
 
-// 	// 주소를 저장한다
-// 	this->d3d11Device->CreateVertexShader(vsByteCode->GetBufferPointer(), vsByteCode->GetBufferSize(), NULL, &defaultVs);
-// 	this->d3d11Device->CreatePixelShader(psByteCode->GetBufferPointer(), psByteCode->GetBufferSize(), NULL, &defaultPs);
-// 
-// 	// 셰이더 세팅 ??
-// 	this->d3d11DeviceContext->VSSetShader(defaultVs, 0, 0);
-// 	this->d3d11DeviceContext->PSSetShader(defaultPs, 0, 0);
+	this->d3d11Device->CreateVertexShader(vsByteCode->GetBufferPointer(), vsByteCode->GetBufferSize(), nullptr, &_vertexShader);
+	this->d3d11Device->CreatePixelShader(psByteCode->GetBufferPointer(), psByteCode->GetBufferSize(), nullptr, &_pixelShader);
 
 	hr = this->d3d11Device->CreateInputLayout(
 		defaultInputLayerDECS,
 		2,
 		vsByteCode->GetBufferPointer(),
 		vsByteCode->GetBufferSize(),
-		&inputLayout
+		&_inputLayout
 	);
 	assert(hr == S_OK && "cannot create inpur layer");
 
-	this->d3d11DeviceContext->IASetInputLayout(this->inputLayout);
+	D3D11_BUFFER_DESC mbd;
+	mbd.Usage = D3D11_USAGE_DYNAMIC;
+	mbd.ByteWidth = sizeof(MatrixBufferType);
+	mbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	mbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	mbd.MiscFlags = 0;
+	mbd.StructureByteStride = 0;
 
+	this->d3d11Device->CreateBuffer(&mbd, nullptr, &matrixBuffer);
 }
 
 /// <summary>
@@ -354,31 +356,97 @@ void GraphicsEngine::ClearDepthStencilView()
 	);
 }
 
+void GraphicsEngine::CreateRasterizerState(ID3D11RasterizerState* _rasterizerState)
+{
+	HRESULT hr = S_OK;
+	D3D11_RASTERIZER_DESC rsDesc;
+	ZeroMemory(&rsDesc, sizeof(D3D11_RASTERIZER_DESC));
+	rsDesc.FillMode = D3D11_FILL_SOLID;
+	rsDesc.CullMode = D3D11_CULL_NONE;
+	rsDesc.FrontCounterClockwise = false;
+	rsDesc.DepthClipEnable = true;
+
+	hr = this->d3d11Device->CreateRasterizerState(&rsDesc, &_rasterizerState);
+	assert(SUCCEEDED(hr) && "cannot create Rasterizser State");
+
+	this->d3d11DeviceContext->RSSetState(_rasterizerState);
+}
+
+void GraphicsEngine::SetParameter(DirectX::XMMATRIX _w, DirectX::XMMATRIX _v, DirectX::XMMATRIX _p)
+{
+	HRESULT hr;
+
+	_w = DirectX::XMMatrixTranspose(_w);
+	_v = DirectX::XMMatrixTranspose(_v);
+	_p = DirectX::XMMatrixTranspose(_p);
+
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+	hr = this->d3d11DeviceContext->Map(this->matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	assert(SUCCEEDED(hr));
+
+	MatrixBufferType* dataptr = (MatrixBufferType*)mappedResource.pData;
+	
+	dataptr->world = _w;
+	dataptr->view = _v;
+	dataptr->proj = _p;
+
+	this->d3d11DeviceContext->Unmap(matrixBuffer, 0);
+
+	this->d3d11DeviceContext->VSSetConstantBuffers(0, 1, &matrixBuffer);
+}
+
 /// <summary>
 /// 정점 버퍼에 정점 추가
 /// </summary>
-void GraphicsEngine::InputVertexBuffer(Vertex* _verteies, size_t _size)
+void GraphicsEngine::CreateVertexBuffer(Vertex* _verteies, size_t _size, ID3D11Buffer* _vertexbuffer)
 {
 	HRESULT hr = S_OK;
 
 	D3D11_BUFFER_DESC vb;
 
 	vb.Usage = D3D11_USAGE_IMMUTABLE;
-	vb.ByteWidth = _size;
+	vb.ByteWidth = static_cast<UINT>(_size);
 	vb.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vb.CPUAccessFlags = 0;
+	vb.MiscFlags = 0;
 	vb.StructureByteStride = 0;
 
 	D3D11_SUBRESOURCE_DATA initData;
 	initData.pSysMem = _verteies;
 
-	ID3D11Buffer* newBuffer;	
-
-	this->d3d11Device->CreateBuffer(
+	hr = this->d3d11Device->CreateBuffer(
 		&vb,
 		&initData,
-		&newBuffer
+		&_vertexbuffer
 	);
+	assert(hr == S_OK && "cannot create vertex buffer");
+}
 
-	this->vertexBuffers.push_back(newBuffer);
+void GraphicsEngine::CreateIndexBuffer(UINT* _indices, size_t _size, ID3D11Buffer* _indexbuffer)
+{
+	HRESULT hr = S_OK;
+	D3D11_BUFFER_DESC ibd;
+	ibd.Usage = D3D11_USAGE_IMMUTABLE;
+	ibd.ByteWidth = static_cast<UINT>(_size);
+	ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	ibd.CPUAccessFlags = 0;
+	ibd.MiscFlags = 0;
+	ibd.StructureByteStride = 0;
+
+	D3D11_SUBRESOURCE_DATA iinitData;
+	iinitData.pSysMem = _indices;
+
+	hr = this->d3d11Device->CreateBuffer(&ibd, &iinitData, &_indexbuffer);
+	assert(SUCCEEDED(hr) && "cannot create Index Buffer");
+}
+
+void GraphicsEngine::endDraw()
+{
+	this->swapChain->Present(0, 0);
+}
+
+void GraphicsEngine::begineDraw()
+{
+	RenderClearView();
 }

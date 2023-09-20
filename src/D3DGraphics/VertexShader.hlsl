@@ -1,13 +1,32 @@
-struct VOut
+cbuffer cbPerObject
 {
-    float4 position : SV_POSITION;
-    float4 color : COLOR;
+    matrix w;
+    matrix v;
+    matrix p;
 };
 
-VOut VShader(float4 position : POSITION, float4 color : COLOR)
+
+struct Vertexln
 {
-    VOut output;
-    output.position = position;
-    output.color = color;
-    return output;
+    float3 PosL : POSITION;
+    float4 Color : COLOR;
+};
+struct VertexOut
+{
+    float4 PosH : SV_POSITION;
+    float4 Color : COLOR;
+};
+
+VertexOut VS(Vertexln vin)
+{
+    VertexOut vout;
+    float4 vinpos = {vin.PosL.x, vin.PosL.y, vin.PosL.z, 1.0f};
+    vout.PosH.w = 1.0f;
+    vout.PosH = mul(vinpos, w);
+    vout.PosH = mul(vout.PosH, v);
+    vout.PosH = mul(vout.PosH, p);
+    
+
+    vout.Color = vin.Color;
+    return vout;
 }

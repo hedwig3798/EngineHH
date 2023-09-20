@@ -30,6 +30,7 @@
     <ClInclude Include="color.h">
       <Filter>Color</Filter>
     </ClInclude>
+    <ClInclude Include="pipeline.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl" />
