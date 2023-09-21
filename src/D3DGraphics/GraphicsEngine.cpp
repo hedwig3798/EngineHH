@@ -47,17 +47,18 @@ void GraphicsEngine::RenderClearView()
 /// </summary>
 void GraphicsEngine::RenderTestThing(PipeLine& _pipline)
 {
-	this->d3d11DeviceContext->IASetInputLayout(_pipline.inputLayout);
-	this->d3d11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+ 	this->d3d11DeviceContext->IASetInputLayout(_pipline.inputLayout);
+ 	this->d3d11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 
 	this->d3d11DeviceContext->IAGetVertexBuffers(0, 1, &_pipline.vertexBuffer, &stride, &offset);
-	this->d3d11DeviceContext->IASetIndexBuffer(_pipline.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	this->d3d11DeviceContext->VSSetShader(_pipline.vertexShader, nullptr, 0);
-	this->d3d11DeviceContext->PSSetShader(_pipline.pixelShader, nullptr, 0);
-	this->d3d11DeviceContext->DrawIndexed(36, 0, 0);
+ 	this->d3d11DeviceContext->IASetIndexBuffer(_pipline.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+ 	this->d3d11DeviceContext->VSSetShader(_pipline.vertexShader, nullptr, 0);
+ 	this->d3d11DeviceContext->PSSetShader(_pipline.pixelShader, nullptr, 0);
+	this->d3d11DeviceContext->RSSetState(_pipline.rasterizerState);
+ 	this->d3d11DeviceContext->DrawIndexed(36, 0, 0);
 }
 
 /// <summary>
@@ -98,7 +99,7 @@ void GraphicsEngine::CreateChainValue()
 	assert(m4xMsaaQuality > 0);
 
 	// 스왑  체인 구조체
-	DXGI_SWAP_CHAIN_DESC chainDesc;
+	DXGI_SWAP_CHAIN_DESC chainDesc = {};
 
 	// 버퍼의 크기를 윈도우의 사이즈 만큼 설정
 	chainDesc.BufferDesc.Width = windowSize.right - windowSize.left;
@@ -205,7 +206,7 @@ void GraphicsEngine::CreateDepthStencilBufferAndView()
 	assert(GetWindowRect(hwnd, &windowSize) && "cannot get window rectangle");
 
 	// 구조체 값 채우기
-	D3D11_TEXTURE2D_DESC depthStancilDesc;
+	D3D11_TEXTURE2D_DESC depthStancilDesc = {};
 	// 윈도우 사이즈
 	depthStancilDesc.Width = windowSize.right - windowSize.left;
 	depthStancilDesc.Height = windowSize.bottom - windowSize.top;
@@ -262,7 +263,7 @@ void GraphicsEngine::BindView()
 /// <summary>
 /// Input Layer를 생성한다
 /// </summary>
-void GraphicsEngine::CreateInputLayer(ID3D11InputLayout* _inputLayout, ID3D11VertexShader* _vertexShader, ID3D11PixelShader* _pixelShader)
+void GraphicsEngine::CreateInputLayer(ID3D11InputLayout** _inputLayout, ID3D11VertexShader** _vertexShader, ID3D11PixelShader** _pixelShader)
 {
 	HRESULT hr = S_OK;
 
@@ -304,19 +305,19 @@ void GraphicsEngine::CreateInputLayer(ID3D11InputLayout* _inputLayout, ID3D11Ver
 	);
 	assert(hr == S_OK && "cannot Compile Pixel Shader");
 
-	this->d3d11Device->CreateVertexShader(vsByteCode->GetBufferPointer(), vsByteCode->GetBufferSize(), nullptr, &_vertexShader);
-	this->d3d11Device->CreatePixelShader(psByteCode->GetBufferPointer(), psByteCode->GetBufferSize(), nullptr, &_pixelShader);
+	this->d3d11Device->CreateVertexShader(vsByteCode->GetBufferPointer(), vsByteCode->GetBufferSize(), nullptr, _vertexShader);
+	this->d3d11Device->CreatePixelShader(psByteCode->GetBufferPointer(), psByteCode->GetBufferSize(), nullptr, _pixelShader);
 
 	hr = this->d3d11Device->CreateInputLayout(
 		defaultInputLayerDECS,
 		2,
 		vsByteCode->GetBufferPointer(),
 		vsByteCode->GetBufferSize(),
-		&_inputLayout
+		_inputLayout
 	);
 	assert(hr == S_OK && "cannot create inpur layer");
 
-	D3D11_BUFFER_DESC mbd;
+	D3D11_BUFFER_DESC mbd = {};
 	mbd.Usage = D3D11_USAGE_DYNAMIC;
 	mbd.ByteWidth = sizeof(MatrixBufferType);
 	mbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -356,7 +357,7 @@ void GraphicsEngine::ClearDepthStencilView()
 	);
 }
 
-void GraphicsEngine::CreateRasterizerState(ID3D11RasterizerState* _rasterizerState)
+void GraphicsEngine::CreateRasterizerState(ID3D11RasterizerState** _rasterizerState)
 {
 	HRESULT hr = S_OK;
 	D3D11_RASTERIZER_DESC rsDesc;
@@ -366,10 +367,10 @@ void GraphicsEngine::CreateRasterizerState(ID3D11RasterizerState* _rasterizerSta
 	rsDesc.FrontCounterClockwise = false;
 	rsDesc.DepthClipEnable = true;
 
-	hr = this->d3d11Device->CreateRasterizerState(&rsDesc, &_rasterizerState);
+	hr = this->d3d11Device->CreateRasterizerState(&rsDesc, _rasterizerState);
 	assert(SUCCEEDED(hr) && "cannot create Rasterizser State");
 
-	this->d3d11DeviceContext->RSSetState(_rasterizerState);
+
 }
 
 void GraphicsEngine::SetParameter(DirectX::XMMATRIX _w, DirectX::XMMATRIX _v, DirectX::XMMATRIX _p)
@@ -399,11 +400,11 @@ void GraphicsEngine::SetParameter(DirectX::XMMATRIX _w, DirectX::XMMATRIX _v, Di
 /// <summary>
 /// 정점 버퍼에 정점 추가
 /// </summary>
-void GraphicsEngine::CreateVertexBuffer(Vertex* _verteies, size_t _size, ID3D11Buffer* _vertexbuffer)
+void GraphicsEngine::CreateVertexBuffer(Vertex* _verteies, size_t _size, ID3D11Buffer** _vertexbuffer)
 {
 	HRESULT hr = S_OK;
 
-	D3D11_BUFFER_DESC vb;
+	D3D11_BUFFER_DESC vb = {};
 
 	vb.Usage = D3D11_USAGE_IMMUTABLE;
 	vb.ByteWidth = static_cast<UINT>(_size);
@@ -412,21 +413,21 @@ void GraphicsEngine::CreateVertexBuffer(Vertex* _verteies, size_t _size, ID3D11B
 	vb.MiscFlags = 0;
 	vb.StructureByteStride = 0;
 
-	D3D11_SUBRESOURCE_DATA initData;
+	D3D11_SUBRESOURCE_DATA initData = {};
 	initData.pSysMem = _verteies;
 
 	hr = this->d3d11Device->CreateBuffer(
 		&vb,
 		&initData,
-		&_vertexbuffer
+		_vertexbuffer
 	);
 	assert(hr == S_OK && "cannot create vertex buffer");
 }
 
-void GraphicsEngine::CreateIndexBuffer(UINT* _indices, size_t _size, ID3D11Buffer* _indexbuffer)
+void GraphicsEngine::CreateIndexBuffer(UINT* _indices, size_t _size, ID3D11Buffer** _indexbuffer)
 {
 	HRESULT hr = S_OK;
-	D3D11_BUFFER_DESC ibd;
+	D3D11_BUFFER_DESC ibd = {};
 	ibd.Usage = D3D11_USAGE_IMMUTABLE;
 	ibd.ByteWidth = static_cast<UINT>(_size);
 	ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
@@ -434,10 +435,10 @@ void GraphicsEngine::CreateIndexBuffer(UINT* _indices, size_t _size, ID3D11Buffe
 	ibd.MiscFlags = 0;
 	ibd.StructureByteStride = 0;
 
-	D3D11_SUBRESOURCE_DATA iinitData;
+	D3D11_SUBRESOURCE_DATA iinitData = {};
 	iinitData.pSysMem = _indices;
 
-	hr = this->d3d11Device->CreateBuffer(&ibd, &iinitData, &_indexbuffer);
+	hr = this->d3d11Device->CreateBuffer(&ibd, &iinitData, _indexbuffer);
 	assert(SUCCEEDED(hr) && "cannot create Index Buffer");
 }
 

@@ -21,12 +21,15 @@ void DemoProcess::Initialize(HWND _hwnd)
 	this->graphicsEngine->Initialize(this->hwnd);
 	this->graphicsEngine->RenderClearView();
 
+	DirectX::XMMATRIX w = DirectX::XMMatrixIdentity();
+	DirectX::XMMATRIX v = DirectX::XMMatrixIdentity();
+	DirectX::XMMATRIX p = DirectX::XMMatrixIdentity();
 
-	this->graphicsEngine->CreateInputLayer(this->pipeline.inputLayout, this->pipeline.vertexShader, this->pipeline.pixelShader);
+	this->graphicsEngine->CreateInputLayer(&this->pipeline.inputLayout, &this->pipeline.vertexShader, &this->pipeline.pixelShader);
 	this->graphicsEngine->SetParameter(DirectX::XMMatrixIdentity(), DirectX::XMMatrixIdentity(), DirectX::XMMatrixIdentity());
-	this->graphicsEngine->CreateVertexBuffer(this->tempVertex, sizeof(this->tempVertex), this->pipeline.vertexBuffer);
-	this->graphicsEngine->CreateIndexBuffer(tempIndex, sizeof(tempIndex), this->pipeline.IndexBuffer);
-	this->graphicsEngine->CreateRasterizerState(this->pipeline.rasterizerState);
+	this->graphicsEngine->CreateVertexBuffer(this->tempVertex, sizeof(this->tempVertex), &this->pipeline.vertexBuffer);
+	this->graphicsEngine->CreateIndexBuffer(tempIndex, sizeof(tempIndex), &this->pipeline.IndexBuffer);
+	this->graphicsEngine->CreateRasterizerState(&this->pipeline.rasterizerState);
 }
 
 void DemoProcess::Process()
