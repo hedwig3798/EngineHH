@@ -28,14 +28,14 @@ private:
 	GraphicsEngine* graphicsEngine;
 	Vertex tempVertex[8] =
 	{
-		{DirectX::XMFLOAT3{-0.5f, -0.5f, -0.5f}, COLORS::Cyan},
-		{DirectX::XMFLOAT3{-0.5f, 0.5f, -0.5f}, COLORS::Black},
-		{DirectX::XMFLOAT3{0.5f, 0.5f, -0.5f}, COLORS::Red},
-		{DirectX::XMFLOAT3{0.5f, -0.5f, -0.5f}, COLORS::Green},
-		{DirectX::XMFLOAT3{-0.5f, -0.5f, 0.5f}, COLORS::Blue},
-		{DirectX::XMFLOAT3{-0.5f, 0.5f, 0.5f}, COLORS::Yellow},
-		{DirectX::XMFLOAT3{0.5f, 0.5f, 0.5f}, COLORS::Cyan},
-		{DirectX::XMFLOAT3{0.5f, -0.5f, 0.5f}, COLORS::Magenta},
+		{DirectX::XMFLOAT3{-1.0f, -1.0f, -1.0f}, COLORS::Cyan},
+		{DirectX::XMFLOAT3{-1.0f, 1.0f, -1.0f}, COLORS::Black},
+		{DirectX::XMFLOAT3{1.0f, 1.0f, -1.0f}, COLORS::Red},
+		{DirectX::XMFLOAT3{1.0f, -1.0f, -1.0f}, COLORS::Green},
+		{DirectX::XMFLOAT3{-1.0f, -1.0f, 1.0f}, COLORS::Blue},
+		{DirectX::XMFLOAT3{-1.0f, 1.0f, 1.0f}, COLORS::Yellow},
+		{DirectX::XMFLOAT3{1.0f, 1.0f, 1.0f}, COLORS::Cyan},
+		{DirectX::XMFLOAT3{1.0f, -1.0f, 1.0f}, COLORS::Magenta},
 	};
 
 	UINT tempIndex[36] =

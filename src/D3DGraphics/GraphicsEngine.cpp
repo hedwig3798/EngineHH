@@ -31,6 +31,7 @@ void GraphicsEngine::Initialize(HWND _hwnd)
 	CreateChainValue();
 	CreateRenderTargetView();
 	CreateDepthStencilBufferAndView();
+	BindView();
 }
 
 /// <summary>
@@ -47,17 +48,7 @@ void GraphicsEngine::RenderClearView()
 /// </summary>
 void GraphicsEngine::RenderTestThing(PipeLine& _pipline)
 {
- 	this->d3d11DeviceContext->IASetInputLayout(_pipline.inputLayout);
- 	this->d3d11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
-	UINT stride = sizeof(Vertex);
-	UINT offset = 0;
-
-	this->d3d11DeviceContext->IAGetVertexBuffers(0, 1, &_pipline.vertexBuffer, &stride, &offset);
- 	this->d3d11DeviceContext->IASetIndexBuffer(_pipline.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
- 	this->d3d11DeviceContext->VSSetShader(_pipline.vertexShader, nullptr, 0);
- 	this->d3d11DeviceContext->PSSetShader(_pipline.pixelShader, nullptr, 0);
-	this->d3d11DeviceContext->RSSetState(_pipline.rasterizerState);
  	this->d3d11DeviceContext->DrawIndexed(36, 0, 0);
 }
 
@@ -397,6 +388,21 @@ void GraphicsEngine::SetParameter(DirectX::XMMATRIX _w, DirectX::XMMATRIX _v, Di
 	this->d3d11DeviceContext->VSSetConstantBuffers(0, 1, &matrixBuffer);
 }
 
+void GraphicsEngine::BindPipeline(PipeLine& _pipline)
+{
+	this->d3d11DeviceContext->IASetInputLayout(_pipline.inputLayout);
+	this->d3d11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+
+	this->d3d11DeviceContext->IASetIndexBuffer(_pipline.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	this->d3d11DeviceContext->IASetVertexBuffers(0, 1, &_pipline.vertexBuffer, &stride, &offset);
+	this->d3d11DeviceContext->VSSetShader(_pipline.vertexShader, nullptr, 0);
+	this->d3d11DeviceContext->PSSetShader(_pipline.pixelShader, nullptr, 0);
+	this->d3d11DeviceContext->RSSetState(_pipline.rasterizerState);
+}
+
 /// <summary>
 /// 정점 버퍼에 정점 추가
 /// </summary>
@@ -450,4 +456,5 @@ void GraphicsEngine::endDraw()
 void GraphicsEngine::begineDraw()
 {
 	RenderClearView();
+	ClearDepthStencilView();
 }

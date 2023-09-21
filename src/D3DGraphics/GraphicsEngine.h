@@ -72,6 +72,8 @@ public:
 
 	void SetParameter(DirectX::XMMATRIX _w, DirectX::XMMATRIX _v, DirectX::XMMATRIX _p);
 
+	void BindPipeline(PipeLine& _pipline);
+
 private:
 	void CreateD3D11DeviceContext();
 	void CreateChainValue();

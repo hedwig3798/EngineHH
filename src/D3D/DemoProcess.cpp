@@ -23,13 +23,17 @@ void DemoProcess::Initialize(HWND _hwnd)
 
 	DirectX::XMMATRIX w = DirectX::XMMatrixIdentity();
 	DirectX::XMMATRIX v = DirectX::XMMatrixIdentity();
-	DirectX::XMMATRIX p = DirectX::XMMatrixIdentity();
+	v *= DirectX::XMMatrixLookAtLH(DirectX::XMVECTOR{ 2, 2, 2 }, DirectX::XMVECTOR{ 0, 0, 0 }, DirectX::XMVECTOR{ 0, 1, 0 });
+	v *= DirectX::XMMatrixTranslation(2.0f, 2.0f, 2.0f);
+	DirectX::XMMATRIX p = DirectX::XMMatrixPerspectiveFovLH(1.0f, 800.0f/600.0f, 1, 1000);
 
 	this->graphicsEngine->CreateInputLayer(&this->pipeline.inputLayout, &this->pipeline.vertexShader, &this->pipeline.pixelShader);
-	this->graphicsEngine->SetParameter(DirectX::XMMatrixIdentity(), DirectX::XMMatrixIdentity(), DirectX::XMMatrixIdentity());
+	this->graphicsEngine->SetParameter(w, v, p);
 	this->graphicsEngine->CreateVertexBuffer(this->tempVertex, sizeof(this->tempVertex), &this->pipeline.vertexBuffer);
 	this->graphicsEngine->CreateIndexBuffer(tempIndex, sizeof(tempIndex), &this->pipeline.IndexBuffer);
 	this->graphicsEngine->CreateRasterizerState(&this->pipeline.rasterizerState);
+
+	this->graphicsEngine->BindPipeline(pipeline);
 }
 
 void DemoProcess::Process()
