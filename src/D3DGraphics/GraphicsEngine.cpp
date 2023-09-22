@@ -164,7 +164,7 @@ void GraphicsEngine::CreateRenderTargetView()
 		// 3. 받아올 백 버퍼
 	hr = this->swapChain->GetBuffer(
 		0,
-		__uuidof(backBuffer),
+		__uuidof(ID3D11Texture2D),
 		reinterpret_cast<void**>(&backBuffer)
 	);
 	assert(hr == S_OK && "cannot get buffer");
@@ -175,7 +175,7 @@ void GraphicsEngine::CreateRenderTargetView()
 		// 3. 렌더 타겟
 	hr = this->d3d11Device->CreateRenderTargetView(
 		backBuffer,
-		nullptr,
+		0,
 		&this->renderTargetView
 	);
 	assert(hr == S_OK && "cannot create RenderTargetView");
@@ -183,6 +183,7 @@ void GraphicsEngine::CreateRenderTargetView()
 	// 사용한 백 버퍼 인터페이스 반환	
 	hr = backBuffer->Release();
 	assert(hr == S_OK && "cannot release backBuffer");
+
 
 }
 
@@ -233,6 +234,15 @@ void GraphicsEngine::CreateDepthStencilBufferAndView()
 		&this->depthStancilView
 	);
 	assert(hr == S_OK && "cannot create depth-stancil view");
+
+	D3D11_VIEWPORT vp;
+	vp.Width = windowSize.right - windowSize.left;
+	vp.Height = (windowSize.bottom - windowSize.top);
+	vp.MinDepth = 0;
+	vp.MaxDepth = 1;
+	vp.TopLeftX = 0;
+	vp.TopLeftY = 0;
+	this->d3d11DeviceContext->RSSetViewports(1, &vp);
 }
 
 /// <summary>
@@ -261,7 +271,7 @@ void GraphicsEngine::CreateInputLayer(ID3D11InputLayout** _inputLayout, ID3D11Ve
 	D3D11_INPUT_ELEMENT_DESC defaultInputLayerDECS[] =
 	{
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
+		{"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0}
 	};
 
 	ID3DBlob* vsByteCode;
@@ -275,7 +285,7 @@ void GraphicsEngine::CreateInputLayer(ID3D11InputLayout** _inputLayout, ID3D11Ve
 		D3D_COMPILE_STANDARD_FILE_INCLUDE,
 		"VS",
 		"vs_5_0",
-		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
+		D3DCOMPILE_DEBUG,
 		0,
 		&vsByteCode,
 		&compileError
@@ -289,7 +299,7 @@ void GraphicsEngine::CreateInputLayer(ID3D11InputLayout** _inputLayout, ID3D11Ve
 		D3D_COMPILE_STANDARD_FILE_INCLUDE,
 		"PS",
 		"ps_5_0",
-		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
+		D3DCOMPILE_DEBUG,
 		0,
 		&psByteCode,
 		&compileError
@@ -351,10 +361,14 @@ void GraphicsEngine::ClearDepthStencilView()
 void GraphicsEngine::CreateRasterizerState(ID3D11RasterizerState** _rasterizerState)
 {
 	HRESULT hr = S_OK;
+
+
+
+
 	D3D11_RASTERIZER_DESC rsDesc;
 	ZeroMemory(&rsDesc, sizeof(D3D11_RASTERIZER_DESC));
 	rsDesc.FillMode = D3D11_FILL_SOLID;
-	rsDesc.CullMode = D3D11_CULL_NONE;
+	rsDesc.CullMode = D3D11_CULL_BACK;
 	rsDesc.FrontCounterClockwise = false;
 	rsDesc.DepthClipEnable = true;
 
@@ -398,9 +412,9 @@ void GraphicsEngine::BindPipeline(PipeLine& _pipline)
 
 	this->d3d11DeviceContext->IASetIndexBuffer(_pipline.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	this->d3d11DeviceContext->IASetVertexBuffers(0, 1, &_pipline.vertexBuffer, &stride, &offset);
+	this->d3d11DeviceContext->RSSetState(_pipline.rasterizerState);
 	this->d3d11DeviceContext->VSSetShader(_pipline.vertexShader, nullptr, 0);
 	this->d3d11DeviceContext->PSSetShader(_pipline.pixelShader, nullptr, 0);
-	this->d3d11DeviceContext->RSSetState(_pipline.rasterizerState);
 }
 
 /// <summary>
@@ -456,5 +470,4 @@ void GraphicsEngine::endDraw()
 void GraphicsEngine::begineDraw()
 {
 	RenderClearView();
-	ClearDepthStencilView();
 }

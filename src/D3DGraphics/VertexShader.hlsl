@@ -5,28 +5,26 @@ cbuffer cbPerObject
     matrix p;
 };
 
-
-struct Vertexln
+struct VIN
 {
-    float3 PosL : POSITION;
-    float4 Color : COLOR;
-};
-struct VertexOut
-{
-    float4 PosH : SV_POSITION;
-    float4 Color : COLOR;
+    float3 pos : POSITION;
+    float4 color : COLOR;
 };
 
-VertexOut VS(Vertexln vin)
+struct VOUT
 {
-    VertexOut vout;
-    float4 vinpos = {vin.PosL.x, vin.PosL.y, vin.PosL.z, 1.0f};
-    vout.PosH.w = 1.0f;
-    vout.PosH = mul(vinpos, w);
-    vout.PosH = mul(vout.PosH, v);
-    vout.PosH = mul(vout.PosH, p);
+    float4 pos : SV_POSITION;
+    float4 color : COLOR;
+};
+
+VOUT VS(VIN _vin)
+{
+    VOUT vout;
+    vout.pos = float4(_vin.pos, 1.0f);
+    vout.pos = mul(vout.pos, w);
+    vout.pos = mul(vout.pos, v);
+    vout.pos = mul(vout.pos, p);
+    vout.color = _vin.color;
     
-
-    vout.Color = vin.Color;
     return vout;
 }

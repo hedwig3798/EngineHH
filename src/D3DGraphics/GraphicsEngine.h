@@ -33,7 +33,7 @@ private:
 	ID3D11DeviceContext* d3d11DeviceContext;
 
 	// 디바이스 플래그
-	UINT createDeviceFlags = 0;
+	UINT createDeviceFlags = D3D11_CREATE_DEVICE_DEBUG;
 
 	// 윈도우 핸들러
 	HWND hwnd;

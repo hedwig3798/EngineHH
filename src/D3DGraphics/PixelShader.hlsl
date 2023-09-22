@@ -1,11 +1,11 @@
 
-struct VertexOut
+struct VOUT
 {
-    float4 PosH : SV_POSITION;
-    float4 Color : COLOR;
+    float4 pos : SV_POSITION;
+    float4 color : COLOR;
 };
 
-float4 PS (VertexOut pin) : SV_Target
+float4 PS (VOUT _pin) : SV_Target
 {
-    return pin.Color;
+    return _pin.color;
 }
