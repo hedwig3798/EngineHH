@@ -79,6 +79,7 @@ private:
 	void CreateChainValue();
 	void CreateRenderTargetView();
 	void CreateDepthStencilBufferAndView();
+	void CreateViewport();
 	void BindView();
 
 };
