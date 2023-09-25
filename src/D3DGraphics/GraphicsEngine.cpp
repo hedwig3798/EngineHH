@@ -53,6 +53,11 @@ void GraphicsEngine::RenderTestThing(PipeLine& _pipline)
  	this->d3d11DeviceContext->DrawIndexed(36, 0, 0);
 }
 
+void GraphicsEngine::RenderByIndex(PipeLine& _pipline, int _indexSize)
+{
+ 	this->d3d11DeviceContext->DrawIndexed(_indexSize, 0, 0);
+}
+
 /// <summary>
 /// D3D11 디바이스와 디바이스 컨텍스트 생성
 /// </summary>
@@ -269,7 +274,7 @@ void GraphicsEngine::CreateInputLayer(ID3D11InputLayout** _inputLayout, ID3D11Ve
 		&vsByteCode,
 		&compileError
 	);
-	assert(hr == S_OK && "cannot Compile Vertex Shader");
+	assert(SUCCEEDED(hr) && "cannot Compile Vertex Shader");
 	
 	// TODO : 상대경로로 바꾸기
 	hr = D3DCompileFromFile(
@@ -283,7 +288,7 @@ void GraphicsEngine::CreateInputLayer(ID3D11InputLayout** _inputLayout, ID3D11Ve
 		&psByteCode,
 		&compileError
 	);
-	assert(hr == S_OK && "cannot Compile Pixel Shader");
+	assert(SUCCEEDED(hr) && "cannot Compile Pixel Shader");
 
 	this->d3d11Device->CreateVertexShader(vsByteCode->GetBufferPointer(), vsByteCode->GetBufferSize(), nullptr, _vertexShader);
 	this->d3d11Device->CreatePixelShader(psByteCode->GetBufferPointer(), psByteCode->GetBufferSize(), nullptr, _pixelShader);
@@ -295,7 +300,7 @@ void GraphicsEngine::CreateInputLayer(ID3D11InputLayout** _inputLayout, ID3D11Ve
 		vsByteCode->GetBufferSize(),
 		_inputLayout
 	);
-	assert(hr == S_OK && "cannot create inpur layer");
+	assert(SUCCEEDED(hr) && "cannot create inpur layer");
 
 	D3D11_BUFFER_DESC mbd = {};
 	mbd.Usage = D3D11_USAGE_DYNAMIC;
@@ -337,12 +342,13 @@ void GraphicsEngine::ClearDepthStencilView()
 	);
 }
 
+/// <summary>
+/// 레스터라이저 생성
+/// </summary>
+/// <param name="_rasterizerState">반환 받을 레스터라이저</param>
 void GraphicsEngine::CreateRasterizerState(ID3D11RasterizerState** _rasterizerState)
 {
 	HRESULT hr = S_OK;
-
-
-
 
 	D3D11_RASTERIZER_DESC rsDesc;
 	ZeroMemory(&rsDesc, sizeof(D3D11_RASTERIZER_DESC));
@@ -353,10 +359,14 @@ void GraphicsEngine::CreateRasterizerState(ID3D11RasterizerState** _rasterizerSt
 
 	hr = this->d3d11Device->CreateRasterizerState(&rsDesc, _rasterizerState);
 	assert(SUCCEEDED(hr) && "cannot create Rasterizser State");
-
-
 }
 
+/// <summary>
+/// 파라미터 설정
+/// </summary>
+/// <param name="_w">월드 TM</param>
+/// <param name="_v">뷰포트 TM</param>
+/// <param name="_p">프로젝션 TM</param>
 void GraphicsEngine::SetParameter(DirectX::XMMATRIX _w, DirectX::XMMATRIX _v, DirectX::XMMATRIX _p)
 {
 	HRESULT hr;
@@ -381,6 +391,10 @@ void GraphicsEngine::SetParameter(DirectX::XMMATRIX _w, DirectX::XMMATRIX _v, Di
 	this->d3d11DeviceContext->VSSetConstantBuffers(0, 1, &matrixBuffer);
 }
 
+/// <summary>
+/// 파이프라인 바인딩
+/// </summary>
+/// <param name="_pipline"></param>
 void GraphicsEngine::BindPipeline(PipeLine& _pipline)
 {
 	this->d3d11DeviceContext->IASetInputLayout(_pipline.inputLayout);
@@ -420,9 +434,15 @@ void GraphicsEngine::CreateVertexBuffer(Vertex* _verteies, size_t _size, ID3D11B
 		&initData,
 		_vertexbuffer
 	);
-	assert(hr == S_OK && "cannot create vertex buffer");
+	assert(SUCCEEDED(hr) && "cannot create vertex buffer");
 }
 
+/// <summary>
+/// 인덱스 버퍼 생성
+/// </summary>
+/// <param name="_indices">인덱스 배열</param>
+/// <param name="_size">배열의 사이즈</param>
+/// <param name="_indexbuffer">버퍼를 반환받을 포인터</param>
 void GraphicsEngine::CreateIndexBuffer(UINT* _indices, size_t _size, ID3D11Buffer** _indexbuffer)
 {
 	HRESULT hr = S_OK;
@@ -441,11 +461,17 @@ void GraphicsEngine::CreateIndexBuffer(UINT* _indices, size_t _size, ID3D11Buffe
 	assert(SUCCEEDED(hr) && "cannot create Index Buffer");
 }
 
+/// <summary>
+/// 그리기 작업을 종료하고 출력
+/// </summary>
 void GraphicsEngine::endDraw()
 {
 	this->swapChain->Present(0, 0);
 }
 
+/// <summary>
+/// 그리기 작업 시작시 초기화
+/// </summary>
 void GraphicsEngine::begineDraw()
 {
 	RenderClearView();

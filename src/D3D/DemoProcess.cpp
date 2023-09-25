@@ -1,12 +1,14 @@
 #include "DemoProcess.h"
 #include "GraphicsEngine.h"
+#include "DemoCamera.h"
+#include "DemoObject.h"
 
 DemoProcess::DemoProcess()
 	: graphicsEngine(nullptr)
 	, hwnd(nullptr)
-	, pipeline{}
+	, camera(nullptr)
+	, object(nullptr)
 {
-
 }
 
 DemoProcess::~DemoProcess()
@@ -21,19 +23,11 @@ void DemoProcess::Initialize(HWND _hwnd)
 	this->graphicsEngine->Initialize(this->hwnd);
 	this->graphicsEngine->RenderClearView();
 
-	DirectX::XMMATRIX w = DirectX::XMMatrixIdentity();
-	DirectX::XMMATRIX v = DirectX::XMMatrixIdentity();
-	v *= DirectX::XMMatrixLookAtLH(DirectX::XMVECTOR{ 2, 2, 2 }, DirectX::XMVECTOR{ 0, 0, 0 }, DirectX::XMVECTOR{ 0, 1, 0 });
-	// v *= DirectX::XMMatrixTranslation(2.0f, 2.0f, 2.0f);
-	DirectX::XMMATRIX p = DirectX::XMMatrixPerspectiveFovLH(1.7f, 800.0f/600.0f, 1, 1000);
+	RECT windowSize;
+	GetWindowRect(this->hwnd, &windowSize);
 
-	this->graphicsEngine->CreateInputLayer(&this->pipeline.inputLayout, &this->pipeline.vertexShader, &this->pipeline.pixelShader);
-	this->graphicsEngine->SetParameter(w, v, p);
-	this->graphicsEngine->CreateVertexBuffer(this->tempVertex, sizeof(this->tempVertex), &this->pipeline.vertexBuffer);
-	this->graphicsEngine->CreateIndexBuffer(tempIndex, sizeof(tempIndex), &this->pipeline.IndexBuffer);
-	this->graphicsEngine->CreateRasterizerState(&this->pipeline.rasterizerState);
-
-	this->graphicsEngine->BindPipeline(pipeline);
+	this->camera = new DemoCamera((float)(windowSize.bottom - windowSize.top), (float)(windowSize.right - windowSize.left));
+	this->object = new DemoObject(this->graphicsEngine, this);
 }
 
 void DemoProcess::Process()
@@ -42,14 +36,19 @@ void DemoProcess::Process()
 	Render();
 }
 
+DemoCamera* DemoProcess::getCamera()
+{
+	return this->camera;
+}
+
 void DemoProcess::Update()
 {
-
+	camera->Update();
 }
 
 void DemoProcess::Render()
 {
 	this->graphicsEngine->begineDraw();
-	this->graphicsEngine->RenderTestThing(this->pipeline);
+	this->object->Render(graphicsEngine);
 	this->graphicsEngine->endDraw();
 }

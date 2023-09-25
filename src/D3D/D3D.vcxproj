@@ -135,6 +135,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="D3D.h" />
+    <ClInclude Include="DemoCamera.h" />
     <ClInclude Include="DemoObject.h" />
     <ClInclude Include="DemoProcess.h" />
     <ClInclude Include="framework.h" />
@@ -144,6 +145,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="D3D.cpp" />
+    <ClCompile Include="DemoCamera.cpp" />
     <ClCompile Include="DemoObject.cpp" />
     <ClCompile Include="DemoProcess.cpp" />
   </ItemGroup>

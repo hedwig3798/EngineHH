@@ -9,7 +9,7 @@
 /// D3D 그래픽 엔진
 /// 작성자 : 김형환
 /// 최초 작성일 : 2023/09/06
-/// 최종 수정일 : 2023/09/18
+/// 최종 수정일 : 2023/09/25
 /// 
 /// Dx11을 이용한 3D 그래픽 엔진
 /// </summary>
@@ -59,6 +59,7 @@ public:
 	void Initialize(HWND _hwnd);
 	void RenderClearView();
 	void RenderTestThing(PipeLine& _pipline);
+	void RenderByIndex(PipeLine& _pipline, int _indexSize);
 	void endDraw();
 	void begineDraw();
 
@@ -81,6 +82,5 @@ private:
 	void CreateDepthStencilBufferAndView();
 	void CreateViewport();
 	void BindView();
-
 };
 

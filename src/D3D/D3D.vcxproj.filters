@@ -19,8 +19,8 @@
     <Filter Include="DemoObject">
       <UniqueIdentifier>{74cb4a02-544e-4134-bb85-f7979d889cf4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Vertex">
-      <UniqueIdentifier>{71583b54-c54a-43e3-ba9b-0da7ae49663f}</UniqueIdentifier>
+    <Filter Include="DemoCamera">
+      <UniqueIdentifier>{5d142a40-2788-4648-a552-2d42d0d49e1b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -45,6 +45,9 @@
     <ClInclude Include="pch.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="DemoCamera.h">
+      <Filter>DemoCamera</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="D3D.cpp">
@@ -55,6 +58,9 @@
     </ClCompile>
     <ClCompile Include="DemoObject.cpp">
       <Filter>DemoObject</Filter>
+    </ClCompile>
+    <ClCompile Include="DemoCamera.cpp">
+      <Filter>DemoCamera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
