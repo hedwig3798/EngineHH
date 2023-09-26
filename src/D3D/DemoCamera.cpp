@@ -1,12 +1,19 @@
 #include "DemoCamera.h"
+#include "ManagerSet.h"
 
-DemoCamera::DemoCamera(float _screenHight, float _screenWidth)
+DemoCamera::DemoCamera(float _screenHight, float _screenWidth, ManagerSet* _managers)
 	: viewTM(DirectX::XMMatrixIdentity())
+	, projectionTM(DirectX::XMMatrixIdentity())
 	, FOV(1.0f)
 	, rotation{ 0, 0, 0 }
 	, position{ 0, 0, 0 }
 	, screenHight(_screenHight)
 	, screenWidth(_screenWidth)
+	, managers(_managers)
+	, dirUp{ 0.0f, 1.0f, 0.0f }
+	, dirRight{ 1.0f, 0.0f, 0.0f }
+	, dirLook{ 0.0f, 0.0f, 1.0f }
+
 {
 
 }
@@ -48,6 +55,52 @@ void DemoCamera::Traslation(DirectX::XMFLOAT3 _value)
 }
 
 /// <summary>
+/// 전방 이동
+/// </summary>
+/// <param name="_value">이동 값</param>
+void DemoCamera::MoveFoward(float _value)
+{
+	DirectX::XMVECTOR s = DirectX::XMVectorReplicate(_value);
+	DirectX::XMVECTOR l = DirectX::XMLoadFloat3(&this->dirLook);
+	DirectX::XMVECTOR p = DirectX::XMLoadFloat3(&this->position);
+	DirectX::XMStoreFloat3(&this->position, DirectX::XMVectorMultiplyAdd(s, l, p));
+}
+
+/// <summary>
+/// 측면 이동
+/// </summary>
+/// <param name="_value">이동 값</param>
+void DemoCamera::MoveRight(float _value)
+{
+	DirectX::XMVECTOR s = DirectX::XMVectorReplicate(_value);
+	DirectX::XMVECTOR r = DirectX::XMLoadFloat3(&this->dirRight);
+	DirectX::XMVECTOR p = DirectX::XMLoadFloat3(&this->position);
+	DirectX::XMStoreFloat3(&this->position, DirectX::XMVectorMultiplyAdd(s, r, p));
+}
+
+/// <summary>
+/// 상하 이동
+/// </summary>
+/// <param name="_value">이동 값</param>
+void DemoCamera::MoveUP(float _value)
+{
+	DirectX::XMVECTOR s = DirectX::XMVectorReplicate(_value);
+	DirectX::XMVECTOR u = DirectX::XMLoadFloat3(&this->dirUp);
+	DirectX::XMVECTOR p = DirectX::XMLoadFloat3(&this->position);
+	DirectX::XMStoreFloat3(&this->position, DirectX::XMVectorMultiplyAdd(s, u, p));
+}
+
+void DemoCamera::RotateRight(float _value)
+{
+	this->rotation.y += _value;
+}
+
+void DemoCamera::RotateUp(float _value)
+{
+	this->rotation.x += _value;
+}
+
+/// <summary>
 /// 뷰 행렬 연산
 /// </summary>
 /// <returns>뷰 행렬</returns>
@@ -62,7 +115,7 @@ const DirectX::XMMATRIX& DemoCamera::GetViewTM()
 	DirectX::XMVECTOR det = DirectX::XMMatrixDeterminant(temp);
 
 	this->viewTM = DirectX::XMMatrixInverse(&det, temp);
-
+	// this->viewTM = temp;
 	return this->viewTM;
 }
 
@@ -75,7 +128,50 @@ const DirectX::XMMATRIX& DemoCamera::GetProjectionTM()
 	return this->projectionTM = DirectX::XMMatrixPerspectiveFovLH(this->FOV, this->screenWidth / this->screenHight, 1, 1000);;
 }
 
+/// <summary>
+/// 카메라의 이동
+/// </summary>
 void DemoCamera::Update()
 {
+	if (this->managers->keyManager->GetKeyState(KEY::RIGHT) == KEY_STATE::HOLD)
+	{
+		RotateRight(this->managers->timeManager->GetfDT());
+	}
+	if (this->managers->keyManager->GetKeyState(KEY::LEFT) == KEY_STATE::HOLD)
+	{
+		RotateRight(-this->managers->timeManager->GetfDT());
+	}
+	if (this->managers->keyManager->GetKeyState(KEY::UP) == KEY_STATE::HOLD)
+	{
+		RotateUp(-this->managers->timeManager->GetfDT());
+	}
+	if (this->managers->keyManager->GetKeyState(KEY::DOWN) == KEY_STATE::HOLD)
+	{
+		RotateUp(this->managers->timeManager->GetfDT());
+	}
 
+	if (this->managers->keyManager->GetKeyState(KEY::W) == KEY_STATE::HOLD)
+	{
+		MoveFoward(this->managers->timeManager->GetfDT() * 10);
+	}
+	if (this->managers->keyManager->GetKeyState(KEY::S) == KEY_STATE::HOLD)
+	{
+		MoveFoward(-this->managers->timeManager->GetfDT() * 10);
+	}
+	if (this->managers->keyManager->GetKeyState(KEY::A) == KEY_STATE::HOLD)
+	{
+		MoveRight(-this->managers->timeManager->GetfDT() * 10);
+	}
+	if (this->managers->keyManager->GetKeyState(KEY::D) == KEY_STATE::HOLD)
+	{
+		MoveRight(this->managers->timeManager->GetfDT() * 10);
+	}
+	if (this->managers->keyManager->GetKeyState(KEY::Q) == KEY_STATE::HOLD)
+	{
+		MoveUP(-this->managers->timeManager->GetfDT() * 10);
+	}
+	if (this->managers->keyManager->GetKeyState(KEY::E) == KEY_STATE::HOLD)
+	{
+		MoveUP(this->managers->timeManager->GetfDT() * 10);
+	}
 }

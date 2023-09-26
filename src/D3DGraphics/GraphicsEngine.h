@@ -52,6 +52,8 @@ private:
 
 	ID3D11Buffer* matrixBuffer;
 
+	bool useMSAA;
+
 public:
 	GraphicsEngine();
 	~GraphicsEngine();

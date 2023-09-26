@@ -6,6 +6,8 @@
 class GraphicsEngine;
 class DemoCamera;
 class DemoObject;
+class ManagerSet;
+class LineObject;
 
 class DemoProcess
 {
@@ -32,7 +34,11 @@ private:
 	HWND hwnd;
 	GraphicsEngine* graphicsEngine;
 
+	ManagerSet* managers;
+
 	DemoCamera* camera;
 	DemoObject* object;
+
+	std::vector<LineObject*> lineList;
 };
 

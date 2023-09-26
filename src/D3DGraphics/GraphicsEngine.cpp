@@ -12,6 +12,7 @@ GraphicsEngine::GraphicsEngine()
 	, depthStancilBuffer(nullptr)
 	, depthStancilView(nullptr)
 	, matrixBuffer(nullptr)
+	, useMSAA(true)
 {
 }
 
@@ -104,8 +105,18 @@ void GraphicsEngine::CreateChainValue()
 	chainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	chainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	chainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
-	chainDesc.SampleDesc.Count = 4;
-	chainDesc.SampleDesc.Quality = this->m4xMsaaQuality - 1;
+	if (this->useMSAA) 
+	{
+		chainDesc.SampleDesc.Count = 4;
+		chainDesc.SampleDesc.Quality = this->m4xMsaaQuality - 1;
+	}
+	else
+	{
+		chainDesc.SampleDesc.Count = 1;
+		chainDesc.SampleDesc.Quality = 0;
+	}
+
+
 	chainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	chainDesc.BufferCount = 1;
 	chainDesc.OutputWindow = this->hwnd;
@@ -190,8 +201,18 @@ void GraphicsEngine::CreateDepthStencilBufferAndView()
 	depthStancilDesc.MipLevels = 1;
 	depthStancilDesc.ArraySize = 1;
 	depthStancilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthStancilDesc.SampleDesc.Count = 4;
-	depthStancilDesc.SampleDesc.Quality = this->m4xMsaaQuality - 1;
+	if (this->useMSAA) 
+	{
+		depthStancilDesc.SampleDesc.Count = 4;
+		depthStancilDesc.SampleDesc.Quality = this->m4xMsaaQuality - 1;
+	}
+	else
+	{
+		depthStancilDesc.SampleDesc.Count = 1;
+		depthStancilDesc.SampleDesc.Quality = 0;
+	}
+
+
 	depthStancilDesc.Usage = D3D11_USAGE_DEFAULT;
 	depthStancilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 	depthStancilDesc.CPUAccessFlags = 0;
@@ -398,7 +419,7 @@ void GraphicsEngine::SetParameter(DirectX::XMMATRIX _w, DirectX::XMMATRIX _v, Di
 void GraphicsEngine::BindPipeline(PipeLine& _pipline)
 {
 	this->d3d11DeviceContext->IASetInputLayout(_pipline.inputLayout);
-	this->d3d11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	this->d3d11DeviceContext->IASetPrimitiveTopology(_pipline.primitiveTopology);
 
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;

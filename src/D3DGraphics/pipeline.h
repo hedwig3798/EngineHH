@@ -9,4 +9,5 @@ struct PipeLine
 	ID3D11Buffer* vertexBuffer;
 	ID3D11Buffer* IndexBuffer;
 	ID3D11RasterizerState* rasterizerState;
+	D3D_PRIMITIVE_TOPOLOGY primitiveTopology;
 };
