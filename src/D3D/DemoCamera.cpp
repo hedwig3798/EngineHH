@@ -93,11 +93,20 @@ void DemoCamera::MoveUP(float _value)
 void DemoCamera::RotateRight(float _value)
 {
 	this->rotation.y += _value;
+	DirectX::XMMATRIX R = DirectX::XMMatrixRotationY(_value);
+
+	DirectX::XMStoreFloat3(&this->dirRight, DirectX::XMVector3TransformNormal(DirectX::XMLoadFloat3(&this->dirRight), R));
+	DirectX::XMStoreFloat3(&this->dirUp, DirectX::XMVector3TransformNormal(DirectX::XMLoadFloat3(&this->dirUp), R));
+	DirectX::XMStoreFloat3(&this->dirLook, DirectX::XMVector3TransformNormal(DirectX::XMLoadFloat3(&this->dirLook), R));
 }
 
 void DemoCamera::RotateUp(float _value)
 {
 	this->rotation.x += _value;
+	DirectX::XMMATRIX R = DirectX::XMMatrixRotationAxis(DirectX::XMLoadFloat3(&this->dirRight), _value);
+
+	DirectX::XMStoreFloat3(&this->dirUp, DirectX::XMVector3TransformNormal(DirectX::XMLoadFloat3(&this->dirUp), R));
+	DirectX::XMStoreFloat3(&this->dirLook, DirectX::XMVector3TransformNormal(DirectX::XMLoadFloat3(&this->dirLook), R));
 }
 
 /// <summary>
