@@ -138,6 +138,7 @@
     <ClInclude Include="color.h" />
     <ClInclude Include="DXTKFont.h" />
     <ClInclude Include="GraphicsEngine.h" />
+    <ClInclude Include="ModelParser.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="pipeline.h" />
     <ClInclude Include="Vertex.h" />
@@ -145,6 +146,7 @@
   <ItemGroup>
     <ClCompile Include="DXTKFont.cpp" />
     <ClCompile Include="GraphicsEngine.cpp" />
+    <ClCompile Include="ModelParser.cpp" />
     <ClCompile Include="Vertex.cpp" />
   </ItemGroup>
   <ItemGroup>

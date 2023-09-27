@@ -467,14 +467,14 @@ void GraphicsEngine::WriteText(int x, int y, DirectX::XMFLOAT4 color, TCHAR* tex
 /// <summary>
 /// 정점 버퍼에 정점 추가
 /// </summary>
-void GraphicsEngine::CreateVertexBuffer(Vertex* _verteies, size_t _size, ID3D11Buffer** _vertexbuffer)
+void GraphicsEngine::CreateVertexBuffer(Vertex* _verteies, UINT _size, ID3D11Buffer** _vertexbuffer)
 {
 	HRESULT hr = S_OK;
 
 	D3D11_BUFFER_DESC vb = {};
 
 	vb.Usage = D3D11_USAGE_IMMUTABLE;
-	vb.ByteWidth = static_cast<UINT>(_size);
+	vb.ByteWidth = sizeof(Vertex) * _size;
 	vb.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vb.CPUAccessFlags = 0;
 	vb.MiscFlags = 0;
@@ -497,12 +497,12 @@ void GraphicsEngine::CreateVertexBuffer(Vertex* _verteies, size_t _size, ID3D11B
 /// <param name="_indices">인덱스 배열</param>
 /// <param name="_size">배열의 사이즈</param>
 /// <param name="_indexbuffer">버퍼를 반환받을 포인터</param>
-void GraphicsEngine::CreateIndexBuffer(UINT* _indices, size_t _size, ID3D11Buffer** _indexbuffer)
+void GraphicsEngine::CreateIndexBuffer(UINT* _indices, UINT _size, ID3D11Buffer** _indexbuffer)
 {
 	HRESULT hr = S_OK;
 	D3D11_BUFFER_DESC ibd = {};
 	ibd.Usage = D3D11_USAGE_IMMUTABLE;
-	ibd.ByteWidth = static_cast<UINT>(_size);
+	ibd.ByteWidth = sizeof(UINT) * _size;
 	ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	ibd.CPUAccessFlags = 0;
 	ibd.MiscFlags = 0;

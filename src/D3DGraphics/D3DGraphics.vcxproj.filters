@@ -22,6 +22,7 @@
       <Filter>Vertex</Filter>
     </ClCompile>
     <ClCompile Include="DXTKFont.cpp" />
+    <ClCompile Include="ModelParser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GraphicsEngine.h">
@@ -36,6 +37,7 @@
     </ClInclude>
     <ClInclude Include="pipeline.h" />
     <ClInclude Include="DXTKFont.h" />
+    <ClInclude Include="ModelParser.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl" />

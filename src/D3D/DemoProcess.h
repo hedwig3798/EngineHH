@@ -8,6 +8,7 @@ class DemoCamera;
 class DemoObject;
 class ManagerSet;
 class LineObject;
+class ModelParser;
 
 class DemoProcess
 {

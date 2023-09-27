@@ -72,7 +72,6 @@ void DemoProcess::Initialize(HWND _hwnd)
 	start = { DirectX::XMFLOAT3{0, 0, 0}, COLORS::White };
 	end = { DirectX::XMFLOAT3{-5, 0, 0}, COLORS::White };
 	lineList.push_back(new LineObject(this->graphicsEngine, this, start, end));
-
 }
 
 void DemoProcess::Process()
