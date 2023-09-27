@@ -4,7 +4,6 @@
 #include "color.h"
 #include "pipeline.h"
 
-
 /// <summary>
 /// D3D 그래픽 엔진
 /// 작성자 : 김형환
@@ -13,6 +12,8 @@
 /// 
 /// Dx11을 이용한 3D 그래픽 엔진
 /// </summary>
+
+class DXTKFont;
 
 class GraphicsEngine
 {
@@ -54,6 +55,10 @@ private:
 
 	bool useMSAA;
 
+	DXTKFont* writer;
+	ID3D11DepthStencilState* writerDSS;
+	ID3D11RasterizerState* writerRS;
+
 public:
 	GraphicsEngine();
 	~GraphicsEngine();
@@ -84,5 +89,7 @@ private:
 	void CreateDepthStencilBufferAndView();
 	void CreateViewport();
 	void BindView();
+
+	void CreateWriter();
 };
 

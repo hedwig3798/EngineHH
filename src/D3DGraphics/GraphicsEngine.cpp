@@ -1,5 +1,6 @@
 #include "GraphicsEngine.h"
 #include <minwinbase.h>
+#include "DXTKFont.h"
 
 GraphicsEngine::GraphicsEngine()
 	: featureLevel{}
@@ -13,6 +14,9 @@ GraphicsEngine::GraphicsEngine()
 	, depthStancilView(nullptr)
 	, matrixBuffer(nullptr)
 	, useMSAA(true)
+	, writerDSS(nullptr)
+	, writerRS(nullptr)
+	, writer(nullptr)
 {
 }
 
@@ -34,6 +38,7 @@ void GraphicsEngine::Initialize(HWND _hwnd)
 	CreateDepthStencilBufferAndView();
 	CreateViewport();
 	BindView();
+	CreateWriter();
 }
 
 /// <summary>
@@ -264,6 +269,29 @@ void GraphicsEngine::BindView()
 		&this->renderTargetView,
 		this->depthStancilView
 	);
+}
+
+void GraphicsEngine::CreateWriter()
+{
+	// 폰트용 DSS
+	D3D11_DEPTH_STENCIL_DESC equalsDesc;
+	ZeroMemory(&equalsDesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
+	equalsDesc.DepthEnable = true;
+	equalsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;		// 깊이버퍼에 쓰기는 한다
+	equalsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	this->d3d11Device->CreateDepthStencilState(&equalsDesc, &writerDSS);
+
+	// Render State 중 Rasterizer State
+	D3D11_RASTERIZER_DESC solidDesc;
+	ZeroMemory(&solidDesc, sizeof(D3D11_RASTERIZER_DESC));
+	solidDesc.FillMode = D3D11_FILL_SOLID;
+	solidDesc.CullMode = D3D11_CULL_BACK;
+	solidDesc.FrontCounterClockwise = false;
+	solidDesc.DepthClipEnable = true;
+
+	this->d3d11Device->CreateRasterizerState(&solidDesc, &writerRS);
+	this->writer = new DXTKFont();
+	this->writer->Create(this->d3d11Device, this->writerRS, this->writerDSS);
 }
 
 /// <summary>
