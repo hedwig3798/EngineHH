@@ -459,6 +459,11 @@ void GraphicsEngine::BindPipeline(PipeLine& _pipline)
 	this->d3d11DeviceContext->PSSetShader(_pipline.pixelShader, nullptr, 0);
 }
 
+void GraphicsEngine::WriteText(int x, int y, DirectX::XMFLOAT4 color, TCHAR* text)
+{
+	this->writer->DrawTextColor(x, y, color, text);
+}
+
 /// <summary>
 /// 정점 버퍼에 정점 추가
 /// </summary>

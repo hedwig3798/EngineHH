@@ -82,6 +82,8 @@ public:
 
 	void BindPipeline(PipeLine& _pipline);
 
+	void WriteText(int x, int y, DirectX::XMFLOAT4 color, TCHAR* text);
+
 private:
 	void CreateD3D11DeviceContext();
 	void CreateChainValue();
