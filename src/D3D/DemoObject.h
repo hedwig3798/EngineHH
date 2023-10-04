@@ -7,7 +7,7 @@ class DemoProcess;
 class DemoObject
 {
 private:
-	Vertex* vertexes;
+	VertexC::Vertex* vertexes;
 	int vertexesSize;
 	UINT* indexes;
 	int indexesSize;

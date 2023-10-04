@@ -10,4 +10,14 @@ struct PipeLine
 	ID3D11Buffer* IndexBuffer;
 	ID3D11RasterizerState* rasterizerState;
 	D3D_PRIMITIVE_TOPOLOGY primitiveTopology;
+
+	void relasePipline()
+	{
+		inputLayout->Release();
+		vertexShader->Release();
+		vertexBuffer->Release();
+		pixelShader->Release();
+		IndexBuffer->Release();
+		rasterizerState->Release();
+	}
 };

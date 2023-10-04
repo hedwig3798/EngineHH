@@ -6,7 +6,7 @@ class DemoProcess;
 class LineObject
 {
 private:
-	Vertex vertexes[2];
+	VertexC::Vertex vertexes[2];
 
 	UINT indexes[2] =
 	{
@@ -20,7 +20,7 @@ private:
 	DemoProcess* scene;
 
 public:
-	LineObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene, Vertex _start, Vertex _end);
+	LineObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene, VertexC::Vertex _start, VertexC::Vertex _end);
 	~LineObject();
 
 	void Update(float _dt);

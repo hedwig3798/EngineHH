@@ -74,7 +74,7 @@ public:
 	void ClearDepthStencilView();
 
 	void CreateInputLayer(ID3D11InputLayout** _inputLayout, ID3D11VertexShader** _vertexShader, ID3D11PixelShader** _pixelShader);
-	void CreateVertexBuffer(Vertex* _verteies, UINT _size, ID3D11Buffer** _vertexbuffer);
+	void CreateVertexBuffer(VertexC::Vertex* _verteies, UINT _size, ID3D11Buffer** _vertexbuffer);
 	void CreateIndexBuffer(UINT* _indices, UINT _size, ID3D11Buffer** _indexbuffer);
 	void CreateRasterizerState(ID3D11RasterizerState** _rasterizerState);
 

@@ -16,7 +16,14 @@ DemoProcess::DemoProcess()
 
 DemoProcess::~DemoProcess()
 {
-
+	delete this->graphicsEngine;
+	delete this->object;
+	for (size_t i = 0; i < this->lineList.size(); i++)
+	{
+		delete this->lineList[i];
+	}
+	delete this->camera;
+	delete this->managers;
 }
 
 void DemoProcess::Initialize(HWND _hwnd)
@@ -38,8 +45,8 @@ void DemoProcess::Initialize(HWND _hwnd)
 
 	for (size_t i = 1; i < 5; i++)
 	{
-		Vertex start = { DirectX::XMFLOAT3{-5.0f, 0, (float)i}, COLORS::White };
-		Vertex end = { DirectX::XMFLOAT3{5.0f, 0, (float)i}, COLORS::White };
+		VertexC::Vertex start = { DirectX::XMFLOAT3{-5.0f, 0, (float)i}, COLORS::White };
+		VertexC::Vertex end = { DirectX::XMFLOAT3{5.0f, 0, (float)i}, COLORS::White };
 		lineList.push_back(new LineObject(this->graphicsEngine, this, start, end));
 
 		start = { DirectX::XMFLOAT3{-5.0f, 0, -(float)i}, COLORS::White };
@@ -54,8 +61,8 @@ void DemoProcess::Initialize(HWND _hwnd)
 		end = { DirectX::XMFLOAT3{-(float)i, 0, 5.0f}, COLORS::White };
 		lineList.push_back(new LineObject(this->graphicsEngine, this, start, end));
 	}
-	Vertex start = { DirectX::XMFLOAT3{0, 0, 0}, COLORS::Blue };
-	Vertex end = { DirectX::XMFLOAT3{0, 0, 10}, COLORS::Blue };
+	VertexC::Vertex start = { DirectX::XMFLOAT3{0, 0, 0}, COLORS::Blue };
+	VertexC::Vertex end = { DirectX::XMFLOAT3{0, 0, 10}, COLORS::Blue };
 	lineList.push_back(new LineObject(this->graphicsEngine, this, start, end));
 	start = { DirectX::XMFLOAT3{0, 0, 0}, COLORS::White };
 	end = { DirectX::XMFLOAT3{0, 0, -5}, COLORS::White };

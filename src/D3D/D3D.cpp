@@ -63,8 +63,9 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
 		// 기본 메세지 처리
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
-			if (msg.message == WM_QUIT) break;
 			DispatchMessage(&msg);
+			if (msg.message == WM_QUIT) 
+				break;
 
 		}
 		else

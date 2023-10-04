@@ -4,7 +4,7 @@
 #include <sstream>
 #include "color.h"
 
-void GetVertexAndIndex(std::vector<Vertex>& _vertexes, std::vector<UINT>& _indexes, std::wstring _filePath)
+void GetVertexAndIndex(std::vector<VertexC::Vertex>& _vertexes, std::vector<UINT>& _indexes, std::wstring _filePath)
 {
 	std::string line;
 	std::ifstream file(_filePath);
@@ -17,7 +17,7 @@ void GetVertexAndIndex(std::vector<Vertex>& _vertexes, std::vector<UINT>& _index
 
 			if (parsed[0] == "v")
 			{
-				Vertex input = { DirectX::XMFLOAT3{std::stof(parsed[1]) / 10.0f, std::stof(parsed[2]) / 10.0f ,std::stof(parsed[3]) / 10.0f}, COLORS::White };
+				VertexC::Vertex input = { DirectX::XMFLOAT3{std::stof(parsed[1]) / 10.0f, std::stof(parsed[2]) / 10.0f ,std::stof(parsed[3]) / 10.0f}, COLORS::White };
 				_vertexes.push_back(input);
 			}
 			if (parsed[0] == "f")

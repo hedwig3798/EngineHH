@@ -21,8 +21,10 @@
     <ClCompile Include="Vertex.cpp">
       <Filter>Vertex</Filter>
     </ClCompile>
-    <ClCompile Include="DXTKFont.cpp" />
     <ClCompile Include="ModelParser.cpp" />
+    <ClCompile Include="DXTKFont.cpp">
+      <Filter>Writer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GraphicsEngine.h">
@@ -36,8 +38,10 @@
       <Filter>Color</Filter>
     </ClInclude>
     <ClInclude Include="pipeline.h" />
-    <ClInclude Include="DXTKFont.h" />
     <ClInclude Include="ModelParser.h" />
+    <ClInclude Include="DXTKFont.h">
+      <Filter>Writer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl" />
