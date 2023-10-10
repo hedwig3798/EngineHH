@@ -24,7 +24,7 @@ private:
 		L"../Shader/PixelShader2.hlsl",
 	};
 
-	std::wstring texturePath = L"../Model/Texture.dds";
+	std::wstring texturePath = L"../Model/Texture1.dds";
 
 public:
 	DemoObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene);
