@@ -41,6 +41,8 @@ void TestParser(std::vector<VertexT::Data>& _vertexes, std::vector<UINT>& _index
 	std::string line;
 	std::ifstream file(_filePath);
 
+	DirectX::XMMATRIX LTM = DirectX::XMMatrixIdentity();
+
 	int step = 0;
 
 	if (file.is_open())
@@ -52,6 +54,15 @@ void TestParser(std::vector<VertexT::Data>& _vertexes, std::vector<UINT>& _index
 			{
 			case 0:
 			{
+				DirectX::XMFLOAT3 rotation = { std::stof(parsed[0]), std::stof(parsed[1]) ,std::stof(parsed[2]) };
+				LTM = DirectX::XMMatrixRotationX(rotation.x);
+				LTM *= DirectX::XMMatrixRotationY(rotation.y);
+				LTM *= DirectX::XMMatrixRotationZ(rotation.z);
+				step++;
+				break;
+			}
+			case 1:
+			{
 				for (int i = 0; i < parsed.size(); i++)
 				{
 					_indexes.push_back((UINT)(std::stoi(parsed[i])));
@@ -59,7 +70,7 @@ void TestParser(std::vector<VertexT::Data>& _vertexes, std::vector<UINT>& _index
 				step++;
 				break;
 			}
-			case 1:
+			case 2:
 			{
 				for (int i = 0; i < parsed.size(); i += 3)
 				{
@@ -69,7 +80,7 @@ void TestParser(std::vector<VertexT::Data>& _vertexes, std::vector<UINT>& _index
 				step++;
 				break;
 			}
-			case 2:
+			case 3:
 			{
 // 				for (int i = 0; i < parsed.size(); i += 3)
 // 				{
@@ -80,12 +91,12 @@ void TestParser(std::vector<VertexT::Data>& _vertexes, std::vector<UINT>& _index
 				step++;
 				break;
 			}
-			case 3:
+			case 4:
 			{
 				for (int i = 0; i < parsed.size(); i += 2)
 				{
 					_vertexes[i / 2].texture.x = std::stof(parsed[i]);
-					_vertexes[i / 2].texture.y = std::stof(parsed[i + 1]);
+					_vertexes[i / 2].texture.y = 1 - std::stof(parsed[i + 1]);
 				}
 				step++;
 				break;
