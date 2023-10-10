@@ -1,6 +1,8 @@
 #include "GraphicsEngine.h"
 #include <minwinbase.h>
 #include "DXTKFont.h"
+#include "DirectXTex.h"
+#include "DDSTextureLoader.h"
 
 GraphicsEngine::GraphicsEngine()
 	: featureLevel{}
@@ -308,15 +310,9 @@ void GraphicsEngine::CreateWriter()
 /// <summary>
 /// Input Layer를 생성한다
 /// </summary>
-void GraphicsEngine::CreateInputLayer(ID3D11InputLayout** _inputLayout, ID3D11VertexShader** _vertexShader, ID3D11PixelShader** _pixelShader)
+void GraphicsEngine::CreateInputLayer(PipeLine& _pipline, D3D11_INPUT_ELEMENT_DESC* _defaultInputLayerDECS, std::wstring _path[], UINT _numberOfElement)
 {
 	HRESULT hr = S_OK;
-
-	D3D11_INPUT_ELEMENT_DESC defaultInputLayerDECS[] =
-	{
-		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0}
-	};
 
 	ID3DBlob* vsByteCode;
 	ID3DBlob* psByteCode;
@@ -324,7 +320,7 @@ void GraphicsEngine::CreateInputLayer(ID3D11InputLayout** _inputLayout, ID3D11Ve
 
 	// TODO : 상대경로로 바꾸기
 	hr = D3DCompileFromFile(
-		L"C:\\Users\\User\\project\\Engine\\EngineHH\\src\\D3DGraphics\\VertexShader.hlsl",
+		_path[0].c_str(),
 		nullptr,
 		D3D_COMPILE_STANDARD_FILE_INCLUDE,
 		"VS",
@@ -338,7 +334,7 @@ void GraphicsEngine::CreateInputLayer(ID3D11InputLayout** _inputLayout, ID3D11Ve
 
 	// TODO : 상대경로로 바꾸기
 	hr = D3DCompileFromFile(
-		L"C:\\Users\\User\\project\\Engine\\EngineHH\\src\\D3DGraphics\\PixelShader.hlsl",
+		_path[1].c_str(),
 		nullptr,
 		D3D_COMPILE_STANDARD_FILE_INCLUDE,
 		"PS",
@@ -350,15 +346,15 @@ void GraphicsEngine::CreateInputLayer(ID3D11InputLayout** _inputLayout, ID3D11Ve
 	);
 	assert(SUCCEEDED(hr) && "cannot Compile Pixel Shader");
 
-	this->d3d11Device->CreateVertexShader(vsByteCode->GetBufferPointer(), vsByteCode->GetBufferSize(), nullptr, _vertexShader);
-	this->d3d11Device->CreatePixelShader(psByteCode->GetBufferPointer(), psByteCode->GetBufferSize(), nullptr, _pixelShader);
+	this->d3d11Device->CreateVertexShader(vsByteCode->GetBufferPointer(), vsByteCode->GetBufferSize(), nullptr, &_pipline.vertexShader);
+	this->d3d11Device->CreatePixelShader(psByteCode->GetBufferPointer(), psByteCode->GetBufferSize(), nullptr, &_pipline.pixelShader);
 
 	hr = this->d3d11Device->CreateInputLayout(
-		defaultInputLayerDECS,
-		2,
+		_defaultInputLayerDECS,
+		_numberOfElement,
 		vsByteCode->GetBufferPointer(),
 		vsByteCode->GetBufferSize(),
-		_inputLayout
+		&_pipline.inputLayout
 	);
 	assert(SUCCEEDED(hr) && "cannot create inpur layer");
 
@@ -462,7 +458,7 @@ void GraphicsEngine::BindPipeline(PipeLine& _pipline)
 	this->d3d11DeviceContext->IASetInputLayout(_pipline.inputLayout);
 	this->d3d11DeviceContext->IASetPrimitiveTopology(_pipline.primitiveTopology);
 
-	UINT stride = sizeof(VertexC::Vertex);
+	UINT stride = _pipline.vertexStructSize;
 	UINT offset = 0;
 
 	this->d3d11DeviceContext->IASetIndexBuffer(_pipline.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
@@ -477,31 +473,12 @@ void GraphicsEngine::WriteText(int x, int y, DirectX::XMFLOAT4 color, TCHAR* tex
 	this->writer->DrawTextColor(x, y, color, text);
 }
 
-/// <summary>
-/// 정점 버퍼에 정점 추가
-/// </summary>
-void GraphicsEngine::CreateVertexBuffer(VertexC::Vertex* _verteies, UINT _size, ID3D11Buffer** _vertexbuffer)
+void GraphicsEngine::CreateTextureData(std::wstring _path, ID3D11ShaderResourceView** _resourceView)
 {
 	HRESULT hr = S_OK;
-
-	D3D11_BUFFER_DESC vb = {};
-
-	vb.Usage = D3D11_USAGE_IMMUTABLE;
-	vb.ByteWidth = _size;
-	vb.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vb.CPUAccessFlags = 0;
-	vb.MiscFlags = 0;
-	vb.StructureByteStride = 0;
-
-	D3D11_SUBRESOURCE_DATA initData = {};
-	initData.pSysMem = _verteies;
-
-	hr = this->d3d11Device->CreateBuffer(
-		&vb,
-		&initData,
-		_vertexbuffer
-	);
-	assert(SUCCEEDED(hr) && "cannot create vertex buffer");
+	ID3D11Resource* texResource = nullptr;
+	DirectX::CreateDDSTextureFromFile(this->d3d11Device, _path.c_str(), &texResource, _resourceView);
+	texResource->Release();
 }
 
 /// <summary>
