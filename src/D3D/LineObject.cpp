@@ -1,20 +1,21 @@
 #include "LineObject.h"
 
-LineObject::LineObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene, VertexC::Vertex _start, VertexC::Vertex _end)
+LineObject::LineObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene, VertexC::Data _start, VertexC::Data _end)
 	: graphicsEngine(_graphicsEngine)
 	, scene(_scene)
 	, vertexes{_start, _end}
 {
-	this->graphicsEngine->CreateInputLayer(&this->pipeline.inputLayout, &this->pipeline.vertexShader, &this->pipeline.pixelShader);
-	this->graphicsEngine->CreateVertexBuffer(this->vertexes, (UINT)sizeof(this->vertexes) * VertexC::Size(), &this->pipeline.vertexBuffer);
+	this->graphicsEngine->CreateInputLayer(this->pipeline, VertexC::defaultInputLayerDECS, this->path, 2);
+	this->graphicsEngine->CreateVertexBuffer(this->vertexes, 2 * VertexC::Size(), &this->pipeline.vertexBuffer);
 	this->graphicsEngine->CreateIndexBuffer(indexes, sizeof(indexes), &this->pipeline.IndexBuffer);
 	this->graphicsEngine->CreateRasterizerState(&this->pipeline.rasterizerState);
 	this->pipeline.primitiveTopology = D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
+	this->pipeline.vertexStructSize = VertexC::Size();
 }
 
 LineObject::~LineObject()
 {
-	this->pipeline.relasePipline();
+	this->pipeline.RelasePipline();
 }
 
 void LineObject::Update(float _dt)

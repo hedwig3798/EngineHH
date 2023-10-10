@@ -6,7 +6,7 @@ class DemoProcess;
 class LineObject
 {
 private:
-	VertexC::Vertex vertexes[2];
+	VertexC::Data vertexes[2];
 
 	UINT indexes[2] =
 	{
@@ -19,8 +19,14 @@ private:
 
 	DemoProcess* scene;
 
+	std::wstring path[2]
+	{
+		L"../Shader/VertexShader.hlsl",
+		L"../Shader/PixelShader.hlsl",
+	};
+
 public:
-	LineObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene, VertexC::Vertex _start, VertexC::Vertex _end);
+	LineObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene, VertexC::Data _start, VertexC::Data _end);
 	~LineObject();
 
 	void Update(float _dt);

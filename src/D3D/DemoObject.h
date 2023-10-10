@@ -7,7 +7,7 @@ class DemoProcess;
 class DemoObject
 {
 private:
-	VertexC::Vertex* vertexes;
+	VertexT::Data* vertexes;
 	int vertexesSize;
 	UINT* indexes;
 	int indexesSize;
@@ -17,6 +17,14 @@ private:
 	GraphicsEngine* graphicsEngine;
 
 	DemoProcess* scene;
+
+	std::wstring path[2]
+	{
+		L"../Shader/VertexShader2.hlsl",
+		L"../Shader/PixelShader2.hlsl",
+	};
+
+	std::wstring texturePath = L"../Model/Texture.dds";
 
 public:
 	DemoObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene);

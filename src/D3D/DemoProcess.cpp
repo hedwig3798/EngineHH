@@ -45,8 +45,8 @@ void DemoProcess::Initialize(HWND _hwnd)
 
 	for (size_t i = 1; i < 5; i++)
 	{
-		VertexC::Vertex start = { DirectX::XMFLOAT3{-5.0f, 0, (float)i}, COLORS::White };
-		VertexC::Vertex end = { DirectX::XMFLOAT3{5.0f, 0, (float)i}, COLORS::White };
+		VertexC::Data start = { DirectX::XMFLOAT3{-5.0f, 0, (float)i}, COLORS::White };
+		VertexC::Data end = { DirectX::XMFLOAT3{5.0f, 0, (float)i}, COLORS::White };
 		lineList.push_back(new LineObject(this->graphicsEngine, this, start, end));
 
 		start = { DirectX::XMFLOAT3{-5.0f, 0, -(float)i}, COLORS::White };
@@ -61,8 +61,8 @@ void DemoProcess::Initialize(HWND _hwnd)
 		end = { DirectX::XMFLOAT3{-(float)i, 0, 5.0f}, COLORS::White };
 		lineList.push_back(new LineObject(this->graphicsEngine, this, start, end));
 	}
-	VertexC::Vertex start = { DirectX::XMFLOAT3{0, 0, 0}, COLORS::Blue };
-	VertexC::Vertex end = { DirectX::XMFLOAT3{0, 0, 10}, COLORS::Blue };
+	VertexC::Data start = { DirectX::XMFLOAT3{0, 0, 0}, COLORS::Blue };
+	VertexC::Data end = { DirectX::XMFLOAT3{0, 0, 10}, COLORS::Blue };
 	lineList.push_back(new LineObject(this->graphicsEngine, this, start, end));
 	start = { DirectX::XMFLOAT3{0, 0, 0}, COLORS::White };
 	end = { DirectX::XMFLOAT3{0, 0, -5}, COLORS::White };
@@ -101,11 +101,13 @@ void DemoProcess::Update()
 void DemoProcess::Render()
 {
 	this->graphicsEngine->begineDraw();
+
 	this->graphicsEngine->SetParameter(
 		DirectX::XMMatrixIdentity(),
 		this->camera->GetViewTM(),
 		this->camera->GetProjectionTM()
 	);
+
 	this->object->Render(graphicsEngine);
 	for (SIZE_T i = 0; i < this->lineList.size(); i++)
 	{

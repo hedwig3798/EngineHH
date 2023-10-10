@@ -8,5 +8,7 @@
 #include <dxgi.h>
 #include <tchar.h>
 #include <DirectXPackedVector.h>
+#include <dxgi.h>
+
 #pragma comment(lib,"d3d11.lib")
 #pragma comment(lib,"d3dcompiler.lib")

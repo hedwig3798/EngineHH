@@ -4,12 +4,12 @@
 #include <sstream>
 #include "color.h"
 
-void GetVertexAndIndex(std::vector<VertexC::Vertex>& _vertexes, std::vector<UINT>& _indexes, std::wstring _filePath)
+void GetVertexAndIndex(std::vector<VertexC::Data>& _vertexes, std::vector<UINT>& _indexes, std::wstring _filePath)
 {
 	std::string line;
 	std::ifstream file(_filePath);
 
-	if (file.is_open()) 
+	if (file.is_open())
 	{
 		while (getline(file, line))
 		{
@@ -17,10 +17,10 @@ void GetVertexAndIndex(std::vector<VertexC::Vertex>& _vertexes, std::vector<UINT
 
 			if (parsed[0] == "v")
 			{
-				VertexC::Vertex input = { DirectX::XMFLOAT3{std::stof(parsed[1]) / 10.0f, std::stof(parsed[2]) / 10.0f ,std::stof(parsed[3]) / 10.0f}, COLORS::White };
+				VertexC::Data input = { DirectX::XMFLOAT3{std::stof(parsed[1]) / 10.0f, std::stof(parsed[2]) / 10.0f ,std::stof(parsed[3]) / 10.0f}, COLORS::White };
 				_vertexes.push_back(input);
 			}
-			if (parsed[0] == "f")
+			else if (parsed[0] == "f")
 			{
 				for (int i = 1; i < parsed.size(); i++)
 				{
@@ -28,6 +28,70 @@ void GetVertexAndIndex(std::vector<VertexC::Vertex>& _vertexes, std::vector<UINT
 					_indexes.push_back((UINT)(std::stoi(indexData[0])));
 				}
 			}
+		}
+	}
+	else
+	{
+		assert(false && "cannot read 3d model object");
+	}
+}
+
+void TestParser(std::vector<VertexT::Data>& _vertexes, std::vector<UINT>& _indexes, std::wstring _filePath)
+{
+	std::string line;
+	std::ifstream file(_filePath);
+
+	int step = 0;
+
+	if (file.is_open())
+	{
+		while (getline(file, line))
+		{
+			std::vector<std::string> parsed = split(line, ' ');
+			switch (step)
+			{
+			case 0:
+			{
+				for (int i = 0; i < parsed.size(); i++)
+				{
+					_indexes.push_back((UINT)(std::stoi(parsed[i])));
+				}
+				step++;
+				break;
+			}
+			case 1:
+			{
+				for (int i = 0; i < parsed.size(); i += 3)
+				{
+					VertexT::Data input = { DirectX::XMFLOAT3{std::stof(parsed[i]) / 10.0f, std::stof(parsed[i + 1]) / 10.0f ,std::stof(parsed[i + 2]) / 10.0f}, {} };
+					_vertexes.push_back(input);
+				}
+				step++;
+				break;
+			}
+			case 2:
+			{
+// 				for (int i = 0; i < parsed.size(); i += 3)
+// 				{
+// 					_vertexes[i / 3].normal.x = std::stof(parsed[i]);
+// 					_vertexes[i / 3].normal.y = std::stof(parsed[i + 1]);
+// 					_vertexes[i / 3].normal.z = std::stof(parsed[i + 2]);
+// 				}
+				step++;
+				break;
+			}
+			case 3:
+			{
+				for (int i = 0; i < parsed.size(); i += 2)
+				{
+					_vertexes[i / 2].texture.x = std::stof(parsed[i]);
+					_vertexes[i / 2].texture.y = std::stof(parsed[i + 1]);
+				}
+				step++;
+				break;
+			}
+			}
+
 		}
 	}
 	else

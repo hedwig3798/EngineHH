@@ -12,6 +12,20 @@ class ModelParser;
 
 class DemoProcess
 {
+private:
+	// 윈도우 핸들러
+	HWND hwnd;
+	GraphicsEngine* graphicsEngine;
+
+	ManagerSet* managers;
+
+	DemoCamera* camera;
+	DemoObject* object;
+
+	std::vector<LineObject*> lineList;
+
+
+
 public:
 	// 생성자 소멸자
 	DemoProcess();
@@ -30,16 +44,5 @@ private:
 	void Update();
 	void Render();
 
-private:
-	// 윈도우 핸들러
-	HWND hwnd;
-	GraphicsEngine* graphicsEngine;
-
-	ManagerSet* managers;
-
-	DemoCamera* camera;
-	DemoObject* object;
-
-	std::vector<LineObject*> lineList;
 };
 

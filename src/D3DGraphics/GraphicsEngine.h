@@ -8,7 +8,7 @@
 /// D3D 그래픽 엔진
 /// 작성자 : 김형환
 /// 최초 작성일 : 2023/09/06
-/// 최종 수정일 : 2023/09/25
+/// 최종 수정일 : 2023/10/10
 /// 
 /// Dx11을 이용한 3D 그래픽 엔진
 /// </summary>
@@ -73,8 +73,11 @@ public:
 	void ClearRenderTargetView();
 	void ClearDepthStencilView();
 
-	void CreateInputLayer(ID3D11InputLayout** _inputLayout, ID3D11VertexShader** _vertexShader, ID3D11PixelShader** _pixelShader);
-	void CreateVertexBuffer(VertexC::Vertex* _verteies, UINT _size, ID3D11Buffer** _vertexbuffer);
+	void CreateInputLayer(PipeLine& _pipline, D3D11_INPUT_ELEMENT_DESC* _defaultInputLayerDECS, std::wstring _path[], UINT _numberOfElement);
+
+	template<typename V>
+	void CreateVertexBuffer(V* _verteies, UINT _size, ID3D11Buffer** _vertexbuffer);
+
 	void CreateIndexBuffer(UINT* _indices, UINT _size, ID3D11Buffer** _indexbuffer);
 	void CreateRasterizerState(ID3D11RasterizerState** _rasterizerState);
 
@@ -84,6 +87,8 @@ public:
 
 	void WriteText(int x, int y, DirectX::XMFLOAT4 color, TCHAR* text);
 
+	void CreateTextureData(std::wstring _path, ID3D11ShaderResourceView** _resourceView);
+	void SetTexture(UINT _start, UINT _viewNumbers, ID3D11ShaderResourceView** _resourceView);
 private:
 	void CreateD3D11DeviceContext();
 	void CreateChainValue();
@@ -94,4 +99,29 @@ private:
 
 	void CreateWriter();
 };
+
+template<typename V>
+void GraphicsEngine::CreateVertexBuffer(V* _verteies, UINT _size, ID3D11Buffer** _vertexbuffer)
+{
+	HRESULT hr = S_OK;
+
+	D3D11_BUFFER_DESC vb = {};
+
+	vb.Usage = D3D11_USAGE_IMMUTABLE;
+	vb.ByteWidth = _size;
+	vb.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vb.CPUAccessFlags = 0;
+	vb.MiscFlags = 0;
+	vb.StructureByteStride = 0;
+
+	D3D11_SUBRESOURCE_DATA initData = {};
+	initData.pSysMem = _verteies;
+
+	hr = this->d3d11Device->CreateBuffer(
+		&vb,
+		&initData,
+		_vertexbuffer
+	);
+	assert(SUCCEEDED(hr) && "cannot create vertex buffer");
+}
 
