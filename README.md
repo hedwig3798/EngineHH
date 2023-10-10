@@ -10,6 +10,6 @@ https://www.notion.so/D3D-11-feb27209e87148d883f1ace7b864283a
 DirectX 11
 ---
 ### 데모
-최종 작성일 2023/09/27    
-![스크린샷 2023-09-27 190014](https://github.com/hedwig3798/EngineHH/assets/71327618/94562e43-207c-451e-a907-3fe6984b6782)
+최종 작성일 2023/10/10    
+![image](https://github.com/hedwig3798/EngineHH/assets/71327618/407f799a-c7cb-4d23-aa8d-b060cf17b59b)
 
