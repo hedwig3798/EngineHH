@@ -477,8 +477,14 @@ void GraphicsEngine::CreateTextureData(std::wstring _path, ID3D11ShaderResourceV
 {
 	HRESULT hr = S_OK;
 	ID3D11Resource* texResource = nullptr;
-	DirectX::CreateDDSTextureFromFile(this->d3d11Device, _path.c_str(), &texResource, _resourceView);
+	hr = DirectX::CreateDDSTextureFromFile(this->d3d11Device, _path.c_str(), &texResource, _resourceView);
+	assert(SUCCEEDED(hr) && "cannot create resource view");
 	texResource->Release();
+}
+
+void GraphicsEngine::SetTexture(UINT _start, UINT _viewNumbers, ID3D11ShaderResourceView** _resourceView)
+{
+	this->d3d11DeviceContext->PSSetShaderResources(_start, _viewNumbers, _resourceView);
 }
 
 /// <summary>

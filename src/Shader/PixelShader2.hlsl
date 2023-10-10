@@ -6,7 +6,7 @@ struct VertexOut
 	float2 Tex     : TEXCOORD;
 };
 
-Texture2D gDiffuseMap;
+Texture2D gDiffuseMap : register(t0);
 
 SamplerState samAnisotropic
 {
