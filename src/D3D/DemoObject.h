@@ -3,6 +3,7 @@
 
 class GraphicsEngine;
 class DemoProcess;
+class ManagerSet;
 
 class DemoObject
 {
@@ -26,8 +27,12 @@ private:
 
 	std::wstring texturePath = L"../Model/Texture1.dds";
 
+	Material demoMat;
+	DirectionalLight dirLights[3];
+	UINT lightCount;
+	ManagerSet* managers;
 public:
-	DemoObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene);
+	DemoObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene, ManagerSet* _manager);
 	~DemoObject();
 
 	void Update(float _dt);

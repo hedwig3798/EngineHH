@@ -40,6 +40,7 @@ private:
 		L"../Shader/VertexShader.hlsl",
 		L"../Shader/PixelShader.hlsl",
 	};
+	Material demoMat;
 
 public:
 	Axes(GraphicsEngine* _graphicsEngine, DemoProcess* _scene);

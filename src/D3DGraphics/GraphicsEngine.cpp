@@ -3,6 +3,7 @@
 #include "DXTKFont.h"
 #include "DirectXTex.h"
 #include "DDSTextureLoader.h"
+#include "LightHelper.h"
 
 GraphicsEngine::GraphicsEngine()
 	: featureLevel{}
@@ -19,6 +20,7 @@ GraphicsEngine::GraphicsEngine()
 	, writerDSS(nullptr)
 	, writerRS(nullptr)
 	, writer(nullptr)
+	, lightBuffer(nullptr)
 {
 }
 
@@ -52,6 +54,8 @@ void GraphicsEngine::Initialize(HWND _hwnd)
 	CreateViewport();
 	BindView();
 	CreateWriter();
+	CreateMatrixBuffer();
+	CreateLightingBffer();
 }
 
 /// <summary>
@@ -325,7 +329,7 @@ void GraphicsEngine::CreateInputLayer(PipeLine& _pipline, D3D11_INPUT_ELEMENT_DE
 		D3D_COMPILE_STANDARD_FILE_INCLUDE,
 		"VS",
 		"vs_5_0",
-		D3DCOMPILE_DEBUG,
+		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
 		0,
 		&vsByteCode,
 		&compileError
@@ -339,7 +343,7 @@ void GraphicsEngine::CreateInputLayer(PipeLine& _pipline, D3D11_INPUT_ELEMENT_DE
 		D3D_COMPILE_STANDARD_FILE_INCLUDE,
 		"PS",
 		"ps_5_0",
-		D3DCOMPILE_DEBUG,
+		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
 		0,
 		&psByteCode,
 		&compileError
@@ -356,17 +360,7 @@ void GraphicsEngine::CreateInputLayer(PipeLine& _pipline, D3D11_INPUT_ELEMENT_DE
 		vsByteCode->GetBufferSize(),
 		&_pipline.inputLayout
 	);
-	assert(SUCCEEDED(hr) && "cannot create inpur layer");
-
-	D3D11_BUFFER_DESC mbd = {};
-	mbd.Usage = D3D11_USAGE_DYNAMIC;
-	mbd.ByteWidth = sizeof(MatrixBufferType);
-	mbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	mbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	mbd.MiscFlags = 0;
-	mbd.StructureByteStride = 0;
-
-	this->d3d11Device->CreateBuffer(&mbd, nullptr, &matrixBuffer);
+	assert(SUCCEEDED(hr) && "cannot create input layer");
 
 	vsByteCode->Release();
 	psByteCode->Release();
@@ -420,19 +414,28 @@ void GraphicsEngine::CreateRasterizerState(ID3D11RasterizerState** _rasterizerSt
 	assert(SUCCEEDED(hr) && "cannot create Rasterizser State");
 }
 
+void GraphicsEngine::CreateMatrixBuffer()
+{
+	D3D11_BUFFER_DESC mbd = {};
+	mbd.Usage = D3D11_USAGE_DYNAMIC;
+	mbd.ByteWidth = sizeof(MatrixBufferType);
+	mbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	mbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	mbd.MiscFlags = 0;
+	mbd.StructureByteStride = 0;
+
+	this->d3d11Device->CreateBuffer(&mbd, nullptr, &matrixBuffer);
+}
+
 /// <summary>
 /// 파라미터 설정
 /// </summary>
 /// <param name="_w">월드 TM</param>
 /// <param name="_v">뷰포트 TM</param>
 /// <param name="_p">프로젝션 TM</param>
-void GraphicsEngine::SetParameter(DirectX::XMMATRIX _w, DirectX::XMMATRIX _v, DirectX::XMMATRIX _p)
+void GraphicsEngine::BindMatrixParameter(DirectX::XMMATRIX _w, DirectX::XMMATRIX _v, DirectX::XMMATRIX _p, Material _material)
 {
 	HRESULT hr;
-
-	_w = DirectX::XMMatrixTranspose(_w);
-	_v = DirectX::XMMatrixTranspose(_v);
-	_p = DirectX::XMMatrixTranspose(_p);
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 
@@ -441,12 +444,56 @@ void GraphicsEngine::SetParameter(DirectX::XMMATRIX _w, DirectX::XMMATRIX _v, Di
 
 	MatrixBufferType* dataptr = (MatrixBufferType*)mappedResource.pData;
 
+	DirectX::XMVECTOR det = DirectX::XMMatrixDeterminant(_w);
 	dataptr->world = _w;
-	dataptr->view = _v;
-	dataptr->proj = _p;
+	dataptr->wvp = _w * _v * _p;
+	dataptr->worldInversTranspose = DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(&det, _w));
+
+	dataptr->world = DirectX::XMMatrixTranspose(_w);
+	dataptr->wvp = DirectX::XMMatrixTranspose(dataptr->wvp);
+	dataptr->worldInversTranspose = DirectX::XMMatrixTranspose(dataptr->worldInversTranspose);
+
+	dataptr->material = _material;
 
 	this->d3d11DeviceContext->Unmap(matrixBuffer, 0);
 	this->d3d11DeviceContext->VSSetConstantBuffers(0, 1, &matrixBuffer);
+}
+
+
+void GraphicsEngine::CreateLightingBffer()
+{
+	D3D11_BUFFER_DESC mbd = {};
+	mbd.Usage = D3D11_USAGE_DYNAMIC;
+	mbd.ByteWidth = sizeof(LightingBufferType);
+	mbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	mbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	mbd.MiscFlags = 0;
+	mbd.StructureByteStride = 0;
+
+	this->d3d11Device->CreateBuffer(&mbd, nullptr, &this->lightBuffer);
+}
+
+void GraphicsEngine::BindLightingParameter(DirectionalLight _directionLight[], UINT _lightCount, DirectX::XMFLOAT3 _cameraPos)
+{
+	HRESULT hr;
+
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+	hr = this->d3d11DeviceContext->Map(this->lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	assert(SUCCEEDED(hr));
+
+	LightingBufferType* dataptr = (LightingBufferType*)mappedResource.pData;
+
+	dataptr->dirLights[0] = _directionLight[0];
+	dataptr->dirLights[1] = _directionLight[1];
+	dataptr->dirLights[2] = _directionLight[2];
+
+	dataptr->lightCount = _lightCount;
+
+	dataptr->eyePosW = _cameraPos;
+
+	this->d3d11DeviceContext->Unmap(this->lightBuffer, 0);
+	this->d3d11DeviceContext->PSSetConstantBuffers(1, 1, &this->lightBuffer);
 }
 
 /// <summary>
