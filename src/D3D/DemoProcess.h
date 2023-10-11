@@ -26,6 +26,7 @@ private:
 	LineObject* line;
 	Axes* axes;
 
+	std::wstring explain;
 
 public:
 	// 持失切 社瑚切
