@@ -79,6 +79,6 @@ void DemoProcess::Render()
 	this->axes->Render(graphicsEngine);
 	TCHAR* explain = (TCHAR*)(L"W, S : 카메라 전방, 후방 이동\nA, D : 카메라 좌우 이동\n화살표 : 카메라 회전");
 	this->graphicsEngine->WriteText(10, 10, COLORS::White, explain);
-
 	this->graphicsEngine->endDraw();
+	int test = 0;
 }
