@@ -1,26 +1,8 @@
-#include "LineObject.h"
-
-LineObject::LineObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene)
+#include "Axes.h"
+Axes::Axes(GraphicsEngine* _graphicsEngine, DemoProcess* _scene)
 	: graphicsEngine(_graphicsEngine)
 	, scene(_scene)
 {
-	for (int i = 0; i < 100; i++)
-	{
-		vertexes[i].position = DirectX::XMFLOAT3((float)(i % 10) - 5.0f, 0.0f, (float)(i / 10) - 5.0f);
-		vertexes[i].color = COLORS::White;
-	}
-
-	for (int i = 0; i < 10; i++)
-	{
-		indexes[i * 2] = i;
-		indexes[i * 2 + 1] = i + 90;
-	}
-
-	for (int i = 0; i < 10; i++)
-	{
-		indexes[20 + (i * 2)] = i * 10;
-		indexes[20 + (i * 2) + 1] = i * 10 + 9;
-	}
 
 	this->graphicsEngine->CreateInputLayer(this->pipeline, VertexC::defaultInputLayerDECS, this->path, 2);
 	this->graphicsEngine->CreateVertexBuffer(this->vertexes, sizeof(this->vertexes) * VertexC::Size(), &this->pipeline.vertexBuffer);
@@ -30,17 +12,17 @@ LineObject::LineObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene)
 	this->pipeline.vertexStructSize = VertexC::Size();
 }
 
-LineObject::~LineObject()
+Axes::~Axes()
 {
 	this->pipeline.RelasePipline();
 }
 
-void LineObject::Update(float _dt)
+void Axes::Update(float _dt)
 {
 
 }
 
-void LineObject::Render(GraphicsEngine* ge)
+void Axes::Render(GraphicsEngine* ge)
 {
 	this->graphicsEngine->BindPipeline(pipeline);
 	this->graphicsEngine->RenderByIndex(pipeline, sizeof(this->indexes) / sizeof(this->indexes[0]));
