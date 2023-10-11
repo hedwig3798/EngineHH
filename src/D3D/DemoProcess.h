@@ -9,6 +9,7 @@ class DemoObject;
 class ManagerSet;
 class LineObject;
 class ModelParser;
+class Axes;
 
 class DemoProcess
 {
@@ -22,8 +23,8 @@ private:
 	DemoCamera* camera;
 	DemoObject* object;
 
-	std::vector<LineObject*> lineList;
-
+	LineObject* line;
+	Axes* axes;
 
 
 public:

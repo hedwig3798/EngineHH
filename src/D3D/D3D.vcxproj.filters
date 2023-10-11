@@ -75,6 +75,9 @@
     <ClInclude Include="ManagerSet.h">
       <Filter>DemoManager\Set</Filter>
     </ClInclude>
+    <ClInclude Include="Axes.h">
+      <Filter>DemoObject\LineObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="D3D.cpp">
@@ -100,6 +103,9 @@
     </ClCompile>
     <ClCompile Include="ManagerSet.cpp">
       <Filter>DemoManager\Set</Filter>
+    </ClCompile>
+    <ClCompile Include="Axes.cpp">
+      <Filter>DemoObject\LineObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

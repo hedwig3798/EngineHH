@@ -6,12 +6,9 @@ class DemoProcess;
 class LineObject
 {
 private:
-	VertexC::Data vertexes[2];
+	VertexC::Data vertexes[100];
 
-	UINT indexes[2] =
-	{
-		0, 1
-	};
+	UINT indexes[40];
 
 	PipeLine pipeline;
 
@@ -26,7 +23,7 @@ private:
 	};
 
 public:
-	LineObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene, VertexC::Data _start, VertexC::Data _end);
+	LineObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene);
 	~LineObject();
 
 	void Update(float _dt);

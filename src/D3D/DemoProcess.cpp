@@ -4,6 +4,7 @@
 #include "DemoObject.h"
 #include "ManagerSet.h"
 #include "LineObject.h"
+#include "Axes.h"
 
 DemoProcess::DemoProcess()
 	: graphicsEngine(nullptr)
@@ -11,6 +12,7 @@ DemoProcess::DemoProcess()
 	, camera(nullptr)
 	, object(nullptr)
 	, managers(nullptr)
+	, line(nullptr)
 {
 }
 
@@ -18,10 +20,9 @@ DemoProcess::~DemoProcess()
 {
 	delete this->graphicsEngine;
 	delete this->object;
-	for (size_t i = 0; i < this->lineList.size(); i++)
-	{
-		delete this->lineList[i];
-	}
+
+	delete this->line;
+	
 	delete this->camera;
 	delete this->managers;
 }
@@ -38,47 +39,12 @@ void DemoProcess::Initialize(HWND _hwnd)
 
 
 	this->object = new DemoObject(this->graphicsEngine, this);
+	this->line = new LineObject(this->graphicsEngine, this);
+	this->axes = new Axes(this->graphicsEngine, this);
 
 	this->managers = new ManagerSet();
 	this->managers->Initialize(this->hwnd);
 	this->camera = new DemoCamera((float)(windowSize.bottom - windowSize.top), (float)(windowSize.right - windowSize.left), this->managers);
-
-	for (size_t i = 1; i < 5; i++)
-	{
-		VertexC::Data start = { DirectX::XMFLOAT3{-5.0f, 0, (float)i}, COLORS::White };
-		VertexC::Data end = { DirectX::XMFLOAT3{5.0f, 0, (float)i}, COLORS::White };
-		lineList.push_back(new LineObject(this->graphicsEngine, this, start, end));
-
-		start = { DirectX::XMFLOAT3{-5.0f, 0, -(float)i}, COLORS::White };
-		end = { DirectX::XMFLOAT3{5.0f, 0, -(float)i}, COLORS::White };
-		lineList.push_back(new LineObject(this->graphicsEngine, this, start, end));
-
-		start = { DirectX::XMFLOAT3{(float)i, 0, -5.0f}, COLORS::White };
-		end = { DirectX::XMFLOAT3{(float)i, 0, 5.0f}, COLORS::White };
-		lineList.push_back(new LineObject(this->graphicsEngine, this, start, end));
-
-		start = { DirectX::XMFLOAT3{-(float)i, 0, -5.0f}, COLORS::White };
-		end = { DirectX::XMFLOAT3{-(float)i, 0, 5.0f}, COLORS::White };
-		lineList.push_back(new LineObject(this->graphicsEngine, this, start, end));
-	}
-	VertexC::Data start = { DirectX::XMFLOAT3{0, 0, 0}, COLORS::Blue };
-	VertexC::Data end = { DirectX::XMFLOAT3{0, 0, 10}, COLORS::Blue };
-	lineList.push_back(new LineObject(this->graphicsEngine, this, start, end));
-	start = { DirectX::XMFLOAT3{0, 0, 0}, COLORS::White };
-	end = { DirectX::XMFLOAT3{0, 0, -5}, COLORS::White };
-	lineList.push_back(new LineObject(this->graphicsEngine, this, start, end));
-
-	start = { DirectX::XMFLOAT3{0, 0, 0}, COLORS::Red };
-	end = { DirectX::XMFLOAT3{0, 10.0f, 0}, COLORS::Red };
-	lineList.push_back(new LineObject(this->graphicsEngine, this, start, end));
-
-	start = { DirectX::XMFLOAT3{0, 0, 0}, COLORS::Green };
-	end = { DirectX::XMFLOAT3{10, 0, 0}, COLORS::Green };
-	lineList.push_back(new LineObject(this->graphicsEngine, this, start, end));
-
-	start = { DirectX::XMFLOAT3{0, 0, 0}, COLORS::White };
-	end = { DirectX::XMFLOAT3{-5, 0, 0}, COLORS::White };
-	lineList.push_back(new LineObject(this->graphicsEngine, this, start, end));
 }
 
 void DemoProcess::Process()
@@ -109,10 +75,8 @@ void DemoProcess::Render()
 	);
 
 	this->object->Render(graphicsEngine);
-	for (SIZE_T i = 0; i < this->lineList.size(); i++)
-	{
-		lineList[i]->Render(graphicsEngine);
-	}
+	this->line->Render(graphicsEngine);
+	this->axes->Render(graphicsEngine);
 	TCHAR* explain = (TCHAR*)(L"W, S : 카메라 전방, 후방 이동\nA, D : 카메라 좌우 이동\n화살표 : 카메라 회전");
 	this->graphicsEngine->WriteText(10, 10, COLORS::White, explain);
 
