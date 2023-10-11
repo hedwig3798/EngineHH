@@ -137,6 +137,11 @@ const DirectX::XMMATRIX& DemoCamera::GetProjectionTM()
 	return this->projectionTM = DirectX::XMMatrixPerspectiveFovLH(this->FOV, this->screenWidth / this->screenHight, 1, 1000);;
 }
 
+DirectX::XMFLOAT3 DemoCamera::GetPosition()
+{
+	return position;
+}
+
 /// <summary>
 /// 카메라의 이동
 /// </summary>

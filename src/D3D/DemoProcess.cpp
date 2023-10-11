@@ -39,12 +39,12 @@ void DemoProcess::Initialize(HWND _hwnd)
 	GetWindowRect(this->hwnd, &windowSize);
 
 
-	this->object = new DemoObject(this->graphicsEngine, this);
 	this->line = new LineObject(this->graphicsEngine, this);
 	this->axes = new Axes(this->graphicsEngine, this);
 
 	this->managers = new ManagerSet();
 	this->managers->Initialize(this->hwnd);
+	this->object = new DemoObject(this->graphicsEngine, this, this->managers);
 	this->camera = new DemoCamera((float)(windowSize.bottom - windowSize.top), (float)(windowSize.right - windowSize.left), this->managers);
 }
 
@@ -63,17 +63,12 @@ void DemoProcess::Update()
 {
 	this->managers->Update();
 	camera->Update();
+	this->object->Update(this->managers->timeManager->GetfDT());
 }
 
 void DemoProcess::Render()
 {
 	this->graphicsEngine->begineDraw();
-
-	this->graphicsEngine->BindParameter(
-		DirectX::XMMatrixIdentity(),
-		this->camera->GetViewTM(),
-		this->camera->GetProjectionTM()
-	);
 
 	this->object->Render(graphicsEngine);
 	this->line->Render(graphicsEngine);
