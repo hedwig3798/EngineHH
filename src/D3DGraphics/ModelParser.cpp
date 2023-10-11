@@ -82,12 +82,12 @@ void TestParser(std::vector<VertexT::Data>& _vertexes, std::vector<UINT>& _index
 			}
 			case 3:
 			{
-// 				for (int i = 0; i < parsed.size(); i += 3)
-// 				{
-// 					_vertexes[i / 3].normal.x = std::stof(parsed[i]);
-// 					_vertexes[i / 3].normal.y = std::stof(parsed[i + 1]);
-// 					_vertexes[i / 3].normal.z = std::stof(parsed[i + 2]);
-// 				}
+				for (int i = 0; i < parsed.size(); i += 3)
+				{
+					_vertexes[i / 3].normal.x = std::stof(parsed[i]);
+					_vertexes[i / 3].normal.y = std::stof(parsed[i + 1]);
+					_vertexes[i / 3].normal.z = std::stof(parsed[i + 2]);
+				}
 				step++;
 				break;
 			}

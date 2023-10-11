@@ -13,6 +13,7 @@ DemoProcess::DemoProcess()
 	, object(nullptr)
 	, managers(nullptr)
 	, line(nullptr)
+	, axes(nullptr)
 {
 }
 
@@ -68,7 +69,7 @@ void DemoProcess::Render()
 {
 	this->graphicsEngine->begineDraw();
 
-	this->graphicsEngine->SetParameter(
+	this->graphicsEngine->BindParameter(
 		DirectX::XMMatrixIdentity(),
 		this->camera->GetViewTM(),
 		this->camera->GetProjectionTM()

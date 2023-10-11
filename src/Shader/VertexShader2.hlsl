@@ -1,13 +1,14 @@
 cbuffer cbPerObject
 {
-    matrix w;
-    matrix v;
-    matrix p;
+    matrix world;
+    matrix wvp;
+    matrix worldInvers;
 };
 
 struct VertexIn
 {
 	float3 PosL    : POSITION;
+	float3 NormalL : NORMAL;
 	float2 Tex     : TEXCOORD;
 };
 
@@ -16,20 +17,14 @@ struct VertexOut
 	float4 PosH    : SV_POSITION;
     float3 PosW    : POSITION;
 	float2 Tex     : TEXCOORD;
+    float3 NormalW : NORMAL;
 };
 
 VertexOut VS(VertexIn vin)
 {
 	VertexOut vout;
-	
-	// Transform to world space space.
-	vout.PosW = mul(float4(vin.PosL, 1.0f), w);
-		
-    matrix wvp = w;
-    wvp = mul(wvp, v);
-    wvp = mul(wvp, p);
 
-	vout.PosW = mul(float4(vin.PosL, 1.0f), w).xyz;
+	vout.PosW = mul(float4(vin.PosL, 1.0f), world).xyz;
 	// Transform to homogeneous clip space.
 	vout.PosH = mul(float4(vin.PosL, 1.0f), wvp);
 	

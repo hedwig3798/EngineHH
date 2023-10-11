@@ -1,8 +1,8 @@
 cbuffer cbPerObject
 {
-    matrix w;
-    matrix v;
-    matrix p;
+    matrix world;
+    matrix wvp;
+    matrix worldInversTranspose;
 };
 
 struct VIN
@@ -21,9 +21,7 @@ VOUT VS(VIN _vin)
 {
     VOUT vout;
     vout.pos = float4(_vin.pos, 1.0f);
-    vout.pos = mul(vout.pos, w);
-    vout.pos = mul(vout.pos, v);
-    vout.pos = mul(vout.pos, p);
+    vout.pos = mul(vout.pos, wvp);
     vout.color = _vin.color;
     
     return vout;

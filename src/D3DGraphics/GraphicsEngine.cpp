@@ -356,7 +356,7 @@ void GraphicsEngine::CreateInputLayer(PipeLine& _pipline, D3D11_INPUT_ELEMENT_DE
 		vsByteCode->GetBufferSize(),
 		&_pipline.inputLayout
 	);
-	assert(SUCCEEDED(hr) && "cannot create inpur layer");
+	assert(SUCCEEDED(hr) && "cannot create input layer");
 
 	D3D11_BUFFER_DESC mbd = {};
 	mbd.Usage = D3D11_USAGE_DYNAMIC;
@@ -426,13 +426,9 @@ void GraphicsEngine::CreateRasterizerState(ID3D11RasterizerState** _rasterizerSt
 /// <param name="_w">월드 TM</param>
 /// <param name="_v">뷰포트 TM</param>
 /// <param name="_p">프로젝션 TM</param>
-void GraphicsEngine::SetParameter(DirectX::XMMATRIX _w, DirectX::XMMATRIX _v, DirectX::XMMATRIX _p)
+void GraphicsEngine::BindParameter(DirectX::XMMATRIX _w, DirectX::XMMATRIX _v, DirectX::XMMATRIX _p)
 {
 	HRESULT hr;
-
-	_w = DirectX::XMMatrixTranspose(_w);
-	_v = DirectX::XMMatrixTranspose(_v);
-	_p = DirectX::XMMatrixTranspose(_p);
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 
@@ -441,9 +437,14 @@ void GraphicsEngine::SetParameter(DirectX::XMMATRIX _w, DirectX::XMMATRIX _v, Di
 
 	MatrixBufferType* dataptr = (MatrixBufferType*)mappedResource.pData;
 
+	DirectX::XMVECTOR det = DirectX::XMMatrixDeterminant(_w);
 	dataptr->world = _w;
-	dataptr->view = _v;
-	dataptr->proj = _p;
+	dataptr->wvp = _w * _v * _p;
+	dataptr->worldInversTranspose = DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(&det, _w));
+
+	dataptr->world = DirectX::XMMatrixTranspose(_w);
+	dataptr->wvp = DirectX::XMMatrixTranspose(dataptr->wvp);
+	dataptr->worldInversTranspose = DirectX::XMMatrixTranspose(dataptr->worldInversTranspose);
 
 	this->d3d11DeviceContext->Unmap(matrixBuffer, 0);
 	this->d3d11DeviceContext->VSSetConstantBuffers(0, 1, &matrixBuffer);

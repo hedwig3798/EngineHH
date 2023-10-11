@@ -25,7 +25,7 @@ DemoObject::DemoObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene)
 		indexes[i] = indexInfo[i];
 	}
 	this->graphicsEngine->CreateTextureData(this->texturePath, &this->pipeline.textureView);
-	this->graphicsEngine->CreateInputLayer(this->pipeline, VertexT::defaultInputLayerDECS, this->path, 2);
+	this->graphicsEngine->CreateInputLayer(this->pipeline, VertexT::defaultInputLayerDECS, this->path, 3);
 	this->graphicsEngine->CreateVertexBuffer(this->vertexes, this->vertexesSize * VertexT::Size(), &this->pipeline.vertexBuffer);
 	this->graphicsEngine->CreateIndexBuffer(this->indexes, this->indexesSize, &this->pipeline.IndexBuffer);
 	this->graphicsEngine->CreateRasterizerState(&this->pipeline.rasterizerState);
