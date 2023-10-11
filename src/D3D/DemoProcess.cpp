@@ -15,6 +15,11 @@ DemoProcess::DemoProcess()
 	, line(nullptr)
 	, axes(nullptr)
 {
+	this->explain = L"W, S : 카메라 전방, 후방 이동\n";
+	this->explain += L"A, D : 카메라 좌우 이동\n";
+	this->explain += L"화살표 : 카메라 회전\n";
+	this->explain += L"숫자 0, 1, 2, 3 : 조명 갯수 설정\n";
+	
 }
 
 DemoProcess::~DemoProcess()
@@ -73,8 +78,15 @@ void DemoProcess::Render()
 	this->object->Render(graphicsEngine);
 	this->line->Render(graphicsEngine);
 	this->axes->Render(graphicsEngine);
-	TCHAR* explain = (TCHAR*)(L"W, S : 카메라 전방, 후방 이동\nA, D : 카메라 좌우 이동\n화살표 : 카메라 회전");
-	this->graphicsEngine->WriteText(10, 10, COLORS::White, explain);
+	std::wstring dt = L"DeltaTime : ";
+	dt += std::to_wstring(this->managers->timeManager->GetfDT());
+	dt += L"\n";
+	dt += L"FPS : ";
+	dt += std::to_wstring(1 / this->managers->timeManager->GetfDT());
+
+
+	this->graphicsEngine->WriteText(10, 12, COLORS::White, const_cast<TCHAR*>(this->explain.c_str()));
+	this->graphicsEngine->WriteText(200, 12, COLORS::White, const_cast<TCHAR*>(dt.c_str()));
 
 	this->graphicsEngine->endDraw();
 }
