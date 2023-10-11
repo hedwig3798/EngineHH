@@ -15,7 +15,9 @@ DemoCamera::DemoCamera(float _screenHight, float _screenWidth, ManagerSet* _mana
 	, dirLook{ 0.0f, 0.0f, 1.0f }
 
 {
-
+	
+	Traslation(DirectX::XMFLOAT3{ -10.0f, 10.0f, 10.0f });
+	Rotate(DirectX::XMFLOAT3{ 0.7, 2.3, 0 });
 }
 
 DemoCamera::~DemoCamera()
@@ -38,8 +40,8 @@ void DemoCamera::AddFOV(float _value)
 /// <param name="_value">각 축에 따른 회전 각</param>
 void DemoCamera::Rotate(DirectX::XMFLOAT3 _value)
 {
-	this->rotation.x += _value.x;
-	this->rotation.y += _value.y;
+	RotateUp(_value.x);
+	RotateRight(_value.y);
 	this->rotation.z += _value.z;
 }
 
