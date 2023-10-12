@@ -520,6 +520,11 @@ void GraphicsEngine::WriteText(int x, int y, DirectX::XMFLOAT4 color, TCHAR* tex
 	this->writer->DrawTextColor(x, y, color, text);
 }
 
+/// <summary>
+/// 텍스쳐 데이터 생성
+/// </summary>
+/// <param name="_path">데이터 경로</param>
+/// <param name="_resourceView">텍스쳐 데이터를 저장할 렌더 리소스 뷰</param>
 void GraphicsEngine::CreateTextureData(std::wstring _path, ID3D11ShaderResourceView** _resourceView)
 {
 	HRESULT hr = S_OK;
@@ -529,6 +534,12 @@ void GraphicsEngine::CreateTextureData(std::wstring _path, ID3D11ShaderResourceV
 	texResource->Release();
 }
 
+/// <summary>
+/// 텍스쳐 리소스를 픽셀 셰이더에 적용
+/// </summary>
+/// <param name="_start">리소스 슬릇</param>
+/// <param name="_viewNumbers">리소스 갯수</param>
+/// <param name="_resourceView">리소스 뷰 포인터</param>
 void GraphicsEngine::SetTexture(UINT _start, UINT _viewNumbers, ID3D11ShaderResourceView** _resourceView)
 {
 	this->d3d11DeviceContext->PSSetShaderResources(_start, _viewNumbers, _resourceView);
