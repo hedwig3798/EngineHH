@@ -76,6 +76,7 @@ void ComputeDirectionalLight(Material mat, DirectionalLight L,
 	// the line of site of the light.
 	
 	float diffuseFactor = dot(lightVec, normal);
+	// diffuseFactor = ceil ((diffuseFactor * 10)/3 );
 
 	// Flatten to avoid dynamic branching.
 	[flatten]
@@ -83,6 +84,7 @@ void ComputeDirectionalLight(Material mat, DirectionalLight L,
 	{
 		float3 v         = reflect(-lightVec, normal);
 		float specFactor = pow(max(dot(v, toEye), 0.0f), mat.Specular.w);
+		// specFactor = ceil ((specFactor * 10)/5 );
 					
 		diffuse = diffuseFactor * mat.Diffuse * L.Diffuse;
 		spec    = specFactor * mat.Specular * L.Specular;
