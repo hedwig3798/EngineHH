@@ -3,7 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include "color.h"
-
+#include "ASEFile.h"
 void GetVertexAndIndex(std::vector<VertexC::Data>& _vertexes, std::vector<UINT>& _indexes, std::wstring _filePath)
 {
 	std::string line;
@@ -36,73 +36,22 @@ void GetVertexAndIndex(std::vector<VertexC::Data>& _vertexes, std::vector<UINT>&
 	}
 }
 
-void TestParser(std::vector<VertexT::Data>& _vertexes, std::vector<UINT>& _indexes, std::wstring _filePath)
+std::vector<Mesh> AseParser(std::wstring _filePath)
 {
 	std::string line;
 	std::ifstream file(_filePath);
 
+	std::vector<Mesh> result;
+
 	DirectX::XMMATRIX LTM = DirectX::XMMatrixIdentity();
 
-	int step = 0;
+	int depth = 0;
 
 	if (file.is_open())
 	{
 		while (getline(file, line))
 		{
-			std::vector<std::string> parsed = split(line, ' ');
-			switch (step)
-			{
-			case 0:
-			{
-				DirectX::XMFLOAT3 rotation = { std::stof(parsed[0]), std::stof(parsed[1]) ,std::stof(parsed[2]) };
-				LTM = DirectX::XMMatrixRotationX(rotation.x);
-				LTM *= DirectX::XMMatrixRotationY(rotation.y);
-				LTM *= DirectX::XMMatrixRotationZ(rotation.z);
-				step++;
-				break;
-			}
-			case 1:
-			{
-				for (int i = 0; i < parsed.size(); i++)
-				{
-					_indexes.push_back((UINT)(std::stoi(parsed[i])));
-				}
-				step++;
-				break;
-			}
-			case 2:
-			{
-				for (int i = 0; i < parsed.size(); i += 3)
-				{
-					VertexT::Data input = { DirectX::XMFLOAT3{std::stof(parsed[i]) / 10.0f, std::stof(parsed[i + 1]) / 10.0f ,std::stof(parsed[i + 2]) / 10.0f}, {} };
-					_vertexes.push_back(input);
-				}
-				step++;
-				break;
-			}
-			case 3:
-			{
-				for (int i = 0; i < parsed.size(); i += 3)
-				{
-					_vertexes[i / 3].normal.x = std::stof(parsed[i]);
-					_vertexes[i / 3].normal.y = std::stof(parsed[i + 1]);
-					_vertexes[i / 3].normal.z = std::stof(parsed[i + 2]);
-				}
-				step++;
-				break;
-			}
-			case 4:
-			{
-				for (int i = 0; i < parsed.size(); i += 2)
-				{
-					_vertexes[i / 2].texture.x = std::stof(parsed[i]);
-					_vertexes[i / 2].texture.y = 1 - std::stof(parsed[i + 1]);
-				}
-				step++;
-				break;
-			}
-			}
-
+			std::vector<_ASEToken> s = ASEToken(line);
 		}
 	}
 	else
@@ -111,7 +60,7 @@ void TestParser(std::vector<VertexT::Data>& _vertexes, std::vector<UINT>& _index
 	}
 }
 
-std::vector<std::string> split(std::string input, char delimiter)
+std::vector<std::string> split(std::string& input, char delimiter)
 {
 	std::vector<std::string> answer;
 	std::stringstream ss(input);
@@ -121,5 +70,26 @@ std::vector<std::string> split(std::string input, char delimiter)
 		answer.push_back(temp);
 	}
 
+	return answer;
+}
+
+std::vector<UINT> ASEToken(std::string& _input)
+{
+	std::vector<UINT> answer;
+	std::string temp = "";
+
+	for (auto& c : _input)
+	{
+		if (c != ' ' && c != '\t' && c != '\r' && c != '\n')
+		{
+			temp += c;
+		}
+		else
+		{
+			answer.push_back(temp);
+			temp = "";
+		}
+	}
+	answer.push_back(temp);
 	return answer;
 }

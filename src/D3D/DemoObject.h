@@ -4,6 +4,7 @@
 class GraphicsEngine;
 class DemoProcess;
 class ManagerSet;
+class Mesh;
 
 class DemoObject
 {
@@ -12,6 +13,8 @@ private:
 	int vertexesSize;
 	UINT* indexes;
 	int indexesSize;
+
+	std::vector<Mesh*> meshies;
 
 	PipeLine pipeline;
 

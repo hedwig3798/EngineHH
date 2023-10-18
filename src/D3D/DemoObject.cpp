@@ -3,15 +3,18 @@
 #include "DemoCamera.h"
 #include "ModelParser.h"
 #include "ManagerSet.h"
+#include "Mesh.h"
+
 DemoObject::DemoObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene, ManagerSet* _manager)
 	: graphicsEngine(_graphicsEngine)
 	, scene(_scene)
 	, lightCount(1)
 	, managers(_manager)
+	, meshies{}
 {
 	std::vector<VertexT::Data> vertexInfo;
 	std::vector<UINT> indexInfo;
-	TestParser(vertexInfo, indexInfo, L"../Model/testPolygon.txt");
+	AseParser(vertexInfo, indexInfo, L"../Model/box.ASE");
 
 	this->vertexesSize = (int)vertexInfo.size();
 	this->indexesSize = (int)indexInfo.size();
