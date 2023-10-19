@@ -9,14 +9,7 @@ class Mesh;
 class DemoObject
 {
 private:
-	VertexT::Data* vertexes;
-	int vertexesSize;
-	UINT* indexes;
-	int indexesSize;
-
 	std::vector<Mesh*> meshies;
-
-	PipeLine pipeline;
 
 	GraphicsEngine* graphicsEngine;
 

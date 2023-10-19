@@ -36,12 +36,12 @@ void GetVertexAndIndex(std::vector<VertexC::Data>& _vertexes, std::vector<UINT>&
 	}
 }
 
-std::vector<Mesh> AseParser(std::wstring _filePath)
+std::vector<Mesh*> AseParser(std::wstring _filePath)
 {
 	std::string line;
 	std::ifstream file(_filePath);
 
-	std::vector<Mesh> result;
+	std::vector<Mesh*> result;
 
 	DirectX::XMMATRIX LTM = DirectX::XMMatrixIdentity();
 
@@ -51,13 +51,42 @@ std::vector<Mesh> AseParser(std::wstring _filePath)
 	{
 		while (getline(file, line))
 		{
-			std::vector<_ASEToken> s = ASEToken(line);
+			std::vector<std::string> s = ASEToken(line);
+
+			if (s[0] == Token[_ASEToken::TOKENR_MESH])
+			{
+				result.push_back(new Mesh());
+			}
+			else if (s[0] == Token[_ASEToken::TOKENR_MESH_NUMVERTEX])
+			{
+				result.back()->vertexList = std::vector<VertexT::Data>(std::stoi(s[1]), VertexT::Data());
+			}
+			else if (s[0] == Token[_ASEToken::TOKENR_MESH_NUMFACES])
+			{
+				result.back()->indexList = std::vector<UINT>(std::stoi(s[1]) * 3);
+			}
+			else if (s[0] == Token[_ASEToken::TOKENR_MESH_VERTEX])
+			{
+				result.back()->vertexList[std::stoi(s[1])].position = DirectX::XMFLOAT3{ std::stof(s[2]), std::stof(s[4]), std::stof(s[3]) };
+			}
+			else if (s[0] == Token[_ASEToken::TOKENR_MESH_FACE])
+			{
+				int startIndex = std::stoi(s[1]) * 3;
+				result.back()->indexList[startIndex] = std::stoi(s[3]);
+				result.back()->indexList[startIndex + 2] = std::stoi(s[3 + 2]);
+				result.back()->indexList[startIndex + 1] = std::stoi(s[3 + 2 + 2]);
+			}
+			else if (s[0] == Token[_ASEToken::TOKENR_MESH_VERTEXNORMAL])
+			{
+				result.back()->vertexList[std::stoi(s[1])].normal = DirectX::XMFLOAT3{ std::stof(s[2]), std::stof(s[3]), std::stof(s[4]) };
+			}
 		}
 	}
 	else
 	{
 		assert(false && "cannot read 3d model object");
 	}
+	return result;
 }
 
 std::vector<std::string> split(std::string& input, char delimiter)
@@ -73,20 +102,23 @@ std::vector<std::string> split(std::string& input, char delimiter)
 	return answer;
 }
 
-std::vector<UINT> ASEToken(std::string& _input)
+std::vector<std::string> ASEToken(std::string& _input)
 {
-	std::vector<UINT> answer;
+	std::vector<std::string> answer;
 	std::string temp = "";
 
 	for (auto& c : _input)
 	{
-		if (c != ' ' && c != '\t' && c != '\r' && c != '\n')
+		if (c != ' ' && c != '\t' && c != '\r' && c != '\n' && c != ':')
 		{
 			temp += c;
 		}
 		else
 		{
-			answer.push_back(temp);
+			if (temp != "")
+			{
+				answer.push_back(temp);
+			}
 			temp = "";
 		}
 	}
