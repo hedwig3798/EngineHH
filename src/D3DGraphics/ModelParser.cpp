@@ -42,46 +42,58 @@ std::vector<Mesh*> AseParser(std::wstring _filePath)
 	std::ifstream file(_filePath);
 
 	std::vector<Mesh*> result;
-
+	std::vector<std::string> s;
 	DirectX::XMMATRIX LTM = DirectX::XMMatrixIdentity();
 
-	int depth = 0;
+	int optimizeSize = 0;
+	int optimizeIndex = 0;
+
+	Mesh* nowMesh = nullptr;
 
 	if (file.is_open())
 	{
 		while (getline(file, line))
 		{
-			std::vector<std::string> s = ASEToken(line);
+			s.clear();
+			ASEToken(line, s);
 
 			if (s[0] == Token[_ASEToken::TOKENR_MESH])
 			{
 				result.push_back(new Mesh());
+				nowMesh = result.back();
+				optimizeIndex = 0;
+				optimizeSize = 0;
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_NUMVERTEX])
 			{
-				result.back()->origianlVertexList = std::vector<VertexT::Data>(std::stoi(s[1]), VertexT::Data());
+				assert(nowMesh && "Ase parser error. no mesh in data");
+				nowMesh->origianlVertexList = std::vector<VertexT::Data>(std::stoi(s[1]), VertexT::Data());
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_NUMFACES])
 			{
-				result.back()->indexList = std::vector<UINT>(std::stoi(s[1]) * 3);
+				assert(nowMesh && "Ase parser error. no mesh in data");
+				optimizeSize = std::stoi(s[1]) * 3;
+				nowMesh->indexList = std::vector<UINT>(optimizeSize);
+				nowMesh->optimizeVertexList = std::vector<VertexT::Data>(optimizeSize);
 				// result.back()->optimizeVertexList = std::vector<VertexT::Data>(std::stoi(s[1]) * 3);
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_VERTEX])
 			{
-				result.back()->origianlVertexList[std::stoi(s[1])].position = DirectX::XMFLOAT3{ std::stof(s[2]), std::stof(s[4]), std::stof(s[3]) };
+				assert(nowMesh && "Ase parser error. no mesh in data");
+				nowMesh->origianlVertexList[std::stoi(s[1])].position = DirectX::XMFLOAT3{ std::stof(s[2]) * 2, std::stof(s[4]) * 2, std::stof(s[3]) * 2 };
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_FACE])
 			{
-				int startIndex = std::stoi(s[1]) * 3;
-				result.back()->indexList[startIndex] = std::stoi(s[3]);
-				result.back()->indexList[startIndex + 2] = std::stoi(s[3 + 2]);
-				result.back()->indexList[startIndex + 1] = std::stoi(s[3 + 2 + 2]);
+// 				int startIndex = std::stoi(s[1]) * 3;
+// 				result.back()->indexList[startIndex] = std::stoi(s[3]);
+// 				result.back()->indexList[startIndex + 2] = std::stoi(s[3 + 2]);
+// 				result.back()->indexList[startIndex + 1] = std::stoi(s[3 + 2 + 2]);
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_VERTEXNORMAL])
 			{
-				int startIndex = std::stoi(s[1]) * 3;
-				VertexT::Data input = { result.back()->origianlVertexList[std::stoi(s[1])].position,  DirectX::XMFLOAT3{ std::stof(s[2]), std::stof(s[3]), std::stof(s[4]) }, {} };
-				result.back()->optimizeVertexList.push_back(input);
+				assert(nowMesh && "Ase parser error. no mesh in data");
+				VertexT::Data input = { nowMesh->origianlVertexList[std::stoi(s[1])].position,  DirectX::XMFLOAT3{ std::stof(s[2]), std::stof(s[3]), std::stof(s[4]) }, {} };
+				nowMesh->optimizeVertexList[optimizeIndex++] = input;
 			}
 		}
 	}
@@ -105,9 +117,8 @@ std::vector<std::string> split(std::string& input, char delimiter)
 	return answer;
 }
 
-std::vector<std::string> ASEToken(std::string& _input)
+void ASEToken(std::string& _input, std::vector<std::string>& _tokens)
 {
-	std::vector<std::string> answer;
 	std::string temp = "";
 
 	for (auto& c : _input)
@@ -120,11 +131,10 @@ std::vector<std::string> ASEToken(std::string& _input)
 		{
 			if (temp != "")
 			{
-				answer.push_back(temp);
+				_tokens.push_back(temp);
 			}
 			temp = "";
 		}
 	}
-	answer.push_back(temp);
-	return answer;
+	_tokens.push_back(temp);
 }

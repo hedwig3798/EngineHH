@@ -14,7 +14,7 @@ DemoObject::DemoObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene, Man
 {
 	std::vector<VertexT::Data> vertexInfo;
 	std::vector<UINT> indexInfo;
-	this->meshies = AseParser(L"../Model/box.ASE");
+	this->meshies = AseParser(L"../Model/genji_max.ASE");
 
 	for (auto& m : this->meshies)
 	{

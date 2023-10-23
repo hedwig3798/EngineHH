@@ -8,5 +8,5 @@ void GetVertexAndIndex(std::vector<VertexT::Data>& _vertexes, std::vector<UINT>&
 std::vector<Mesh*> AseParser(std::wstring _filePath);
 
 std::vector<std::string> split(std::string& input, char delimiter);
-std::vector<std::string> ASEToken(std::string& _input);
+void ASEToken(std::string& _input, std::vector<std::string>& _tokens);
 
