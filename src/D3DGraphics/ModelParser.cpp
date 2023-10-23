@@ -59,15 +59,16 @@ std::vector<Mesh*> AseParser(std::wstring _filePath)
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_NUMVERTEX])
 			{
-				result.back()->vertexList = std::vector<VertexT::Data>(std::stoi(s[1]), VertexT::Data());
+				result.back()->origianlVertexList = std::vector<VertexT::Data>(std::stoi(s[1]), VertexT::Data());
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_NUMFACES])
 			{
 				result.back()->indexList = std::vector<UINT>(std::stoi(s[1]) * 3);
+				// result.back()->optimizeVertexList = std::vector<VertexT::Data>(std::stoi(s[1]) * 3);
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_VERTEX])
 			{
-				result.back()->vertexList[std::stoi(s[1])].position = DirectX::XMFLOAT3{ std::stof(s[2]), std::stof(s[4]), std::stof(s[3]) };
+				result.back()->origianlVertexList[std::stoi(s[1])].position = DirectX::XMFLOAT3{ std::stof(s[2]), std::stof(s[4]), std::stof(s[3]) };
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_FACE])
 			{
@@ -78,7 +79,9 @@ std::vector<Mesh*> AseParser(std::wstring _filePath)
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_VERTEXNORMAL])
 			{
-				result.back()->vertexList[std::stoi(s[1])].normal = DirectX::XMFLOAT3{ std::stof(s[2]), std::stof(s[3]), std::stof(s[4]) };
+				int startIndex = std::stoi(s[1]) * 3;
+				VertexT::Data input = { result.back()->origianlVertexList[std::stoi(s[1])].position,  DirectX::XMFLOAT3{ std::stof(s[2]), std::stof(s[3]), std::stof(s[4]) }, {} };
+				result.back()->optimizeVertexList.push_back(input);
 			}
 		}
 	}

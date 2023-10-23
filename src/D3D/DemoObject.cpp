@@ -23,7 +23,7 @@ DemoObject::DemoObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene, Man
 	dirLights[0].Ambient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
 	dirLights[0].Diffuse = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	dirLights[0].Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
-	dirLights[0].Direction = XMFLOAT3(0.57735f, -0.57735f, 0.57735f);
+	dirLights[0].Direction = XMFLOAT3(1.f, 0.f, 0.f);
 
 	dirLights[1].Ambient = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	dirLights[1].Diffuse = XMFLOAT4(0.20f, 0.20f, 0.20f, 1.0f);

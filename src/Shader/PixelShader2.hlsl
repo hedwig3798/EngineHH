@@ -39,8 +39,8 @@ float4 PS(VertexOut pin) : SV_Target
 		spec    += S;
 	}
 	
-	float4 litColor = ambient + diffuse + spec;
-	litColor = ceil(((diffuse + spec) * 10)/2 ) * litColor;
+	float4 litColor = ambient + diffuse /*+ spec*/;
+	// litColor = ceil(((diffuse + spec) * 10)/2 ) * litColor;
 	litColor.a = pin.material.Diffuse.a;
 	
 
@@ -48,5 +48,5 @@ float4 PS(VertexOut pin) : SV_Target
 	textureColor.a = 1.0f;
 
 	float4 result = litColor; //* textureColor;
-    return result;
+    return litColor;
 }
