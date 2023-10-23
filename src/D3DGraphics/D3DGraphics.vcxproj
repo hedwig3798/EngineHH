@@ -135,9 +135,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ASEFile.h" />
     <ClInclude Include="color.h" />
     <ClInclude Include="DXTKFont.h" />
     <ClInclude Include="GraphicsEngine.h" />
+    <ClInclude Include="Mesh.h" />
     <ClInclude Include="ModelParser.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="pipeline.h" />
@@ -146,6 +148,7 @@
   <ItemGroup>
     <ClCompile Include="DXTKFont.cpp" />
     <ClCompile Include="GraphicsEngine.cpp" />
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="ModelParser.cpp" />
     <ClCompile Include="Vertex.cpp" />
   </ItemGroup>

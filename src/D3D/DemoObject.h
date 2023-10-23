@@ -4,16 +4,12 @@
 class GraphicsEngine;
 class DemoProcess;
 class ManagerSet;
+class Mesh;
 
 class DemoObject
 {
 private:
-	VertexT::Data* vertexes;
-	int vertexesSize;
-	UINT* indexes;
-	int indexesSize;
-
-	PipeLine pipeline;
+	std::vector<Mesh*> meshies;
 
 	GraphicsEngine* graphicsEngine;
 
@@ -25,7 +21,7 @@ private:
 		L"../Shader/PixelShader2.hlsl",
 	};
 
-	std::wstring texturePath = L"../Model/Texture1.dds";
+	std::wstring texturePath = L"../Model/genji_ori.dds";
 
 	Material demoMat;
 	DirectionalLight dirLights[3];

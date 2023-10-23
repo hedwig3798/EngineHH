@@ -3,42 +3,27 @@
 #include "DemoCamera.h"
 #include "ModelParser.h"
 #include "ManagerSet.h"
+#include "Mesh.h"
+
 DemoObject::DemoObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene, ManagerSet* _manager)
 	: graphicsEngine(_graphicsEngine)
 	, scene(_scene)
 	, lightCount(1)
 	, managers(_manager)
+	, meshies{}
 {
 	std::vector<VertexT::Data> vertexInfo;
 	std::vector<UINT> indexInfo;
-	TestParser(vertexInfo, indexInfo, L"../Model/testPolygon.txt");
+	this->meshies = AseParser(L"../Model/genji_max.ASE");
 
-	this->vertexesSize = (int)vertexInfo.size();
-	this->indexesSize = (int)indexInfo.size();
-
-	this->vertexes = new VertexT::Data[this->vertexesSize];
-	for (int i = 0; i < vertexesSize; i++)
+	for (auto& m : this->meshies)
 	{
-		vertexes[i] = vertexInfo[i];
+		m->CreatePipeline(this->graphicsEngine, this->path, this->texturePath);
 	}
-
-	this->indexes = new UINT[this->indexesSize];
-	for (int i = 0; i < indexesSize; i++)
-	{
-		indexes[i] = indexInfo[i];
-	}
-	this->graphicsEngine->CreateTextureData(this->texturePath, &this->pipeline.textureView);
-	this->graphicsEngine->CreateInputLayer(this->pipeline, VertexT::defaultInputLayerDECS, this->path, 3);
-	this->graphicsEngine->CreateVertexBuffer(this->vertexes, this->vertexesSize * VertexT::Size(), &this->pipeline.vertexBuffer);
-	this->graphicsEngine->CreateIndexBuffer(this->indexes, this->indexesSize, &this->pipeline.IndexBuffer);
-	this->graphicsEngine->CreateRasterizerState(&this->pipeline.rasterizerState);
-	this->pipeline.primitiveTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	this->pipeline.vertexStructSize = VertexT::Size();
-
 	dirLights[0].Ambient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
 	dirLights[0].Diffuse = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	dirLights[0].Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
-	dirLights[0].Direction = XMFLOAT3(0.57735f, -0.57735f, 0.57735f);
+	dirLights[0].Direction = XMFLOAT3(1.f, 0.f, 0.f);
 
 	dirLights[1].Ambient = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	dirLights[1].Diffuse = XMFLOAT4(0.20f, 0.20f, 0.20f, 1.0f);
@@ -57,14 +42,15 @@ DemoObject::DemoObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene, Man
 
 DemoObject::~DemoObject()
 {
-	this->pipeline.RelasePipline();
-	delete[] vertexes;
-	delete[] indexes;
+	for (auto& m : this->meshies)
+	{
+		delete m;
+	}
 }
 
 void DemoObject::Update(float _dt)
 {
-	if(this->managers->keyManager->GetKeyState(KEY::N_0) == KEY_STATE::DOWN)
+	if (this->managers->keyManager->GetKeyState(KEY::N_0) == KEY_STATE::DOWN)
 	{
 		lightCount = 0;
 	}
@@ -84,7 +70,6 @@ void DemoObject::Update(float _dt)
 
 void DemoObject::Render(GraphicsEngine* ge)
 {
-	this->graphicsEngine->BindPipeline(pipeline);
 	this->graphicsEngine->BindMatrixParameter(
 		DirectX::XMMatrixIdentity(),
 		this->scene->getCamera()->GetViewTM(),
@@ -94,6 +79,9 @@ void DemoObject::Render(GraphicsEngine* ge)
 
 	this->graphicsEngine->BindLightingParameter(this->dirLights, lightCount, this->scene->getCamera()->GetPosition());
 
-	this->graphicsEngine->SetTexture(0, 1, &this->pipeline.textureView);
-	this->graphicsEngine->RenderByIndex(pipeline, this->indexesSize);
+	// this->graphicsEngine->SetTexture(0, 1, &this->pipeline.textureView);
+	for(auto &m : this->meshies) 
+	{
+		m->Render(graphicsEngine);
+	}
 }
