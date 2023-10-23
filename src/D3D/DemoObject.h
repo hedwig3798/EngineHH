@@ -21,7 +21,7 @@ private:
 		L"../Shader/PixelShader2.hlsl",
 	};
 
-	std::wstring texturePath = L"../Model/Texture1.dds";
+	std::wstring texturePath = L"../Model/BoxTexture.dds";
 
 	Material demoMat;
 	DirectionalLight dirLights[3];

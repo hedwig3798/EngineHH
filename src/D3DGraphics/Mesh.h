@@ -7,8 +7,7 @@ class GraphicsEngine;
 class Mesh
 {
 public:
-	std::vector<VertexT::Data> origianlVertexList;
-	std::vector<VertexT::Data> optimizeVertexList;
+	std::vector<VertexT::Data> vertexList;
 	std::vector<UINT> indexList;
 	PipeLine pipeline;
 

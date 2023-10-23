@@ -45,6 +45,10 @@ std::vector<Mesh*> AseParser(std::wstring _filePath)
 	std::vector<std::string> s;
 	DirectX::XMMATRIX LTM = DirectX::XMMatrixIdentity();
 
+	std::vector<DirectX::XMFLOAT3> vertexData;
+	std::vector<DirectX::XMFLOAT2> textureData;
+	std::vector<UINT> textureIndexData;
+
 	int optimizeSize = 0;
 	int optimizeIndex = 0;
 
@@ -57,6 +61,7 @@ std::vector<Mesh*> AseParser(std::wstring _filePath)
 			s.clear();
 			ASEToken(line, s);
 
+			/// 매쉬 생성
 			if (s[0] == Token[_ASEToken::TOKENR_MESH])
 			{
 				result.push_back(new Mesh());
@@ -64,23 +69,31 @@ std::vector<Mesh*> AseParser(std::wstring _filePath)
 				optimizeIndex = 0;
 				optimizeSize = 0;
 			}
+			/// 정점과 면의 갯수
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_NUMVERTEX])
 			{
-				assert(nowMesh && "Ase parser error. no mesh in data");
-				nowMesh->origianlVertexList = std::vector<VertexT::Data>(std::stoi(s[1]), VertexT::Data());
+				vertexData = std::vector<DirectX::XMFLOAT3>(std::stoi(s[1]));
+			}
+			else if (s[0] == Token[_ASEToken::TOKENR_MESH_NUMTVERTEX])
+			{
+				textureData = std::vector<DirectX::XMFLOAT2>(std::stoi(s[1]));
+			}
+			else if (s[0] == Token[_ASEToken::TOKENR_MESH_NUMTVFACES])
+			{
+				textureIndexData = std::vector<UINT>(std::stoi(s[1]) * 3);
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_NUMFACES])
 			{
 				assert(nowMesh && "Ase parser error. no mesh in data");
 				optimizeSize = std::stoi(s[1]) * 3;
 				nowMesh->indexList = std::vector<UINT>(optimizeSize);
-				nowMesh->optimizeVertexList = std::vector<VertexT::Data>(optimizeSize);
+				nowMesh->vertexList = std::vector<VertexT::Data>(optimizeSize);
 				// result.back()->optimizeVertexList = std::vector<VertexT::Data>(std::stoi(s[1]) * 3);
 			}
+			/// 정점 데이터 파싱
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_VERTEX])
 			{
-				assert(nowMesh && "Ase parser error. no mesh in data");
-				nowMesh->origianlVertexList[std::stoi(s[1])].position = DirectX::XMFLOAT3{ std::stof(s[2]) * 2, std::stof(s[4]) * 2, std::stof(s[3]) * 2 };
+				vertexData[std::stoi(s[1])] = DirectX::XMFLOAT3{ std::stof(s[2]), std::stof(s[4]), std::stof(s[3])};
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_FACE])
 			{
@@ -92,8 +105,25 @@ std::vector<Mesh*> AseParser(std::wstring _filePath)
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_VERTEXNORMAL])
 			{
 				assert(nowMesh && "Ase parser error. no mesh in data");
-				VertexT::Data input = { nowMesh->origianlVertexList[std::stoi(s[1])].position,  DirectX::XMFLOAT3{ std::stof(s[2]), std::stof(s[3]), std::stof(s[4]) }, {} };
-				nowMesh->optimizeVertexList[optimizeIndex++] = input;
+				VertexT::Data input = { 
+					vertexData[std::stoi(s[1])],  
+					DirectX::XMFLOAT3{ std::stof(s[2]), std::stof(s[3]), std::stof(s[4]) },
+					textureData[textureIndexData[optimizeIndex]]
+				};
+				nowMesh->vertexList[optimizeIndex++] = std::move(input);
+			}
+			/// 텍스쳐 데이터 파싱
+			else if (s[0] == Token[_ASEToken::TOKENR_MESH_TVERT])
+			{
+				DirectX::XMFLOAT2 input = { std::stof(s[2]), 1 - std::stof(s[3]) };
+				textureData[std::stoi(s[1])] = std::move(input);
+			}
+			else if (s[0] == Token[TOKENR_MESH_TFACE])
+			{
+				int startIndex = std::stoi(s[1]) * 3;
+				textureIndexData[startIndex] = std::stoi(s[2]);
+				textureIndexData[startIndex + 1] = std::stoi(s[3]);
+				textureIndexData[startIndex + 2] = std::stoi(s[4]);
 			}
 		}
 	}
