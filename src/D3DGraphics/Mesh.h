@@ -11,6 +11,8 @@ public:
 	std::vector<UINT> indexList;
 	PipeLine pipeline;
 
+	Mesh* parent;
+
 	VertexT::Data* vertexes;
 	UINT* indexes;
 

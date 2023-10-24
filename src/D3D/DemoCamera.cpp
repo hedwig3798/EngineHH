@@ -17,7 +17,7 @@ DemoCamera::DemoCamera(float _screenHight, float _screenWidth, ManagerSet* _mana
 {
 	
 	Traslation(DirectX::XMFLOAT3{ -10.0f, 10.0f, 10.0f });
-	Rotate(DirectX::XMFLOAT3{ 0.7, 2.3, 0 });
+	Rotate(DirectX::XMFLOAT3{ 0.7f, 2.3f, 0.f });
 }
 
 DemoCamera::~DemoCamera()
