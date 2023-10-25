@@ -39,6 +39,7 @@ public:
 
 	void Initalize(GraphicsEngine* _graphicsEngine);
 
-	void Localize(GraphicsEngine* _graphicsEngine, DirectX::XMMATRIX _parent);
+	void Localize(GraphicsEngine* _graphicsEngine);
+	void Worldlize(GraphicsEngine* _graphicsEngine);
 };
 

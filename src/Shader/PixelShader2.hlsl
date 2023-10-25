@@ -48,5 +48,5 @@ float4 PS(VertexOut pin) : SV_Target
 	textureColor.a = 1.0f;
 
 	float4 result = litColor; //* textureColor;
-    return test;
+    return litColor;
 }

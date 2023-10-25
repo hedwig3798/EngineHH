@@ -27,6 +27,9 @@ private:
 	DirectionalLight dirLights[3];
 	UINT lightCount;
 	ManagerSet* managers;
+
+	bool isLocal;
+
 public:
 	DemoObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene, ManagerSet* _manager);
 	~DemoObject();

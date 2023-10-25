@@ -11,6 +11,7 @@ DemoObject::DemoObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene, Man
 	, lightCount(1)
 	, managers(_manager)
 	, gemoObject{}
+	, isLocal(false)
 {
 	std::vector<VertexT::Data> vertexInfo;
 	std::vector<UINT> indexInfo;
@@ -63,12 +64,21 @@ void DemoObject::Update(float _dt)
 	{
 		lightCount = 3;
 	}
-	if (this->managers->keyManager->GetKeyState(KEY::N_4) == KEY_STATE::DOWN)
+	if (this->managers->keyManager->GetKeyState(KEY::N_4) == KEY_STATE::DOWN && !isLocal)
 	{
 		for (auto& geo : this->gemoObject)
 		{
-			geo->Localize(graphicsEngine, DirectX::XMMatrixIdentity());
+			geo->Localize(graphicsEngine);
 		}
+		isLocal = true;
+	}
+	if (this->managers->keyManager->GetKeyState(KEY::N_5) == KEY_STATE::DOWN && isLocal)
+	{
+		for (auto& geo : this->gemoObject)
+		{
+			geo->Worldlize(graphicsEngine);
+		}
+		isLocal = false;
 	}
 }
 

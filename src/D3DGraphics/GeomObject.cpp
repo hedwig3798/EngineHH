@@ -65,7 +65,7 @@ void GeomObject::Initalize(GraphicsEngine* _graphicsEngine)
 	}
 }
 
-void GeomObject::Localize(GraphicsEngine* _graphicsEngine, DirectX::XMMATRIX _parent)
+void GeomObject::Localize(GraphicsEngine* _graphicsEngine)
 {
 	for (auto& m : this->meshes)
 	{
@@ -82,12 +82,34 @@ void GeomObject::Localize(GraphicsEngine* _graphicsEngine, DirectX::XMMATRIX _pa
 			DirectX::XMVECTOR positoin = DirectX::XMLoadFloat4(&temp);
 			positoin = DirectX::XMVector4Transform(positoin, invers);
 			DirectX::XMStoreFloat3(&m->vertexes[i].position, positoin);
-			m->vertexes[i].position;
 		}
 	}
 
 	for (auto& c : children)
 	{
-		c->Localize(_graphicsEngine, nodeTM);
+		c->Localize(_graphicsEngine);
+	}
+}
+
+void GeomObject::Worldlize(GraphicsEngine* _graphicsEngine)
+{
+	for (auto& m : this->meshes)
+	{
+		for (int i = 0; i < m->vertexList.size(); i++)
+		{
+			DirectX::XMFLOAT4 temp;
+			temp.x = m->vertexes[i].position.x;
+			temp.y = m->vertexes[i].position.y;
+			temp.z = m->vertexes[i].position.z;
+			temp.w = 1.0f;
+			DirectX::XMVECTOR positoin = DirectX::XMLoadFloat4(&temp);
+			positoin = DirectX::XMVector4Transform(positoin, this->nodeTM);
+			DirectX::XMStoreFloat3(&m->vertexes[i].position, positoin);
+		}
+	}
+
+	for (auto& c : children)
+	{
+		c->Worldlize(_graphicsEngine);
 	}
 }
