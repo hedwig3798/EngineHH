@@ -10,7 +10,7 @@ class GeomObject;
 class DemoObject
 {
 private:
-	std::map<std::string, std::vector<GeomObject*>> gemoObject;
+	std::vector<GeomObject*> gemoObject;
 	GraphicsEngine* graphicsEngine;
 
 	DemoProcess* scene;

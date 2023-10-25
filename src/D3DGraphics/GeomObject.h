@@ -6,17 +6,18 @@ class GraphicsEngine;
 
 class GeomObject
 {
-private:
+public:
 	std::string name;
-	std::string parentname;
-
-	bool isHelper;
 
 	std::vector<Mesh*> meshes;
 
+	GeomObject* parent;
+	std::vector<GeomObject*> children;
+
 public:
+	bool isHelper;
 	DirectX::XMMATRIX nodeTM;
-	DirectX::XMMATRIX inheritTM;
+	DirectX::XMMATRIX localTM;
 
 	std::wstring path[2]
 	{
@@ -28,11 +29,16 @@ public:
 	GeomObject();
 
 	void AddMesh(Mesh* _mesh);
+	void AddChild(GeomObject* _child);
+	void SetParent(GeomObject* _parent);
+
 	std::string GetName() const { return name; }
 	void SetName(std::string val) { name = val; }
 
 	void Render(GraphicsEngine* _graphicsEngine);
 
 	void Initalize(GraphicsEngine* _graphicsEngine);
+
+	void Localize(GraphicsEngine* _graphicsEngine, DirectX::XMMATRIX _parent);
 };
 

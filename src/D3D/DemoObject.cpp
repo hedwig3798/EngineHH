@@ -16,12 +16,9 @@ DemoObject::DemoObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene, Man
 	std::vector<UINT> indexInfo;
 	this->gemoObject = AseParser(L"../Model/03IK-Joe_onlymesh.ASE");
 
-	for(auto& geo :this->gemoObject) 
+	for (auto& g : this->gemoObject)
 	{
-		for(auto& g : geo.second) 
-		{
-			g->Initalize(this->graphicsEngine);
-		}
+		g->Initalize(graphicsEngine);
 	}
 
 	dirLights[0].Ambient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
@@ -66,7 +63,15 @@ void DemoObject::Update(float _dt)
 	{
 		lightCount = 3;
 	}
+	if (this->managers->keyManager->GetKeyState(KEY::N_4) == KEY_STATE::DOWN)
+	{
+		for (auto& geo : this->gemoObject)
+		{
+			geo->Localize(graphicsEngine, DirectX::XMMatrixIdentity());
+		}
+	}
 }
+
 
 void DemoObject::Render(GraphicsEngine* ge)
 {
@@ -78,11 +83,8 @@ void DemoObject::Render(GraphicsEngine* ge)
 	);
 
 	this->graphicsEngine->BindLightingParameter(this->dirLights, lightCount, this->scene->getCamera()->GetPosition());
-	for (auto& geo : this->gemoObject)
+	for(auto& g : this->gemoObject) 
 	{
-		for (auto& g : geo.second)
-		{
-			g->Render(this->graphicsEngine);
-		}
+		g->Render(graphicsEngine);
 	}
 }

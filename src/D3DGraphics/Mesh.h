@@ -20,5 +20,7 @@ public:
 
 	void Render(GraphicsEngine* gp);
 	void CreatePipeline(GraphicsEngine* gp, std::wstring _sPath[], std::wstring _texturePath);
+
+	void ChangeVertex(GraphicsEngine* gp);
 };
 

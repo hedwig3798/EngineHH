@@ -20,6 +20,7 @@ Mesh::~Mesh()
 
 void Mesh::Render(GraphicsEngine* gp)
 {
+	ChangeVertex(gp);
 	gp->BindPipeline(this->pipeline);
 	gp->SetTexture(0, 1, &this->pipeline.textureView);
 	gp->RenderByIndex(this->pipeline, (int)this->indexList.size());
@@ -58,4 +59,10 @@ void Mesh::CreatePipeline(GraphicsEngine* graphicsEngine, std::wstring _sPath[],
 	graphicsEngine->CreateRasterizerState(&this->pipeline.rasterizerState);
 	pipeline.primitiveTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	pipeline.vertexStructSize = VertexT::Size();
+}
+
+void Mesh::ChangeVertex(GraphicsEngine* gp)
+{
+	this->pipeline.vertexBuffer->Release();
+	gp->CreateVertexBuffer(this->vertexes, (UINT)this->vertexList.size() * VertexT::Size(), &this->pipeline.vertexBuffer);
 }
