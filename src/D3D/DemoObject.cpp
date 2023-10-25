@@ -10,20 +10,24 @@ DemoObject::DemoObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene, Man
 	, scene(_scene)
 	, lightCount(1)
 	, managers(_manager)
-	, meshies{}
+	, gemoObject{}
 {
 	std::vector<VertexT::Data> vertexInfo;
 	std::vector<UINT> indexInfo;
-	this->meshies = AseParser(L"../Model/genji_max.ASE");
+	this->gemoObject = AseParser(L"../Model/03IK-Joe_onlymesh.ASE");
 
-	for (auto& m : this->meshies)
+	for(auto& geo :this->gemoObject) 
 	{
-		m->CreatePipeline(this->graphicsEngine, this->path, this->texturePath);
+		for(auto& g : geo.second) 
+		{
+			g->Initalize(this->graphicsEngine);
+		}
 	}
+
 	dirLights[0].Ambient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
 	dirLights[0].Diffuse = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	dirLights[0].Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
-	dirLights[0].Direction = XMFLOAT3(1.f, 0.f, 0.f);
+	dirLights[0].Direction = XMFLOAT3(0.57735f, 0.57735f, 0.57735f);
 
 	dirLights[1].Ambient = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	dirLights[1].Diffuse = XMFLOAT4(0.20f, 0.20f, 0.20f, 1.0f);
@@ -42,10 +46,6 @@ DemoObject::DemoObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene, Man
 
 DemoObject::~DemoObject()
 {
-	for (auto& m : this->meshies)
-	{
-		delete m;
-	}
 }
 
 void DemoObject::Update(float _dt)
@@ -78,10 +78,11 @@ void DemoObject::Render(GraphicsEngine* ge)
 	);
 
 	this->graphicsEngine->BindLightingParameter(this->dirLights, lightCount, this->scene->getCamera()->GetPosition());
-
-	// this->graphicsEngine->SetTexture(0, 1, &this->pipeline.textureView);
-	for(auto &m : this->meshies) 
+	for (auto& geo : this->gemoObject)
 	{
-		m->Render(graphicsEngine);
+		for (auto& g : geo.second)
+		{
+			g->Render(this->graphicsEngine);
+		}
 	}
 }

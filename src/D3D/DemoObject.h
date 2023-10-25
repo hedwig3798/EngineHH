@@ -5,12 +5,12 @@ class GraphicsEngine;
 class DemoProcess;
 class ManagerSet;
 class Mesh;
+class GeomObject;
 
 class DemoObject
 {
 private:
-	std::vector<Mesh*> meshies;
-
+	std::map<std::string, std::vector<GeomObject*>> gemoObject;
 	GraphicsEngine* graphicsEngine;
 
 	DemoProcess* scene;

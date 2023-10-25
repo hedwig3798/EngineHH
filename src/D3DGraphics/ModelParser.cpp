@@ -36,12 +36,12 @@ void GetVertexAndIndex(std::vector<VertexC::Data>& _vertexes, std::vector<UINT>&
 	}
 }
 
-std::vector<Mesh*> AseParser(std::wstring _filePath)
+std::map<std::string, std::vector<GeomObject*>> AseParser(std::wstring _filePath)
 {
 	std::string line;
 	std::ifstream file(_filePath);
 
-	std::vector<Mesh*> result;
+	std::map<std::string, std::vector<GeomObject*>> result;
 	std::vector<std::string> s;
 	DirectX::XMMATRIX LTM = DirectX::XMMatrixIdentity();
 
@@ -53,6 +53,9 @@ std::vector<Mesh*> AseParser(std::wstring _filePath)
 	int optimizeIndex = 0;
 
 	Mesh* nowMesh = nullptr;
+	GeomObject* nowGeom = nullptr;
+
+	std::string parentObj = "";
 
 	if (file.is_open())
 	{
@@ -64,10 +67,54 @@ std::vector<Mesh*> AseParser(std::wstring _filePath)
 			/// 매쉬 생성
 			if (s[0] == Token[_ASEToken::TOKENR_MESH])
 			{
-				result.push_back(new Mesh());
-				nowMesh = result.back();
+				assert(nowGeom && "no geomatry object\n");
+				nowMesh = new Mesh();
+				nowGeom->AddMesh(nowMesh);
 				optimizeIndex = 0;
 				optimizeSize = 0;
+			}
+			else if (s[0] == Token[_ASEToken::TOKENR_GEOMOBJECT])
+			{
+				nowGeom = new GeomObject();
+				parentObj = "";
+			}
+			else if (s[0] == Token[_ASEToken::TOKENR_HELPEROBJECT])
+			{
+				nowGeom = new GeomObject();
+				parentObj = "";
+			}
+			else if (s[0] == Token[_ASEToken::TOKENR_NODE_NAME])
+			{
+				assert(nowGeom && "no geomatry object\n");
+				nowGeom->SetName(s[1]);
+			}
+			else if (s[0] == Token[_ASEToken::TOKENR_NODE_PARENT])
+			{
+				parentObj = s[1];
+			}
+			else if (s[0] == Token[_ASEToken::TOKENR_NODE_TM])
+			{
+				result[parentObj].push_back(nowGeom);
+			}
+			else if (s[0] == Token[_ASEToken::TOKENR_TM_ROW0])
+			{
+				assert(nowGeom && "no geomatry object\n");
+				nowGeom->nodeTM.r[0] = {std::stof(s[1]), std::stof(s[2]), std::stof(s[3]), 0.0f };
+			}
+			else if (s[0] == Token[_ASEToken::TOKENR_TM_ROW1])
+			{
+				assert(nowGeom && "no geomatry object\n");
+				nowGeom->nodeTM.r[1] = { std::stof(s[1]), std::stof(s[2]), std::stof(s[3]), 0.0f };
+			}
+			else if (s[0] == Token[_ASEToken::TOKENR_TM_ROW2])
+			{
+				assert(nowGeom && "no geomatry object\n");
+				nowGeom->nodeTM.r[2] = { std::stof(s[1]), std::stof(s[2]), std::stof(s[3]), 0.0f };
+			}
+			else if (s[0] == Token[_ASEToken::TOKENR_TM_ROW3])
+			{
+				assert(nowGeom && "no geomatry object\n");
+				nowGeom->nodeTM.r[3] = { std::stof(s[1]), std::stof(s[2]), std::stof(s[3]), 1.0f };
 			}
 			/// 정점과 면의 갯수
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_NUMVERTEX])
@@ -93,7 +140,7 @@ std::vector<Mesh*> AseParser(std::wstring _filePath)
 			/// 정점 데이터 파싱
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_VERTEX])
 			{
-				vertexData[std::stoi(s[1])] = DirectX::XMFLOAT3{ std::stof(s[2]), std::stof(s[4]), std::stof(s[3])};
+				vertexData[std::stoi(s[1])] = DirectX::XMFLOAT3{ std::stof(s[2]) / 10, std::stof(s[4]) / 10, std::stof(s[3]) / 10 };
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_FACE])
 			{
@@ -104,11 +151,13 @@ std::vector<Mesh*> AseParser(std::wstring _filePath)
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_VERTEXNORMAL])
 			{
-				assert(nowMesh && "Ase parser error. no mesh in data");
-				VertexT::Data input = { 
-					vertexData[std::stoi(s[1])],  
+				DirectX::XMFLOAT2 textureInput = (textureData.size() == 0) ? DirectX::XMFLOAT2{ 0, 0 } : textureData[textureIndexData[optimizeIndex]];
+				
+					assert(nowMesh && "Ase parser error. no mesh in data");
+				VertexT::Data input = {
+					vertexData[std::stoi(s[1])],
 					DirectX::XMFLOAT3{ std::stof(s[2]), std::stof(s[3]), std::stof(s[4]) },
-					textureData[textureIndexData[optimizeIndex]]
+					textureInput
 				};
 				nowMesh->vertexList[optimizeIndex++] = std::move(input);
 			}

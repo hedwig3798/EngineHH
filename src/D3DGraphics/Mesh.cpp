@@ -7,8 +7,8 @@ Mesh::Mesh()
 	, pipeline{}
 	, vertexes{}
 	, indexes{}
-	, vertexList{}
-	, parent(nullptr)
+	, vertexList{ std::vector<VertexT::Data>() }
+
 {
 }
 
@@ -27,27 +27,31 @@ void Mesh::Render(GraphicsEngine* gp)
 
 void Mesh::CreatePipeline(GraphicsEngine* graphicsEngine, std::wstring _sPath[], std::wstring _texturePath)
 {
-	this->vertexes = new VertexT::Data[(int)this->vertexList.size()];
-	for (int i = 0; i < this->vertexList.size(); i++)
+	int vertexSize = static_cast<int>(this->vertexList.size());
+	this->vertexes = new VertexT::Data[vertexSize];
+	for (int i = 0; i < vertexSize; i++)
 	{
 		this->vertexes[i] = this->vertexList[i];
 	}
 
-// 	this->indexes = new UINT[(int)this->indexList.size()];
-// 	for (int i = 0; i < this->indexList.size(); i++)
-// 	{
-// 		indexes[i] = this->indexList[i];
-// 	}
+	// 	this->indexes = new UINT[(int)this->indexList.size()];
+	// 	for (int i = 0; i < this->indexList.size(); i++)
+	// 	{
+	// 		indexes[i] = this->indexList[i];
+	// 	}
 
-	this->indexes = new UINT[(int)this->vertexList.size()];
-	for (int i = 0; i < (int)this->vertexList.size(); i = i + 3)
+	this->indexes = new UINT[vertexSize];
+	for (int i = 0; i < vertexSize; i += 3)
 	{
-		this->indexes[i] = (UINT)i;
-		this->indexes[i + 1] = (UINT)(i + 2);
-		this->indexes[i + 2] = (UINT)(i + 1);
+		if (i + 2 < vertexSize)
+		{
+			this->indexes[i] = static_cast<UINT>(i);
+			this->indexes[i + 1] = static_cast<UINT>(i + 2);
+			this->indexes[i + 2] = static_cast<UINT>(i + 1);
+		}
 	}
 
-	graphicsEngine->CreateTextureData(_texturePath, &this->pipeline.textureView);
+	// graphicsEngine->CreateTextureData(_texturePath, &this->pipeline.textureView);
 	graphicsEngine->CreateInputLayer(this->pipeline, VertexT::defaultInputLayerDECS, _sPath, 3);
 	graphicsEngine->CreateVertexBuffer(this->vertexes, (UINT)this->vertexList.size() * VertexT::Size(), &this->pipeline.vertexBuffer);
 	graphicsEngine->CreateIndexBuffer(this->indexes, (UINT)this->indexList.size(), &this->pipeline.IndexBuffer);

@@ -11,14 +11,13 @@ public:
 	std::vector<UINT> indexList;
 	PipeLine pipeline;
 
-	Mesh* parent;
-
 	VertexT::Data* vertexes;
 	UINT* indexes;
 
 public:
 	Mesh();
 	~Mesh();
+
 	void Render(GraphicsEngine* gp);
 	void CreatePipeline(GraphicsEngine* gp, std::wstring _sPath[], std::wstring _texturePath);
 };
