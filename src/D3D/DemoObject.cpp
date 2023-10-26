@@ -8,7 +8,7 @@
 DemoObject::DemoObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene, ManagerSet* _manager)
 	: graphicsEngine(_graphicsEngine)
 	, scene(_scene)
-	, lightCount(1)
+	, lightCount(3)
 	, managers(_manager)
 	, gemoObject{}
 	, isLocal(false)
@@ -25,7 +25,7 @@ DemoObject::DemoObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene, Man
 	dirLights[0].Ambient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
 	dirLights[0].Diffuse = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	dirLights[0].Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
-	dirLights[0].Direction = XMFLOAT3(0.57735f, 0.57735f, 0.57735f);
+	dirLights[0].Direction = XMFLOAT3(0.0f, 0.f, -1.f);
 
 	dirLights[1].Ambient = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	dirLights[1].Diffuse = XMFLOAT4(0.20f, 0.20f, 0.20f, 1.0f);
@@ -48,6 +48,12 @@ DemoObject::~DemoObject()
 
 void DemoObject::Update(float _dt)
 {
+
+	for(auto& g : this->gemoObject) 
+	{
+		g->Update(_dt);
+	}
+
 	if (this->managers->keyManager->GetKeyState(KEY::N_0) == KEY_STATE::DOWN)
 	{
 		lightCount = 0;
@@ -78,6 +84,16 @@ void DemoObject::Update(float _dt)
 		for (auto& geo : this->gemoObject)
 		{
 			geo->SetLocal(isLocal);
+		}
+	}
+	if (this->managers->keyManager->GetKeyState(KEY::N_6) == KEY_STATE::HOLD)
+	{
+		for (auto& geo : this->gemoObject)
+		{
+			if (geo->GetName() == "\"Bone01\"")
+			{
+ 				geo->RoateBaseAxis(0, 0, 0.001f);
+			}
 		}
 	}
 }

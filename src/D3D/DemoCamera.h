@@ -22,6 +22,9 @@ private:
 
 	ManagerSet* managers;
 
+
+	float speed;
+
 public:
 
 	DemoCamera(float _screenHight, float _screenWidth, ManagerSet* _managers);

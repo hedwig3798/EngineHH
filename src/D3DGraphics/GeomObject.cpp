@@ -59,25 +59,29 @@ void GeomObject::Initalize(GraphicsEngine* _graphicsEngine)
 
 void GeomObject::Localize(GraphicsEngine* _graphicsEngine)
 {
+	DirectX::XMVECTOR pDet;
+	DirectX::XMMATRIX pInvers;
 	if (this->parent)
 	{
-		DirectX::XMVECTOR pDet = DirectX::XMMatrixDeterminant(this->parent->nodeTM);
-		DirectX::XMMATRIX pInvers = DirectX::XMMatrixInverse(&pDet, this->parent->nodeTM);
+		pDet = DirectX::XMMatrixDeterminant(this->parent->nodeTM);
+		pInvers = DirectX::XMMatrixInverse(&pDet, this->parent->nodeTM);
 
-		localTM = nodeTM * pInvers;
+		this->localTM = this->nodeTM * pInvers;
 	}
 	else
 	{
 		localTM = nodeTM;
+		pInvers = DirectX::XMMatrixIdentity();
 	}
 
+	DirectX::XMMATRIX invers = DirectX::XMMatrixInverse(nullptr, nodeTM);
+	DirectX::XMMATRIX inversTarnspose = DirectX::XMMatrixTranspose(invers);
+
+	DirectX::XMMATRIX inversTarnsposeInvers = DirectX::XMMatrixInverse(nullptr, inversTarnspose);
+// 	invers.r[3].m128_f32[3] = 1.0f;
+// 	tarnspose.r[3].m128_f32[3] = 1.0f;
 	for (auto& m : this->meshes)
 	{
-		DirectX::XMVECTOR det = DirectX::XMMatrixDeterminant(nodeTM);
-		DirectX::XMMATRIX invers = DirectX::XMMatrixInverse(&det, nodeTM);
-		DirectX::XMMATRIX tarnspose = DirectX::XMMatrixTranspose(nodeTM);
-		invers.r[3].m128_f32[3] = 1.0f;
-		tarnspose.r[3].m128_f32[3] = 1.0f;
 		for (int i = 0; i < m->vertexList.size(); i++)
 		{
 			DirectX::XMFLOAT4 meshWorldPosition;
@@ -86,18 +90,19 @@ void GeomObject::Localize(GraphicsEngine* _graphicsEngine)
 			meshWorldPosition.z = m->worldVertexes[i].position.z;
 			meshWorldPosition.w = 1.0f;
 
+			DirectX::XMVECTOR positoin = DirectX::XMLoadFloat4(&meshWorldPosition);
+			positoin = DirectX::XMVector4Transform(positoin, invers);
+			DirectX::XMStoreFloat3(&m->localVertexes[i].position, positoin);
+
+
 			DirectX::XMFLOAT4 meshWorldNoraml;
 			meshWorldNoraml.x = m->worldVertexes[i].normal.x;
 			meshWorldNoraml.y = m->worldVertexes[i].normal.y;
 			meshWorldNoraml.z = m->worldVertexes[i].normal.z;
 			meshWorldNoraml.w = 1.0f;
 
-			DirectX::XMVECTOR positoin = DirectX::XMLoadFloat4(&meshWorldPosition);
-			positoin = DirectX::XMVector4Transform(positoin, invers);
-			DirectX::XMStoreFloat3(&m->localVertexes[i].position, positoin);
-
 			DirectX::XMVECTOR normal = DirectX::XMLoadFloat4(&meshWorldNoraml);
-			normal = DirectX::XMVector3Normalize(DirectX::XMVector4Transform(normal, tarnspose));
+			normal = DirectX::XMVector3Normalize(DirectX::XMVector4Transform(normal, inversTarnsposeInvers));
 			DirectX::XMStoreFloat3(&m->localVertexes[i].normal, normal);
 		}
 	}
@@ -115,7 +120,66 @@ void GeomObject::SetLocal(bool _isLocal)
 	}
 }
 
-void GeomObject::Roate()
+void GeomObject::Update(float _dt)
+{
+	if (this->parent) 
+	{
+		this->nodeTM = this->localTM * this->parent->nodeTM;
+	}
+	else
+	{
+		this->nodeTM = this->localTM;
+	}
+	DirectX::XMVECTOR det = DirectX::XMMatrixDeterminant(nodeTM);
+	DirectX::XMMATRIX invers = DirectX::XMMatrixInverse(&det, nodeTM);
+	DirectX::XMMATRIX inversTarnspose = DirectX::XMMatrixTranspose(invers);
+
+	for (auto& m : this->meshes)
+	{
+		for (int i = 0; i < m->vertexList.size(); i++)
+		{
+			DirectX::XMFLOAT4 meshLocalPosition;
+			meshLocalPosition.x = m->localVertexes[i].position.x;
+			meshLocalPosition.y = m->localVertexes[i].position.y;
+			meshLocalPosition.z = m->localVertexes[i].position.z;
+			meshLocalPosition.w = 1.0f;
+
+			DirectX::XMFLOAT4 meshLocalNoraml;
+			meshLocalNoraml.x = m->localVertexes[i].normal.x;
+			meshLocalNoraml.y = m->localVertexes[i].normal.y;
+			meshLocalNoraml.z = m->localVertexes[i].normal.z;
+			meshLocalNoraml.w = 1.0f;
+
+			DirectX::XMVECTOR positoin = DirectX::XMLoadFloat4(&meshLocalPosition);
+			positoin = DirectX::XMVector4Transform(positoin, nodeTM);
+			DirectX::XMStoreFloat3(&m->worldVertexes[i].position, positoin);
+
+			DirectX::XMVECTOR normal = DirectX::XMLoadFloat4(&meshLocalNoraml);
+			normal = DirectX::XMVector3Normalize(DirectX::XMVector4Transform(normal, inversTarnspose));
+			DirectX::XMStoreFloat3(&m->worldVertexes[i].normal, normal);
+		}
+	}
+
+	for(auto& c : this->children) 
+	{
+		c->Update(_dt);
+	}
+
+}
+
+void GeomObject::Translate(float _x, float _y, float _z)
+{
+	this->localTM *= DirectX::XMMatrixTranslation(_x, _y, _z);
+}
+
+void GeomObject::RoateBaseAxis(float _x, float _y, float _z)
+{
+	this->localTM *= DirectX::XMMatrixRotationX(_x);
+	this->localTM *= DirectX::XMMatrixRotationY(_y);
+	this->localTM *= DirectX::XMMatrixRotationZ(_z);
+}
+
+void GeomObject::Scale(float _x, float _y, float _z)
 {
 
 }

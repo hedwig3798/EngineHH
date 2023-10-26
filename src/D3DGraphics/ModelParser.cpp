@@ -170,7 +170,7 @@ std::vector<GeomObject*> AseParser(std::wstring _filePath)
 				assert(nowMesh && "Ase parser error. no mesh in data");
 				VertexT::Data input = {
 					vertexData[std::stoi(s[1])],
-					DirectX::XMFLOAT3{ std::stof(s[2]), std::stof(s[3]), std::stof(s[4]) },
+					DirectX::XMFLOAT3{ std::stof(s[2]), std::stof(s[4]), std::stof(s[3]) },
 					textureInput
 				};
 				nowMesh->vertexList[optimizeIndex++] = std::move(input);

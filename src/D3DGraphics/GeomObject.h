@@ -41,6 +41,11 @@ public:
 
 	void Localize(GraphicsEngine* _graphicsEngine);
 	void SetLocal(bool _isLocal);
-	void Roate();
+
+	void Update(float _dt);
+
+	void Translate(float _x, float _y, float _z);
+	void RoateBaseAxis(float _x, float _y, float _z);
+	void Scale(float _x, float _y, float _z);
 };
 
