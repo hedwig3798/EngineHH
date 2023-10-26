@@ -5,16 +5,17 @@
 Mesh::Mesh()
 	: indexList{}
 	, pipeline{}
-	, vertexes{}
+	, worldVertexes{}
 	, indexes{}
 	, vertexList{ std::vector<VertexT::Data>() }
-
+	, isLocal(false)
+	, localVertexes(nullptr)
 {
 }
 
 Mesh::~Mesh()
 {
-	delete[] this->vertexes;
+	delete[] this->worldVertexes;
 	delete[] this->indexes;
 }
 
@@ -29,10 +30,11 @@ void Mesh::Render(GraphicsEngine* gp)
 void Mesh::CreatePipeline(GraphicsEngine* graphicsEngine, std::wstring _sPath[], std::wstring _texturePath)
 {
 	int vertexSize = static_cast<int>(this->vertexList.size());
-	this->vertexes = new VertexT::Data[vertexSize];
+	this->worldVertexes = new VertexT::Data[vertexSize];
+	this->localVertexes = new VertexT::Data[vertexSize];
 	for (int i = 0; i < vertexSize; i++)
 	{
-		this->vertexes[i] = this->vertexList[i];
+		this->worldVertexes[i] = this->vertexList[i];
 	}
 
 	// 	this->indexes = new UINT[(int)this->indexList.size()];
@@ -54,7 +56,7 @@ void Mesh::CreatePipeline(GraphicsEngine* graphicsEngine, std::wstring _sPath[],
 
 	// graphicsEngine->CreateTextureData(_texturePath, &this->pipeline.textureView);
 	graphicsEngine->CreateInputLayer(this->pipeline, VertexT::defaultInputLayerDECS, _sPath, 3);
-	graphicsEngine->CreateVertexBuffer(this->vertexes, (UINT)this->vertexList.size() * VertexT::Size(), &this->pipeline.vertexBuffer);
+	graphicsEngine->CreateVertexBuffer(this->worldVertexes, (UINT)this->vertexList.size() * VertexT::Size(), &this->pipeline.vertexBuffer);
 	graphicsEngine->CreateIndexBuffer(this->indexes, (UINT)this->indexList.size(), &this->pipeline.IndexBuffer);
 	graphicsEngine->CreateRasterizerState(&this->pipeline.rasterizerState);
 	pipeline.primitiveTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -64,5 +66,12 @@ void Mesh::CreatePipeline(GraphicsEngine* graphicsEngine, std::wstring _sPath[],
 void Mesh::ChangeVertex(GraphicsEngine* gp)
 {
 	this->pipeline.vertexBuffer->Release();
-	gp->CreateVertexBuffer(this->vertexes, (UINT)this->vertexList.size() * VertexT::Size(), &this->pipeline.vertexBuffer);
+	if (this->isLocal)
+	{
+		gp->CreateVertexBuffer(this->localVertexes, (UINT)this->vertexList.size() * VertexT::Size(), &this->pipeline.vertexBuffer);
+	}
+	else
+	{
+		gp->CreateVertexBuffer(this->worldVertexes, (UINT)this->vertexList.size() * VertexT::Size(), &this->pipeline.vertexBuffer);
+	}
 }

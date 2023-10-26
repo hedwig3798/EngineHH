@@ -11,8 +11,11 @@ public:
 	std::vector<UINT> indexList;
 	PipeLine pipeline;
 
-	VertexT::Data* vertexes;
+	VertexT::Data* worldVertexes;
+	VertexT::Data* localVertexes;
 	UINT* indexes;
+
+	bool isLocal;
 
 public:
 	Mesh();

@@ -66,19 +66,19 @@ void DemoObject::Update(float _dt)
 	}
 	if (this->managers->keyManager->GetKeyState(KEY::N_4) == KEY_STATE::DOWN && !isLocal)
 	{
+		isLocal = true;
 		for (auto& geo : this->gemoObject)
 		{
-			geo->Localize(graphicsEngine);
+			geo->SetLocal(isLocal);
 		}
-		isLocal = true;
 	}
 	if (this->managers->keyManager->GetKeyState(KEY::N_5) == KEY_STATE::DOWN && isLocal)
 	{
+		isLocal = false;
 		for (auto& geo : this->gemoObject)
 		{
-			geo->Worldlize(graphicsEngine);
+			geo->SetLocal(isLocal);
 		}
-		isLocal = false;
 	}
 }
 

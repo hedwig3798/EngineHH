@@ -40,6 +40,7 @@ public:
 	void Initalize(GraphicsEngine* _graphicsEngine);
 
 	void Localize(GraphicsEngine* _graphicsEngine);
-	void Worldlize(GraphicsEngine* _graphicsEngine);
+	void SetLocal(bool _isLocal);
+	void Roate();
 };
 
