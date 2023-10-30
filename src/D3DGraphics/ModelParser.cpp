@@ -158,10 +158,6 @@ std::vector<GeomObject*> AseParser(std::wstring _filePath)
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_FACE])
 			{
-				// 				int startIndex = std::stoi(s[1]) * 3;
-				// 				result.back()->indexList[startIndex] = std::stoi(s[3]);
-				// 				result.back()->indexList[startIndex + 2] = std::stoi(s[3 + 2]);
-				// 				result.back()->indexList[startIndex + 1] = std::stoi(s[3 + 2 + 2]);
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_VERTEXNORMAL])
 			{
@@ -173,7 +169,7 @@ std::vector<GeomObject*> AseParser(std::wstring _filePath)
 					DirectX::XMFLOAT3{ std::stof(s[2]), std::stof(s[4]), std::stof(s[3]) },
 					textureInput
 				};
-				nowMesh->vertexList[optimizeIndex++] = std::move(input);
+				nowMesh->vertexList[optimizeIndex++] = input;
 			}
 			/// 텍스쳐 데이터 파싱
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_TVERT])

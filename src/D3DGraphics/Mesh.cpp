@@ -52,6 +52,10 @@ void Mesh::CreatePipeline(GraphicsEngine* graphicsEngine, std::wstring _sPath[],
 			this->indexes[i + 1] = static_cast<UINT>(i + 2);
 			this->indexes[i + 2] = static_cast<UINT>(i + 1);
 		}
+		else
+		{
+			assert(false);
+		}
 	}
 
 	// graphicsEngine->CreateTextureData(_texturePath, &this->pipeline.textureView);

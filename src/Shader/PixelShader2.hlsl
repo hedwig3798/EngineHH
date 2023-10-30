@@ -27,6 +27,7 @@ float4 PS(VertexOut pin) : SV_Target
 	float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 spec    = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 test = {1.0f, 1.0f, 1.0f, 1.0f};
+	float4 normal = float4(pin.NormalW, 1.0f);
 	// Sum the light contribution from each light source.  
  	[unroll(3)]
  	for(int i = 0; i < g_lightCount; ++i)

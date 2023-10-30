@@ -90,10 +90,7 @@ void DemoObject::Update(float _dt)
 	{
 		for (auto& geo : this->gemoObject)
 		{
-			if (geo->GetName() == "\"Bone01\"")
-			{
- 				geo->RoateBaseAxis(0, 0, 0.001f);
-			}
+ 			geo->RoateBaseAxis(0, 0.001f, 0.0f);
 		}
 	}
 }

@@ -444,10 +444,9 @@ void GraphicsEngine::BindMatrixParameter(DirectX::XMMATRIX _w, DirectX::XMMATRIX
 
 	MatrixBufferType* dataptr = (MatrixBufferType*)mappedResource.pData;
 
-	DirectX::XMVECTOR det = DirectX::XMMatrixDeterminant(_w);
 	dataptr->world = _w;
 	dataptr->wvp = _w * _v * _p;
-	dataptr->worldInversTranspose = DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(&det, _w));
+	dataptr->worldInversTranspose = DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(nullptr, _w));
 
 	dataptr->world = DirectX::XMMatrixTranspose(_w);
 	dataptr->wvp = DirectX::XMMatrixTranspose(dataptr->wvp);
