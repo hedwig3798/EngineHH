@@ -48,7 +48,6 @@ DemoObject::~DemoObject()
 
 void DemoObject::Update(float _dt)
 {
-
 	for(auto& g : this->gemoObject) 
 	{
 		g->Update(_dt);

@@ -34,7 +34,9 @@ void Mesh::CreatePipeline(GraphicsEngine* graphicsEngine, std::wstring _sPath[],
 	this->localVertexes = new VertexT::Data[vertexSize];
 	for (int i = 0; i < vertexSize; i++)
 	{
-		this->worldVertexes[i] = this->vertexList[i];
+		this->worldVertexes[i].position = this->vertexList[i].position;
+		this->localVertexes[i].normal = this->vertexList[i].normal;
+		this->worldVertexes[i].texture = this->vertexList[i].texture;
 	}
 
 	// 	this->indexes = new UINT[(int)this->indexList.size()];

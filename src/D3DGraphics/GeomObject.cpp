@@ -71,7 +71,7 @@ void GeomObject::Localize(GraphicsEngine* _graphicsEngine)
 	}
 
 	DirectX::XMMATRIX invers = DirectX::XMMatrixInverse(nullptr, nodeTM);
-	DirectX::XMMATRIX tarnspose = DirectX::XMMatrixTranspose(nodeTM);
+	DirectX::XMMATRIX inversTarnspose = DirectX::XMMatrixTranspose(invers);
 
 	for (auto& m : this->meshes)
 	{
@@ -82,10 +82,10 @@ void GeomObject::Localize(GraphicsEngine* _graphicsEngine)
 			position = DirectX::XMVector4Transform(position, invers);
 			DirectX::XMStoreFloat3(&m->localVertexes[i].position, position);
 
-			DirectX::XMVECTOR normal = DirectX::XMLoadFloat3(&m->worldVertexes[i].normal);
-// 			normal.m128_f32[3] = 1.0f;
-// 			normal = DirectX::XMVector3Normalize(DirectX::XMVector4Transform(normal, tarnspose));
-			DirectX::XMStoreFloat3(&m->localVertexes[i].normal, normal);
+			DirectX::XMVECTOR normal = DirectX::XMLoadFloat3(&m->localVertexes[i].normal);
+			normal.m128_f32[3] = 1.0f;
+			normal = DirectX::XMVector3Normalize(DirectX::XMVector4Transform(normal, inversTarnspose));
+			DirectX::XMStoreFloat3(&m->worldVertexes[i].normal, normal);
 		}
 	}
 }
