@@ -11,15 +11,19 @@ public:
 	std::vector<UINT> indexList;
 	PipeLine pipeline;
 
-	Mesh* parent;
-
-	VertexT::Data* vertexes;
+	VertexT::Data* worldVertexes;
+	VertexT::Data* localVertexes;
 	UINT* indexes;
+
+	bool isLocal;
 
 public:
 	Mesh();
 	~Mesh();
+
 	void Render(GraphicsEngine* gp);
 	void CreatePipeline(GraphicsEngine* gp, std::wstring _sPath[], std::wstring _texturePath);
+
+	void ChangeVertex(GraphicsEngine* gp);
 };
 

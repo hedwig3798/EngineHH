@@ -8,22 +8,24 @@
 DemoObject::DemoObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene, ManagerSet* _manager)
 	: graphicsEngine(_graphicsEngine)
 	, scene(_scene)
-	, lightCount(1)
+	, lightCount(3)
 	, managers(_manager)
-	, meshies{}
+	, gemoObject{}
+	, isLocal(false)
 {
 	std::vector<VertexT::Data> vertexInfo;
 	std::vector<UINT> indexInfo;
-	this->meshies = AseParser(L"../Model/genji_max.ASE");
+	this->gemoObject = AseParser(L"../Model/03IK-Joe_onlymesh.ASE");
 
-	for (auto& m : this->meshies)
+	for (auto& g : this->gemoObject)
 	{
-		m->CreatePipeline(this->graphicsEngine, this->path, this->texturePath);
+		g->Initalize(graphicsEngine);
 	}
+
 	dirLights[0].Ambient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
 	dirLights[0].Diffuse = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	dirLights[0].Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
-	dirLights[0].Direction = XMFLOAT3(1.f, 0.f, 0.f);
+	dirLights[0].Direction = XMFLOAT3(0.0f, 0.f, -1.f);
 
 	dirLights[1].Ambient = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	dirLights[1].Diffuse = XMFLOAT4(0.20f, 0.20f, 0.20f, 1.0f);
@@ -42,14 +44,15 @@ DemoObject::DemoObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene, Man
 
 DemoObject::~DemoObject()
 {
-	for (auto& m : this->meshies)
-	{
-		delete m;
-	}
 }
 
 void DemoObject::Update(float _dt)
 {
+	for(auto& g : this->gemoObject) 
+	{
+		g->Update(_dt);
+	}
+
 	if (this->managers->keyManager->GetKeyState(KEY::N_0) == KEY_STATE::DOWN)
 	{
 		lightCount = 0;
@@ -66,7 +69,31 @@ void DemoObject::Update(float _dt)
 	{
 		lightCount = 3;
 	}
+	if (this->managers->keyManager->GetKeyState(KEY::N_4) == KEY_STATE::DOWN && !isLocal)
+	{
+		isLocal = true;
+		for (auto& geo : this->gemoObject)
+		{
+			geo->SetLocal(isLocal);
+		}
+	}
+	if (this->managers->keyManager->GetKeyState(KEY::N_5) == KEY_STATE::DOWN && isLocal)
+	{
+		isLocal = false;
+		for (auto& geo : this->gemoObject)
+		{
+			geo->SetLocal(isLocal);
+		}
+	}
+	if (this->managers->keyManager->GetKeyState(KEY::N_6) == KEY_STATE::HOLD)
+	{
+		for (auto& geo : this->gemoObject)
+		{
+ 			geo->RoateBaseAxis(0, 0.001f, 0.0f);
+		}
+	}
 }
+
 
 void DemoObject::Render(GraphicsEngine* ge)
 {
@@ -78,10 +105,8 @@ void DemoObject::Render(GraphicsEngine* ge)
 	);
 
 	this->graphicsEngine->BindLightingParameter(this->dirLights, lightCount, this->scene->getCamera()->GetPosition());
-
-	// this->graphicsEngine->SetTexture(0, 1, &this->pipeline.textureView);
-	for(auto &m : this->meshies) 
+	for(auto& g : this->gemoObject) 
 	{
-		m->Render(graphicsEngine);
+		g->Render(graphicsEngine);
 	}
 }

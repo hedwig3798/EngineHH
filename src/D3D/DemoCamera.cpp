@@ -13,7 +13,7 @@ DemoCamera::DemoCamera(float _screenHight, float _screenWidth, ManagerSet* _mana
 	, dirUp{ 0.0f, 1.0f, 0.0f }
 	, dirRight{ 1.0f, 0.0f, 0.0f }
 	, dirLook{ 0.0f, 0.0f, 1.0f }
-
+	, speed(50.0f)
 {
 	
 	Traslation(DirectX::XMFLOAT3{ -10.0f, 10.0f, 10.0f });
@@ -168,26 +168,26 @@ void DemoCamera::Update()
 
 	if (this->managers->keyManager->GetKeyState(KEY::W) == KEY_STATE::HOLD)
 	{
-		MoveFoward(this->managers->timeManager->GetfDT() * 10);
+		MoveFoward(this->managers->timeManager->GetfDT() * speed);
 	}
 	if (this->managers->keyManager->GetKeyState(KEY::S) == KEY_STATE::HOLD)
 	{
-		MoveFoward(-this->managers->timeManager->GetfDT() * 10);
+		MoveFoward(-this->managers->timeManager->GetfDT() * speed);
 	}
 	if (this->managers->keyManager->GetKeyState(KEY::A) == KEY_STATE::HOLD)
 	{
-		MoveRight(-this->managers->timeManager->GetfDT() * 10);
+		MoveRight(-this->managers->timeManager->GetfDT() * speed);
 	}
 	if (this->managers->keyManager->GetKeyState(KEY::D) == KEY_STATE::HOLD)
 	{
-		MoveRight(this->managers->timeManager->GetfDT() * 10);
+		MoveRight(this->managers->timeManager->GetfDT() * speed);
 	}
 	if (this->managers->keyManager->GetKeyState(KEY::Q) == KEY_STATE::HOLD)
 	{
-		MoveUP(-this->managers->timeManager->GetfDT() * 10);
+		MoveUP(-this->managers->timeManager->GetfDT() * speed);
 	}
 	if (this->managers->keyManager->GetKeyState(KEY::E) == KEY_STATE::HOLD)
 	{
-		MoveUP(this->managers->timeManager->GetfDT() * 10);
+		MoveUP(this->managers->timeManager->GetfDT() * speed);
 	}
 }

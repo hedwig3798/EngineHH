@@ -5,12 +5,12 @@ class GraphicsEngine;
 class DemoProcess;
 class ManagerSet;
 class Mesh;
+class GeomObject;
 
 class DemoObject
 {
 private:
-	std::vector<Mesh*> meshies;
-
+	std::vector<GeomObject*> gemoObject;
 	GraphicsEngine* graphicsEngine;
 
 	DemoProcess* scene;
@@ -27,6 +27,9 @@ private:
 	DirectionalLight dirLights[3];
 	UINT lightCount;
 	ManagerSet* managers;
+
+	bool isLocal;
+
 public:
 	DemoObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene, ManagerSet* _manager);
 	~DemoObject();
