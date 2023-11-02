@@ -14,10 +14,23 @@ public:
 	GeomObject* parent;
 	std::vector<GeomObject*> children;
 
+	bool isAnimation;
+	int nowTick;
+	float oneTick;
+	float accTick;
+	int maxTick;
+	std::vector<std::pair<int, DirectX::XMFLOAT3>> animationPositionTrack;
+	int positionTrackIndex;
+	std::vector<std::pair<int, DirectX::XMFLOAT4>> animationRotateTrack;
+	int rotateTrackIndex;
+
+	// std::vector<std::pair<int, DirectX::XMFLOAT3>> animationScaleData;
+
 public:
 	bool isHelper;
 	DirectX::XMMATRIX nodeTM;
 	DirectX::XMMATRIX localTM;
+	DirectX::XMMATRIX anmationTM;
 
 	std::wstring path[2]
 	{
@@ -47,5 +60,7 @@ public:
 	void Translate(float _x, float _y, float _z);
 	void RoateBaseAxis(float _x, float _y, float _z);
 	void Scale(float _x, float _y, float _z);
+
+	void UpdateAnimation(float _dt);
 };
 

@@ -55,6 +55,11 @@ std::vector<GeomObject*> AseParser(std::wstring _filePath)
 	int optimizeSize = 0;
 	int optimizeIndex = 0;
 
+	int maxTick = 0;
+	int firatFrame = 0;
+	int lastFrame = 0;
+	int tickPerFrame = 0;
+
 	Mesh* nowMesh = nullptr;
 	GeomObject* nowGeom = nullptr;
 
@@ -79,11 +84,20 @@ std::vector<GeomObject*> AseParser(std::wstring _filePath)
 			else if (s[0] == Token[_ASEToken::TOKENR_GEOMOBJECT])
 			{
 				nowGeom = new GeomObject();
+				nowGeom->maxTick = lastFrame * tickPerFrame;
 				parentObj = nullptr;
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_HELPEROBJECT])
 			{
 				nowGeom = new GeomObject();
+				nowGeom->maxTick = lastFrame * tickPerFrame;
+				parentObj = nullptr;
+				nowGeom->isHelper = true;
+			}
+			else if (s[0] == Token[_ASEToken::TOKENR_SHAPEOBJECT])
+			{
+				nowGeom = new GeomObject();
+				nowGeom->maxTick = lastFrame * tickPerFrame;
 				parentObj = nullptr;
 				nowGeom->isHelper = true;
 			}
@@ -183,6 +197,35 @@ std::vector<GeomObject*> AseParser(std::wstring _filePath)
 				textureIndexData[startIndex] = std::stoi(s[2]);
 				textureIndexData[startIndex + 1] = std::stoi(s[3]);
 				textureIndexData[startIndex + 2] = std::stoi(s[4]);
+			}
+			/// 에니메이션 데이터
+			else if (s[0] == Token[_ASEToken::TOKENR_CONTROL_POS_SAMPLE])
+			{
+				assert(nowGeom && "no geomatry object\n");
+				nowGeom->animationPositionTrack.push_back(
+					std::make_pair(
+						std::stoi(s[1]),
+						DirectX::XMFLOAT3{ std::stof(s[2]), std::stof(s[4]), std::stof(s[3]) }
+					)
+				);
+			}
+			else if (s[0] == Token[_ASEToken::TOKENR_CONTROL_ROT_SAMPLE])
+			{
+				assert(nowGeom && "no geomatry object\n");
+				nowGeom->animationRotateTrack.push_back(
+					std::make_pair(
+						std::stoi(s[1]),
+						DirectX::XMFLOAT4{ std::stof(s[2]), std::stof(s[4]), std::stof(s[3]), std::stof(s[5]) }
+					)
+				);
+			}
+			else if (s[0] == Token[_ASEToken::TOKENR_SCENE_LASTFRAME])
+			{
+				lastFrame = std::stoi(s[1]);
+			}
+			else if (s[0] == Token[_ASEToken::TOKENR_SCENE_TICKSPERFRAME])
+			{
+				tickPerFrame = std::stoi(s[1]);
 			}
 		}
 	}

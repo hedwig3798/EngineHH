@@ -9,9 +9,20 @@ GeomObject::GeomObject()
 	, parent(nullptr)
 	, children(std::vector<GeomObject*>())
 	, localTM{}
+	, animationPositionTrack(std::vector<std::pair<int, DirectX::XMFLOAT3>>())
+	, animationRotateTrack(std::vector<std::pair<int, DirectX::XMFLOAT4>>())
+	, anmationTM()
+	, positionTrackIndex(0)
+	, rotateTrackIndex(0)
+	, nowTick(0)
+	, oneTick(1.0f)
+	, accTick(0.0f)
+	, maxTick(0)
+	, isAnimation(false)
 {
 	this->nodeTM = DirectX::XMMatrixIdentity();
 	this->localTM = DirectX::XMMatrixIdentity();
+	this->anmationTM = DirectX::XMMatrixIdentity();
 }
 
 void GeomObject::AddMesh(Mesh* _mesh)
@@ -104,14 +115,17 @@ void GeomObject::SetLocal(bool _isLocal)
 
 void GeomObject::Update(float _dt)
 {
+	UpdateAnimation(_dt);
+
 	if (this->parent)
 	{
-		this->nodeTM = this->localTM * this->parent->nodeTM;
+		this->nodeTM = this->localTM * this->parent->nodeTM * this->anmationTM;
 	}
 	else
 	{
-		this->nodeTM = this->localTM;
+		this->nodeTM = this->localTM * this->anmationTM;;
 	}
+
 	DirectX::XMMATRIX invers = DirectX::XMMatrixInverse(nullptr, nodeTM);
 	DirectX::XMMATRIX inversTarnspose = DirectX::XMMatrixTranspose(invers);
 
@@ -152,5 +166,66 @@ void GeomObject::RoateBaseAxis(float _x, float _y, float _z)
 
 void GeomObject::Scale(float _x, float _y, float _z)
 {
+
+}
+
+void GeomObject::UpdateAnimation(float _dt)
+{
+	this->accTick += _dt / 100;
+	if (this->accTick >= this->oneTick)
+	{
+		this->accTick -= this->oneTick;
+		this->nowTick++;
+		this->isAnimation = true;
+		if (this->nowTick == this->maxTick)
+		{
+			this->nowTick = 0;
+			this->positionTrackIndex = 0;
+			this->rotateTrackIndex = 0;
+		}
+	}
+
+	this->anmationTM = DirectX::XMMatrixIdentity();
+
+
+	if (this->animationRotateTrack.size() > 0)
+	{
+		if (this->rotateTrackIndex + 1 < animationRotateTrack.size())
+		{
+			if (this->animationRotateTrack[this->rotateTrackIndex + 1].first >= this->nowTick)
+			{
+				this->rotateTrackIndex++;
+				if (rotateTrackIndex == animationRotateTrack.size())
+				{
+					this->rotateTrackIndex = this->animationRotateTrack.size() - 1;
+				}
+			}
+		}
+
+		const DirectX::XMFLOAT4& nowRotate = this->animationRotateTrack[this->rotateTrackIndex].second;
+		DirectX::XMFLOAT3 axis = { nowRotate.x, nowRotate.y, nowRotate.z };
+		DirectX::XMVECTOR axisData = DirectX::XMLoadFloat3(&axis);
+		this->anmationTM *= DirectX::XMMatrixRotationAxis(axisData, nowRotate.w);
+	}
+
+// 	if (this->animationPositionTrack.size() > 0)
+// 	{
+// 		if (this->positionTrackIndex < animationPositionTrack.size())
+// 		{
+// 			if (this->animationPositionTrack[this->positionTrackIndex].first >= this->nowTick)
+// 			{
+// 				this->positionTrackIndex++;
+// 				if (positionTrackIndex == animationPositionTrack.size())
+// 				{
+// 					this->positionTrackIndex = this->animationPositionTrack.size() - 1;
+// 				}
+// 			}
+// 		}
+// 		const DirectX::XMFLOAT3& nowPosition = this->animationPositionTrack[this->positionTrackIndex].second;
+// 
+// 		this->anmationTM *= DirectX::XMMatrixTranslation(nowPosition.x, nowPosition.y, nowPosition.z);
+// 	}
+
+
 
 }
