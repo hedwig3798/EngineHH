@@ -26,6 +26,10 @@ public:
 
 	// std::vector<std::pair<int, DirectX::XMFLOAT3>> animationScaleData;
 
+	DirectX::XMVECTOR localScale;
+	DirectX::XMVECTOR localRotate;
+	DirectX::XMVECTOR localPosition;
+
 public:
 	bool isHelper;
 	DirectX::XMMATRIX nodeTM;
