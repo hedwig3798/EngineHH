@@ -24,17 +24,21 @@ public:
 	std::vector<std::pair<int, DirectX::XMFLOAT4>> animationRotateTrack;
 	int rotateTrackIndex;
 
-	// std::vector<std::pair<int, DirectX::XMFLOAT3>> animationScaleData;
-
 	DirectX::XMVECTOR localScale;
 	DirectX::XMVECTOR localRotate;
 	DirectX::XMVECTOR localPosition;
+
+	DirectX::XMVECTOR nodeScale;
+	DirectX::XMVECTOR nodeRotate;
+	DirectX::XMVECTOR nodePosition;
 
 public:
 	bool isHelper;
 	DirectX::XMMATRIX nodeTM;
 	DirectX::XMMATRIX localTM;
-	DirectX::XMMATRIX anmationTM;
+	DirectX::XMMATRIX animationTM;
+
+	bool isNegative;
 
 	std::wstring path[2]
 	{
