@@ -32,6 +32,10 @@ public:
 	DirectX::XMVECTOR nodeRotate;
 	DirectX::XMVECTOR nodePosition;
 
+	DirectX::XMVECTOR fileScale;
+	DirectX::XMVECTOR fileRotate;
+	DirectX::XMVECTOR filePosition;
+
 public:
 	bool isHelper;
 	DirectX::XMMATRIX nodeTM;
@@ -39,6 +43,7 @@ public:
 	DirectX::XMMATRIX animationTM;
 
 	bool isNegative;
+	bool hasNegativeScale;
 
 	std::wstring path[2]
 	{

@@ -124,6 +124,7 @@ std::vector<GeomObject*> AseParser(std::wstring _filePath)
 				}
 
 			}
+			/// TM 데이터
 			else if (s[0] == Token[_ASEToken::TOKENR_TM_ROW0])
 			{
 				assert(nowGeom && "no geomatry object\n");
@@ -143,6 +144,31 @@ std::vector<GeomObject*> AseParser(std::wstring _filePath)
 			{
 				assert(nowGeom && "no geomatry object\n");
 				nowGeom->nodeTM.r[3] = DirectX::XMVECTOR{ std::stof(s[1]), std::stof(s[3]), std::stof(s[2]) , 1.0f };
+			}
+			else if (s[0] == Token[_ASEToken::TOKENR_TM_POS])
+			{
+				assert(nowGeom && "no geomatry object\n");
+				nowGeom->filePosition = DirectX::XMVECTOR{ std::stof(s[1]), std::stof(s[3]), std::stof(s[2]) };
+			}
+			else if (s[0] == Token[_ASEToken::TOKENR_TM_ROTAXIS])
+			{
+				assert(nowGeom && "no geomatry object\n");
+				nowGeom->fileRotate = DirectX::XMVECTOR{ std::stof(s[1]), std::stof(s[3]), std::stof(s[2]) };
+			}
+			else if (s[0] == Token[_ASEToken::TOKENR_TM_ROTANGLE])
+			{
+				assert(nowGeom && "no geomatry object\n");
+				nowGeom->fileRotate.m128_f32[3] = std::stof(s[1]);
+			}
+			else if (s[0] == Token[_ASEToken::TOKENR_TM_SCALEAXIS])
+			{
+				assert(nowGeom && "no geomatry object\n");
+				nowGeom->fileScale = DirectX::XMVECTOR{ std::stof(s[1]), std::stof(s[3]), std::stof(s[2]) };
+			}
+			else if (s[0] == Token[_ASEToken::TOKENR_TM_SCALEAXISANG])
+			{
+				assert(nowGeom && "no geomatry object\n");
+				nowGeom->fileScale.m128_f32[3] = std::stof(s[1]);
 			}
 			/// 정점과 면의 갯수
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_NUMVERTEX])

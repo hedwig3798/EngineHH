@@ -73,15 +73,38 @@ void GeomObject::Initalize(GraphicsEngine* _graphicsEngine)
 
 void GeomObject::Localize(GraphicsEngine* _graphicsEngine)
 {
-	assert(DirectX::XMMatrixDecompose(&this->nodeScale, &this->nodeRotate, &this->nodePosition, this->nodeTM) && "cannot decompose node Tm");
+	assert(DirectX::XMMatrixDecompose(&this->nodeScale, &this->nodeRotate, &this->nodePosition, this->nodeTM) &&
+		"cannot decompose node Tm");
 
 	DirectX::XMMATRIX nodeTemp = this->nodeTM;
+	nodeTemp *= DirectX::XMMatrixInverse(nullptr, DirectX::XMMatrixTranslationFromVector(this->filePosition));
+
+	if (!DirectX::XMVector3Equal(fileRotate, DirectX::XMVectorZero()))
+	{
+		this->fileRotate = DirectX::XMQuaternionRotationAxis(this->fileRotate, this->fileRotate.m128_f32[3]);
+		nodeTemp *= DirectX::XMMatrixInverse(nullptr, DirectX::XMMatrixRotationQuaternion(this->fileRotate));
+	}
+
+	if (nodeTemp.r[1].m128_f32[1] - (-1.0f) < abs(0.1f))
+	{
+		this->hasNegativeScale = true;
+		if (this->parent && this->parent->hasNegativeScale != true)
+		{
+			this->isNegative = true;
+		}
+	}
+	else
+	{
+		if (this->parent && this->parent->hasNegativeScale == true)
+		{
+			this->isNegative = true;
+		}
+	}
 
 	if (this->parent)
 	{
 		DirectX::XMMATRIX pInvers;
 		pInvers = DirectX::XMMatrixInverse(nullptr, this->parent->nodeTM);
-
 		this->localTM = this->nodeTM * pInvers;
 	}
 	else
@@ -89,7 +112,9 @@ void GeomObject::Localize(GraphicsEngine* _graphicsEngine)
 		localTM = nodeTM;
 	}
 
-	assert(DirectX::XMMatrixDecompose(&this->localScale, &this->localRotate, &this->localPosition, this->localTM) && "cannot decompose local Tm");
+	assert(DirectX::XMMatrixDecompose(&this->localScale, &this->localRotate, &this->localPosition, this->localTM) &&
+		"cannot decompose local Tm");
+
 
 	for (size_t i = 0; i < this->animationRotateTrack.size(); i++)
 	{
@@ -213,7 +238,17 @@ void GeomObject::UpdateAnimation(float _dt)
 	}
 
 	this->localTM = DirectX::XMMatrixIdentity();
-	this->localTM *= DirectX::XMMatrixScalingFromVector(this->localScale);
+
+	if (this->isNegative && !this->animationRotateTrack.empty())
+	{
+		this->localTM *= DirectX::XMMatrixScalingFromVector(DirectX::XMVECTOR{ -1.0f, -1.0f, -1.0f });
+	}
+	else
+	{
+		this->localTM *= DirectX::XMMatrixScalingFromVector(this->localScale);
+	}
+
+
 
 	if (!this->animationRotateTrack.empty())
 	{
@@ -240,13 +275,12 @@ void GeomObject::UpdateAnimation(float _dt)
 			float t1 = this->animationRotateTrack[this->rotateTrackIndex - 1].first;
 			float t2 = this->animationRotateTrack[this->rotateTrackIndex].first;
 			float lerp = (nowTick - t1) / (t2 - t1);
-			if (lerp >= 1.0f) 
+			if (lerp >= 1.0f)
 			{
 				lerp = 1.0f;
 			}
 			rotateNowVector = DirectX::XMQuaternionSlerp(rotatePrevVector, rotateNowVector, lerp);
 		}
-
 		this->localTM *= DirectX::XMMatrixRotationQuaternion(rotateNowVector);
 	}
 	else
@@ -276,7 +310,7 @@ void GeomObject::UpdateAnimation(float _dt)
 			float t2 = this->animationPositionTrack[this->positionTrackIndex].first;
 			float lerp = (nowTick - t1) / (t2 - t1);
 
-			if (lerp >= 1.0f) 
+			if (lerp >= 1.0f)
 			{
 				lerp = 1.0f;
 			}
