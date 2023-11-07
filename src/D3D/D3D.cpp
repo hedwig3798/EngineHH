@@ -25,37 +25,61 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
 	WCHAR szAppName[] = L"Game Institute of Technology 2023";
 	HWND hWnd;
 	MSG	msg;
-	WNDCLASS wndclass;
+	WNDCLASSEXW wcex;
 
-	wndclass.style = CS_HREDRAW | CS_VREDRAW;
-	wndclass.lpfnWndProc = WndProc;
-	wndclass.cbClsExtra = 0;
-	wndclass.cbWndExtra = 0;
-	wndclass.hInstance = hInstance;
-	wndclass.hIcon = LoadIcon(hInstance, IDI_APPLICATION);
-	wndclass.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wndclass.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
-	wndclass.lpszMenuName = NULL;
-	wndclass.lpszClassName = szAppName;
+	wcex.cbSize = sizeof(WNDCLASSEX);
+	wcex.style = CS_HREDRAW | CS_VREDRAW;
+	wcex.lpfnWndProc = WndProc;
+	wcex.cbClsExtra = 0;
+	wcex.cbWndExtra = 0;
+	wcex.hInstance = hInstance;
+	wcex.hIcon = LoadIcon(hInstance, IDI_APPLICATION);
+	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
+	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+	wcex.lpszMenuName = nullptr;
+	wcex.lpszClassName = szAppName;
+	wcex.hIconSm = LoadIcon(wcex.hInstance, IDI_APPLICATION);
 
 	// 윈도 클래스 등록
-	RegisterClass(&wndclass);
+	RegisterClassExW(&wcex);
 
 	// 윈도 생성
-	hWnd = CreateWindow(szAppName,
+	hWnd = CreateWindowW(szAppName,
 		szAppName,
 		WS_OVERLAPPEDWINDOW,
-		100, 100, 800, 600,
+		100, 100, 1024, 768,
 		NULL, NULL, hInstance, NULL);
 
 	if (!hWnd) return FALSE;
 
 	// 생성된 윈도를 화면에 표시
-	ShowWindow(hWnd, nCmdShow);
-	UpdateWindow(hWnd);
 
 	DemoProcess* demoProcess = new DemoProcess();
 	demoProcess->Initialize(hWnd);
+
+	ShowWindow(hWnd, SW_SHOWNORMAL);
+	UpdateWindow(hWnd);
+
+	RECT nowRect;
+	DWORD _style = (DWORD)GetWindowLong(hWnd, GWL_STYLE);
+	DWORD _exstyle = (DWORD)GetWindowLong(hWnd, GWL_EXSTYLE);
+
+	GetWindowRect(hWnd, &nowRect);
+
+	RECT newRect;
+	newRect.left = 0;
+	newRect.top = 0;
+	newRect.right = 1024;
+	newRect.bottom = 768;
+
+	AdjustWindowRectEx(&newRect, _style, NULL, _exstyle);
+
+	// 클라이언트 영역보다 윈도 크기는 더 커야 한다. (외곽선, 타이틀 등)
+	int _newWidth = (newRect.right - newRect.left);
+	int _newHeight = (newRect.bottom - newRect.top);
+
+	SetWindowPos(hWnd, HWND_NOTOPMOST, nowRect.left, nowRect.top,
+		_newWidth, _newHeight, SWP_SHOWWINDOW);
 
 	// 메시지 루프
 	while (TRUE)

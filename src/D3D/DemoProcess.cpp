@@ -15,13 +15,13 @@ DemoProcess::DemoProcess()
 	, line(nullptr)
 	, axes(nullptr)
 {
-	this->explain = L"W, S : Ä«¸Þ¶ó Àü¹æ, ÈÄ¹æ ÀÌµ¿\n";
-	this->explain += L"A, D : Ä«¸Þ¶ó ÁÂ¿ì ÀÌµ¿\n";
-	this->explain += L"Q, E : Ä«¸Þ¶ó »óÇÏ ÀÌµ¿\n";
-	this->explain += L"È­»ìÇ¥ : Ä«¸Þ¶ó È¸Àü\n";
-	this->explain += L"¼ýÀÚ 0, 1, 2, 3 : Á¶¸í °¹¼ö ¼³Á¤\n";
-	this->explain += L"¼ýÀÚ 4: ¸ðµç ³ëµå¸¦ ·ÎÄÃ À§Ä¡·Î\n";
-	this->explain += L"¼ýÀÚ 5: ¸ðµç ³ëµå¸¦ ¿ùµå À§Ä¡·Î\n";
+	this->explain = L"W, S : ì¹´ë©”ë¼ ì „ë°©, í›„ë°© ì´ë™\n";
+	this->explain += L"A, D : ì¹´ë©”ë¼ ì¢Œìš° ì´ë™\n";
+	this->explain += L"Q, E : ì¹´ë©”ë¼ ìƒí•˜ ì´ë™\n";
+	this->explain += L"í™”ì‚´í‘œ : ì¹´ë©”ë¼ íšŒì „\n";
+	this->explain += L"ìˆ«ìž 0, 1, 2, 3 : ì¡°ëª… ê°¯ìˆ˜ ì„¤ì •\n";
+	this->explain += L"ìˆ«ìž 4: ëª¨ë“  ë…¸ë“œë¥¼ ë¡œì»¬ ìœ„ì¹˜ë¡œ\n";
+	this->explain += L"ìˆ«ìž 5: ëª¨ë“  ë…¸ë“œë¥¼ ì›”ë“œ ìœ„ì¹˜ë¡œ\n";
 	
 }
 
@@ -81,15 +81,15 @@ void DemoProcess::Render()
 	this->object->Render(graphicsEngine);
 	this->line->Render(graphicsEngine);
 	this->axes->Render(graphicsEngine);
+
 	std::wstring dt = L"DeltaTime : ";
 	dt += std::to_wstring(this->managers->timeManager->GetfDT());
 	dt += L"\n";
 	dt += L"FPS : ";
 	dt += std::to_wstring(1 / this->managers->timeManager->GetfDT());
 
-
 	this->graphicsEngine->WriteText(10, 12, COLORS::White, const_cast<TCHAR*>(this->explain.c_str()));
 	this->graphicsEngine->WriteText(200, 12, COLORS::White, const_cast<TCHAR*>(dt.c_str()));
-
 	this->graphicsEngine->endDraw();
+	int test = 0;
 }
