@@ -22,6 +22,9 @@ private:
 
 	ManagerSet* managers;
 
+
+	float speed;
+
 public:
 
 	DemoCamera(float _screenHight, float _screenWidth, ManagerSet* _managers);
@@ -40,6 +43,8 @@ public:
 
 	const DirectX::XMMATRIX& GetViewTM();
 	const DirectX::XMMATRIX& GetProjectionTM();
+
+	DirectX::XMFLOAT3 GetPosition();
 
 	void Update();
 };

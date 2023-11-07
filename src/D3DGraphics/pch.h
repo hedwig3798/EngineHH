@@ -9,6 +9,7 @@
 #include <tchar.h>
 #include <DirectXPackedVector.h>
 #include <dxgi.h>
+#include <map>
 
 #pragma comment(lib,"d3d11.lib")
 #pragma comment(lib,"d3dcompiler.lib")

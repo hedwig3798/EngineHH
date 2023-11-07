@@ -3,12 +3,12 @@
 #include "Vertex.h"
 #include "color.h"
 #include "pipeline.h"
-
+#include "LightHelper.h"
 /// <summary>
 /// D3D 그래픽 엔진
 /// 작성자 : 김형환
 /// 최초 작성일 : 2023/09/06
-/// 최종 수정일 : 2023/10/10
+/// 최종 수정일 : 2023/10/11
 /// 
 /// Dx11을 이용한 3D 그래픽 엔진
 /// </summary>
@@ -22,8 +22,21 @@ private:
 	struct MatrixBufferType
 	{
 		DirectX::XMMATRIX world;
-		DirectX::XMMATRIX view;
-		DirectX::XMMATRIX proj;
+		DirectX::XMMATRIX wvp;
+		DirectX::XMMATRIX worldInversTranspose;
+		Material material;
+	};
+
+	struct LightingBufferType
+	{
+		// 직사광선 (3종류)
+		DirectionalLight dirLights[3];
+		UINT lightCount;
+		// 카메라의 위치
+		DirectX::XMFLOAT3 eyePosW;
+		// 	float  g_fogStart;
+		// 	float  g_fogRange;
+		// 	float4 g_fogColor;
 	};
 
 	// D3D 기능 레벨
@@ -52,6 +65,7 @@ private:
 	ID3D11DepthStencilView* depthStancilView;
 
 	ID3D11Buffer* matrixBuffer;
+	ID3D11Buffer* lightBuffer;
 
 	bool useMSAA;
 
@@ -81,7 +95,11 @@ public:
 	void CreateIndexBuffer(UINT* _indices, UINT _size, ID3D11Buffer** _indexbuffer);
 	void CreateRasterizerState(ID3D11RasterizerState** _rasterizerState);
 
-	void SetParameter(DirectX::XMMATRIX _w, DirectX::XMMATRIX _v, DirectX::XMMATRIX _p);
+	void CreateMatrixBuffer();
+	void BindMatrixParameter(DirectX::XMMATRIX _w, DirectX::XMMATRIX _v, DirectX::XMMATRIX _p, Material _material);
+
+	void CreateLightingBffer();
+	void BindLightingParameter(DirectionalLight _directionLight[], UINT _lightCount, DirectX::XMFLOAT3 _cameraPos);
 
 	void BindPipeline(PipeLine& _pipline);
 
@@ -89,6 +107,7 @@ public:
 
 	void CreateTextureData(std::wstring _path, ID3D11ShaderResourceView** _resourceView);
 	void SetTexture(UINT _start, UINT _viewNumbers, ID3D11ShaderResourceView** _resourceView);
+
 private:
 	void CreateD3D11DeviceContext();
 	void CreateChainValue();

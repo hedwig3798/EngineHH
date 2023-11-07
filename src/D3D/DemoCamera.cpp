@@ -13,9 +13,11 @@ DemoCamera::DemoCamera(float _screenHight, float _screenWidth, ManagerSet* _mana
 	, dirUp{ 0.0f, 1.0f, 0.0f }
 	, dirRight{ 1.0f, 0.0f, 0.0f }
 	, dirLook{ 0.0f, 0.0f, 1.0f }
-
+	, speed(50.0f)
 {
-
+	
+	Traslation(DirectX::XMFLOAT3{ -10.0f, 10.0f, 10.0f });
+	Rotate(DirectX::XMFLOAT3{ 0.7f, 2.3f, 0.f });
 }
 
 DemoCamera::~DemoCamera()
@@ -38,8 +40,8 @@ void DemoCamera::AddFOV(float _value)
 /// <param name="_value">각 축에 따른 회전 각</param>
 void DemoCamera::Rotate(DirectX::XMFLOAT3 _value)
 {
-	this->rotation.x += _value.x;
-	this->rotation.y += _value.y;
+	RotateUp(_value.x);
+	RotateRight(_value.y);
 	this->rotation.z += _value.z;
 }
 
@@ -137,6 +139,11 @@ const DirectX::XMMATRIX& DemoCamera::GetProjectionTM()
 	return this->projectionTM = DirectX::XMMatrixPerspectiveFovLH(this->FOV, this->screenWidth / this->screenHight, 1, 1000);;
 }
 
+DirectX::XMFLOAT3 DemoCamera::GetPosition()
+{
+	return position;
+}
+
 /// <summary>
 /// 카메라의 이동
 /// </summary>
@@ -161,26 +168,26 @@ void DemoCamera::Update()
 
 	if (this->managers->keyManager->GetKeyState(KEY::W) == KEY_STATE::HOLD)
 	{
-		MoveFoward(this->managers->timeManager->GetfDT() * 10);
+		MoveFoward(this->managers->timeManager->GetfDT() * speed);
 	}
 	if (this->managers->keyManager->GetKeyState(KEY::S) == KEY_STATE::HOLD)
 	{
-		MoveFoward(-this->managers->timeManager->GetfDT() * 10);
+		MoveFoward(-this->managers->timeManager->GetfDT() * speed);
 	}
 	if (this->managers->keyManager->GetKeyState(KEY::A) == KEY_STATE::HOLD)
 	{
-		MoveRight(-this->managers->timeManager->GetfDT() * 10);
+		MoveRight(-this->managers->timeManager->GetfDT() * speed);
 	}
 	if (this->managers->keyManager->GetKeyState(KEY::D) == KEY_STATE::HOLD)
 	{
-		MoveRight(this->managers->timeManager->GetfDT() * 10);
+		MoveRight(this->managers->timeManager->GetfDT() * speed);
 	}
 	if (this->managers->keyManager->GetKeyState(KEY::Q) == KEY_STATE::HOLD)
 	{
-		MoveUP(-this->managers->timeManager->GetfDT() * 10);
+		MoveUP(-this->managers->timeManager->GetfDT() * speed);
 	}
 	if (this->managers->keyManager->GetKeyState(KEY::E) == KEY_STATE::HOLD)
 	{
-		MoveUP(this->managers->timeManager->GetfDT() * 10);
+		MoveUP(this->managers->timeManager->GetfDT() * speed);
 	}
 }

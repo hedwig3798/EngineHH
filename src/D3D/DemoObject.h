@@ -3,17 +3,14 @@
 
 class GraphicsEngine;
 class DemoProcess;
+class ManagerSet;
+class Mesh;
+class GeomObject;
 
 class DemoObject
 {
 private:
-	VertexT::Data* vertexes;
-	int vertexesSize;
-	UINT* indexes;
-	int indexesSize;
-
-	PipeLine pipeline;
-
+	std::vector<GeomObject*> gemoObject;
 	GraphicsEngine* graphicsEngine;
 
 	DemoProcess* scene;
@@ -24,10 +21,17 @@ private:
 		L"../Shader/PixelShader2.hlsl",
 	};
 
-	std::wstring texturePath = L"../Model/Texture1.dds";
+	std::wstring texturePath = L"../Model/genji_ori.dds";
+
+	Material demoMat;
+	DirectionalLight dirLights[3];
+	UINT lightCount;
+	ManagerSet* managers;
+
+	bool isLocal;
 
 public:
-	DemoObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene);
+	DemoObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene, ManagerSet* _manager);
 	~DemoObject();
 
 	void Update(float _dt);

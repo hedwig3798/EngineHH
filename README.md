@@ -1,5 +1,5 @@
 # EngineHH   
-게임 엔진 및 그래픽 엔진을 제작하면서 공부하기 위한 레포지토리 입니다.    
+EngineH 과 다르게 3D 게임 제작을 위한 게임 엔진 및 그래픽 엔진을 제작하면서 공부하기 위한 레포지토리 입니다.    
 공부 목적의 코드이므로 주석이 많이 있습니다.   
 최종적으로 게임 개발에 사용 할 수 있는 lib를 만들고 이를 이용한 플랫포머 게임을 만드는 것이 목표입니다.   
 자세한 내용은 notion을 참고해 주세요!   
@@ -11,5 +11,6 @@ DirectX 11
 ---
 ### 데모
 최종 작성일 2023/10/10    
-![image](https://github.com/hedwig3798/EngineHH/assets/71327618/407f799a-c7cb-4d23-aa8d-b060cf17b59b)
+![image](https://github.com/hedwig3798/EngineHH/assets/71327618/a9d0c6b7-b7ad-46e5-aea0-0d8596a3f349)
+
 

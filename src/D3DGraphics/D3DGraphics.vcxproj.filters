@@ -13,6 +13,15 @@
     <Filter Include="Writer">
       <UniqueIdentifier>{bbbcd0d6-414d-4b48-b85d-41d8304130ef}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{d603e31c-8d7e-4c96-b01e-65051adb2c9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mesh">
+      <UniqueIdentifier>{3dc7ed7d-f45f-4ca5-9363-6594c809bf9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Parser">
+      <UniqueIdentifier>{0e2b2bea-c49a-46da-adcb-b048648df311}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GraphicsEngine.cpp">
@@ -21,9 +30,17 @@
     <ClCompile Include="Vertex.cpp">
       <Filter>Vertex</Filter>
     </ClCompile>
-    <ClCompile Include="ModelParser.cpp" />
     <ClCompile Include="DXTKFont.cpp">
       <Filter>Writer</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelParser.cpp">
+      <Filter>Parser</Filter>
+    </ClCompile>
+    <ClCompile Include="GeomObject.cpp">
+      <Filter>Mesh</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -38,15 +55,35 @@
       <Filter>Color</Filter>
     </ClInclude>
     <ClInclude Include="pipeline.h" />
-    <ClInclude Include="ModelParser.h" />
     <ClInclude Include="DXTKFont.h">
       <Filter>Writer</Filter>
     </ClInclude>
+    <ClInclude Include="ASEFile.h" />
+    <ClInclude Include="Mesh.h">
+      <Filter>Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelParser.h">
+      <Filter>Parser</Filter>
+    </ClInclude>
+    <ClInclude Include="GeomObject.h">
+      <Filter>Mesh</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\Shader\PixelShader.hlsl" />
-    <FxCompile Include="..\Shader\VertexShader.hlsl" />
-    <FxCompile Include="..\Shader\PixelShader2.hlsl" />
-    <FxCompile Include="..\Shader\VertexShader2.hlsl" />
+    <FxCompile Include="..\Shader\PixelShader.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Shader\PixelShader2.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Shader\VertexShader.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Shader\VertexShader2.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Shader\LightHelper.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

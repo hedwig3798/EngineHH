@@ -3,6 +3,7 @@
 #include "DXTKFont.h"
 #include "DirectXTex.h"
 #include "DDSTextureLoader.h"
+#include "LightHelper.h"
 
 GraphicsEngine::GraphicsEngine()
 	: featureLevel{}
@@ -19,6 +20,7 @@ GraphicsEngine::GraphicsEngine()
 	, writerDSS(nullptr)
 	, writerRS(nullptr)
 	, writer(nullptr)
+	, lightBuffer(nullptr)
 {
 }
 
@@ -38,9 +40,9 @@ GraphicsEngine::~GraphicsEngine()
 }
 
 /// <summary>
-/// ±×·¡ÇÈ ¿£Áø ÃÊ±âÈ­
+/// ê·¸ë˜í”½ ì—”ì§„ ì´ˆê¸°í™”
 /// </summary>
-/// <param name="_hwnd">À©µµ¿ì ÇÚµé</param>
+/// <param name="_hwnd">ìœˆë„ìš° í•¸ë“¤</param>
 void GraphicsEngine::Initialize(HWND _hwnd)
 {
 	this->hwnd = _hwnd;
@@ -52,10 +54,12 @@ void GraphicsEngine::Initialize(HWND _hwnd)
 	CreateViewport();
 	BindView();
 	CreateWriter();
+	CreateMatrixBuffer();
+	CreateLightingBffer();
 }
 
 /// <summary>
-/// È­¸éÀ» Æ¯Á¤ »öÀ¸·Î ÃÊ±âÈ­
+/// í™”ë©´ì„ íŠ¹ì • ìƒ‰ìœ¼ë¡œ ì´ˆê¸°í™”
 /// </summary>
 void GraphicsEngine::RenderClearView()
 {
@@ -64,7 +68,7 @@ void GraphicsEngine::RenderClearView()
 }
 
 /// <summary>
-/// ÀÓ½Ã ¿ÀºêÁ§Æ® ·»´õ
+/// ì„ì‹œ ì˜¤ë¸Œì íŠ¸ ë Œë”
 /// </summary>
 void GraphicsEngine::RenderTestThing(PipeLine& _pipline)
 {
@@ -78,12 +82,12 @@ void GraphicsEngine::RenderByIndex(PipeLine& _pipline, int _indexSize)
 }
 
 /// <summary>
-/// D3D11 µğ¹ÙÀÌ½º¿Í µğ¹ÙÀÌ½º ÄÁÅØ½ºÆ® »ı¼º
+/// D3D11 ë””ë°”ì´ìŠ¤ì™€ ë””ë°”ì´ìŠ¤ ì»¨í…ìŠ¤íŠ¸ ìƒì„±
 /// </summary>
 void GraphicsEngine::CreateD3D11DeviceContext()
 {
 	HRESULT hr;
-	// D3D11 µğ¹ÙÀÌ½º »ı¼º
+	// D3D11 ë””ë°”ì´ìŠ¤ ìƒì„±
 	hr = D3D11CreateDevice(
 		0,
 		D3D_DRIVER_TYPE_HARDWARE,
@@ -100,20 +104,20 @@ void GraphicsEngine::CreateD3D11DeviceContext()
 }
 
 /// <summary>
-/// ±³È¯ »ç½½ ±¸Á¶Ã¼ÀÇ »ı¼º
+/// êµí™˜ ì‚¬ìŠ¬ êµ¬ì¡°ì²´ì˜ ìƒì„±
 /// </summary>
 void GraphicsEngine::CreateChainValue()
 {
 	RECT windowSize;
 	assert(GetWindowRect(hwnd, &windowSize) && "cannot get window rectangle");
 
-	// ÇÏµå¿ş¾î°¡ 4X MSAA Ç°Áú ¼öÁØÀ» Áö¿øÇÏ´ÂÁö, Áö¿øÇÏÁö ¾Ê´Ù¸é Á¾·á
+	// í•˜ë“œì›¨ì–´ê°€ 4X MSAA í’ˆì§ˆ ìˆ˜ì¤€ì„ ì§€ì›í•˜ëŠ”ì§€, ì§€ì›í•˜ì§€ ì•Šë‹¤ë©´ ì¢…ë£Œ
 	HRESULT hr;
 	hr = d3d11Device->CheckMultisampleQualityLevels(
 		DXGI_FORMAT_R8G8B8A8_UNORM, 4, &this->m4xMsaaQuality);
 	assert(m4xMsaaQuality > 0);
 
-	// ½º¿Ò  Ã¼ÀÎ ±¸Á¶Ã¼
+	// ìŠ¤ì™‘  ì²´ì¸ êµ¬ì¡°ì²´
 	DXGI_SWAP_CHAIN_DESC chainDesc = {};
 
 	chainDesc.BufferDesc.Width = windowSize.right - windowSize.left;
@@ -142,46 +146,46 @@ void GraphicsEngine::CreateChainValue()
 	chainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	chainDesc.Flags = 0;
 
-	// µğ¹ÙÀÌ½º ÀÎÅÍÆäÀÌ½º °¡Á®¿À±â
+	// ë””ë°”ì´ìŠ¤ ì¸í„°í˜ì´ìŠ¤ ê°€ì ¸ì˜¤ê¸°
 	IDXGIDevice* dxgiDevice = nullptr;
 	hr = (d3d11Device->QueryInterface(
 		__uuidof(IDXGIDevice),
 		reinterpret_cast<void**>(&dxgiDevice)));
 	assert(hr == S_OK && "cannot get DXGI device");
 
-	// µğ¹ÙÀÌ½º ¾îµªÅÍ °¡Á®¿À±â
+	// ë””ë°”ì´ìŠ¤ ì–´ëí„° ê°€ì ¸ì˜¤ê¸°
 	IDXGIAdapter* dxgiAdapter = nullptr;
 	hr = (dxgiDevice->GetParent(
 		__uuidof(IDXGIAdapter),
 		reinterpret_cast<void**>(&dxgiAdapter)));
 	assert(hr == S_OK && "cannot get DXGI adapter");
 
-	// µğ¹ÙÀÌ½º ÆåÅä¸® °¡Á®¿À±â
+	// ë””ë°”ì´ìŠ¤ í™í† ë¦¬ ê°€ì ¸ì˜¤ê¸°
 	IDXGIFactory* dxgiFactory = nullptr;
 	hr = (dxgiAdapter->GetParent(
 		__uuidof(IDXGIFactory),
 		reinterpret_cast<void**>(&dxgiFactory)));
 	assert(hr == S_OK && "cannot get DXGI factory");
 
-	// ½º¿Ò Ã¼ÀÎ »ı¼º
+	// ìŠ¤ì™‘ ì²´ì¸ ìƒì„±
 	hr = (dxgiFactory->CreateSwapChain(this->d3d11Device, &chainDesc, &this->swapChain));
 	assert(hr == S_OK && "cannot create swapChain");
 
-	// »ç¿ëÇÑ ÀÎÅÍÆäÀÌ½º Á¦°Å
+	// ì‚¬ìš©í•œ ì¸í„°í˜ì´ìŠ¤ ì œê±°
 	dxgiDevice->Release();
 	dxgiAdapter->Release();
 	dxgiFactory->Release();
 }
 
 /// <summary>
-/// ·»´õ ºä »ı¼º
+/// ë Œë” ë·° ìƒì„±
 /// </summary>
 void GraphicsEngine::CreateRenderTargetView()
 {
 	ID3D11Texture2D* backBuffer = nullptr;
 	HRESULT hr;
 
-	// ½º¿Ò Ã¼ÀÎ¿¡¼­ ¹öÆÛ¸¦ °¡Á®¿È
+	// ìŠ¤ì™‘ ì²´ì¸ì—ì„œ ë²„í¼ë¥¼ ê°€ì ¸ì˜´
 	hr = this->swapChain->GetBuffer(
 		0,
 		__uuidof(ID3D11Texture2D),
@@ -189,7 +193,7 @@ void GraphicsEngine::CreateRenderTargetView()
 	);
 	assert(hr == S_OK && "cannot get buffer");
 
-	// ·»´õ Å¸°Ù ºä »ı¼º
+	// ë Œë” íƒ€ê²Ÿ ë·° ìƒì„±
 	hr = this->d3d11Device->CreateRenderTargetView(
 		backBuffer,
 		0,
@@ -197,13 +201,13 @@ void GraphicsEngine::CreateRenderTargetView()
 	);
 	assert(hr == S_OK && "cannot create RenderTargetView");
 
-	// »ç¿ëÇÑ ¹é ¹öÆÛ ÀÎÅÍÆäÀÌ½º ¹İÈ¯	
+	// ì‚¬ìš©í•œ ë°± ë²„í¼ ì¸í„°í˜ì´ìŠ¤ ë°˜í™˜	
 	hr = backBuffer->Release();
 	assert(hr == S_OK && "cannot release backBuffer");
 }
 
 /// <summary>
-/// ±íÀÌ ½ºÅÙ½Ç ¹öÆÛ¿Í ºä »ı¼º »ı¼º
+/// ê¹Šì´ ìŠ¤í…ì‹¤ ë²„í¼ì™€ ë·° ìƒì„± ìƒì„±
 /// </summary>
 void GraphicsEngine::CreateDepthStencilBufferAndView()
 {
@@ -212,7 +216,7 @@ void GraphicsEngine::CreateDepthStencilBufferAndView()
 	RECT windowSize;
 	assert(GetWindowRect(hwnd, &windowSize) && "cannot get window rectangle");
 
-	// ±¸Á¶Ã¼ °ª Ã¤¿ì±â
+	// êµ¬ì¡°ì²´ ê°’ ì±„ìš°ê¸°
 	D3D11_TEXTURE2D_DESC depthStancilDesc = {};
 	depthStancilDesc.Width = windowSize.right - windowSize.left;
 	depthStancilDesc.Height = windowSize.bottom - windowSize.top;
@@ -236,7 +240,7 @@ void GraphicsEngine::CreateDepthStencilBufferAndView()
 	depthStancilDesc.CPUAccessFlags = 0;
 	depthStancilDesc.MiscFlags = 0;
 
-	// ±íÀÌ ½ºÅÙ½Ç ¹öÆÛ »ı¼º
+	// ê¹Šì´ ìŠ¤í…ì‹¤ ë²„í¼ ìƒì„±
 	hr = this->d3d11Device->CreateTexture2D(
 		&depthStancilDesc,
 		nullptr,
@@ -244,7 +248,7 @@ void GraphicsEngine::CreateDepthStencilBufferAndView()
 	);
 	assert(hr == S_OK && "cannot create depth-stancil buffer");
 
-	// ±íÀÌ ½ºÅÙ½Ç ºä »ı¼º
+	// ê¹Šì´ ìŠ¤í…ì‹¤ ë·° ìƒì„±
 	hr = d3d11Device->CreateDepthStencilView(
 		this->depthStancilBuffer,
 		0,
@@ -254,15 +258,16 @@ void GraphicsEngine::CreateDepthStencilBufferAndView()
 }
 
 /// <summary>
-/// ºäÆ÷Æ® »ı¼º
+/// ë·°í¬íŠ¸ ìƒì„±
 /// </summary>
 void GraphicsEngine::CreateViewport()
 {
 	RECT windowSize;
 	assert(GetWindowRect(hwnd, &windowSize) && "cannot get window rectangle");
-	D3D11_VIEWPORT vp;
-	vp.Width = static_cast<float>(windowSize.right - windowSize.left);
-	vp.Height = static_cast<float>(windowSize.bottom - windowSize.top);
+
+	D3D11_VIEWPORT vp = {};
+	vp.Width = static_cast<FLOAT>(windowSize.right - windowSize.left);
+	vp.Height = static_cast<FLOAT>(windowSize.bottom - windowSize.top);
 	vp.MinDepth = 0;
 	vp.MaxDepth = 1;
 	vp.TopLeftX = 0;
@@ -272,11 +277,11 @@ void GraphicsEngine::CreateViewport()
 }
 
 /// <summary>
-/// »ı¼ºµÈ ºä¸¦ ·»´õ¸µ ÆÄÀÌÇÁ¶óÀÎ¿¡ ¹­´Â´Ù.
+/// ìƒì„±ëœ ë·°ë¥¼ ë Œë”ë§ íŒŒì´í”„ë¼ì¸ì— ë¬¶ëŠ”ë‹¤.
 /// </summary>
 void GraphicsEngine::BindView()
 {
-	// ºä¸¦ ·»´õ¸µ ÆÄÀÌÇÁ¶óÀÎ¿¡ ¹ÙÀÎµå
+	// ë·°ë¥¼ ë Œë”ë§ íŒŒì´í”„ë¼ì¸ì— ë°”ì¸ë“œ
 	this->d3d11DeviceContext->OMSetRenderTargets(
 		1,
 		&this->renderTargetView,
@@ -286,15 +291,15 @@ void GraphicsEngine::BindView()
 
 void GraphicsEngine::CreateWriter()
 {
-	// ÆùÆ®¿ë DSS
+	// í°íŠ¸ìš© DSS
 	D3D11_DEPTH_STENCIL_DESC equalsDesc;
 	ZeroMemory(&equalsDesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
 	equalsDesc.DepthEnable = true;
-	equalsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;		// ±íÀÌ¹öÆÛ¿¡ ¾²±â´Â ÇÑ´Ù
+	equalsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;		// ê¹Šì´ë²„í¼ì— ì“°ê¸°ëŠ” í•œë‹¤
 	equalsDesc.DepthFunc = D3D11_COMPARISON_LESS;
 	this->d3d11Device->CreateDepthStencilState(&equalsDesc, &writerDSS);
 
-	// Render State Áß Rasterizer State
+	// Render State ì¤‘ Rasterizer State
 	D3D11_RASTERIZER_DESC solidDesc;
 	ZeroMemory(&solidDesc, sizeof(D3D11_RASTERIZER_DESC));
 	solidDesc.FillMode = D3D11_FILL_SOLID;
@@ -308,7 +313,7 @@ void GraphicsEngine::CreateWriter()
 }
 
 /// <summary>
-/// Input Layer¸¦ »ı¼ºÇÑ´Ù
+/// Input Layerë¥¼ ìƒì„±í•œë‹¤
 /// </summary>
 void GraphicsEngine::CreateInputLayer(PipeLine& _pipline, D3D11_INPUT_ELEMENT_DESC* _defaultInputLayerDECS, std::wstring _path[], UINT _numberOfElement)
 {
@@ -318,28 +323,28 @@ void GraphicsEngine::CreateInputLayer(PipeLine& _pipline, D3D11_INPUT_ELEMENT_DE
 	ID3DBlob* psByteCode;
 	ID3DBlob* compileError;
 
-	// TODO : »ó´ë°æ·Î·Î ¹Ù²Ù±â
+	// TODO : ìƒëŒ€ê²½ë¡œë¡œ ë°”ê¾¸ê¸°
 	hr = D3DCompileFromFile(
 		_path[0].c_str(),
 		nullptr,
 		D3D_COMPILE_STANDARD_FILE_INCLUDE,
 		"VS",
 		"vs_5_0",
-		D3DCOMPILE_DEBUG,
+		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
 		0,
 		&vsByteCode,
 		&compileError
 	);
 	assert(SUCCEEDED(hr) && "cannot Compile Vertex Shader");
 
-	// TODO : »ó´ë°æ·Î·Î ¹Ù²Ù±â
+	// TODO : ìƒëŒ€ê²½ë¡œë¡œ ë°”ê¾¸ê¸°
 	hr = D3DCompileFromFile(
 		_path[1].c_str(),
 		nullptr,
 		D3D_COMPILE_STANDARD_FILE_INCLUDE,
 		"PS",
 		"ps_5_0",
-		D3DCOMPILE_DEBUG,
+		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
 		0,
 		&psByteCode,
 		&compileError
@@ -356,31 +361,21 @@ void GraphicsEngine::CreateInputLayer(PipeLine& _pipline, D3D11_INPUT_ELEMENT_DE
 		vsByteCode->GetBufferSize(),
 		&_pipline.inputLayout
 	);
-	assert(SUCCEEDED(hr) && "cannot create inpur layer");
-
-	D3D11_BUFFER_DESC mbd = {};
-	mbd.Usage = D3D11_USAGE_DYNAMIC;
-	mbd.ByteWidth = sizeof(MatrixBufferType);
-	mbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	mbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	mbd.MiscFlags = 0;
-	mbd.StructureByteStride = 0;
-
-	this->d3d11Device->CreateBuffer(&mbd, nullptr, &matrixBuffer);
+	assert(SUCCEEDED(hr) && "cannot create input layer");
 
 	vsByteCode->Release();
 	psByteCode->Release();
 }
 
 /// <summary>
-/// ·»´õ Å¸°Ù ºä ÃÊ±âÈ­
+/// ë Œë” íƒ€ê²Ÿ ë·° ì´ˆê¸°í™”
 /// </summary>
 void GraphicsEngine::ClearRenderTargetView()
 {
-	// ÀÓ½Ã »ö ( R G B A )
+	// ì„ì‹œ ìƒ‰ ( R G B A )
 	float bgRed[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
-	// ·»´õ Å¸°ÙÀ» ÁöÁ¤ÇÑ »öÀ¸·Î ÃÊ±âÈ­
+	// ë Œë” íƒ€ê²Ÿì„ ì§€ì •í•œ ìƒ‰ìœ¼ë¡œ ì´ˆê¸°í™”
 	this->d3d11DeviceContext->ClearRenderTargetView(
 		this->renderTargetView,
 		bgRed
@@ -388,11 +383,11 @@ void GraphicsEngine::ClearRenderTargetView()
 }
 
 /// <summary>
-/// ±íÀÌ ½ºÅÙ½Ç ºä ÃÊ±âÈ­
+/// ê¹Šì´ ìŠ¤í…ì‹¤ ë·° ì´ˆê¸°í™”
 /// </summary>
 void GraphicsEngine::ClearDepthStencilView()
 {
-	// ±íÀÌ ½ºÅÙ½Ç ºä ÃÊ±âÈ­
+	// ê¹Šì´ ìŠ¤í…ì‹¤ ë·° ì´ˆê¸°í™”
 	this->d3d11DeviceContext->ClearDepthStencilView(
 		this->depthStancilView,
 		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
@@ -402,9 +397,9 @@ void GraphicsEngine::ClearDepthStencilView()
 }
 
 /// <summary>
-/// ·¹½ºÅÍ¶óÀÌÀú »ı¼º
+/// ë ˆìŠ¤í„°ë¼ì´ì € ìƒì„±
 /// </summary>
-/// <param name="_rasterizerState">¹İÈ¯ ¹ŞÀ» ·¹½ºÅÍ¶óÀÌÀú</param>
+/// <param name="_rasterizerState">ë°˜í™˜ ë°›ì„ ë ˆìŠ¤í„°ë¼ì´ì €</param>
 void GraphicsEngine::CreateRasterizerState(ID3D11RasterizerState** _rasterizerState)
 {
 	HRESULT hr = S_OK;
@@ -420,19 +415,28 @@ void GraphicsEngine::CreateRasterizerState(ID3D11RasterizerState** _rasterizerSt
 	assert(SUCCEEDED(hr) && "cannot create Rasterizser State");
 }
 
+void GraphicsEngine::CreateMatrixBuffer()
+{
+	D3D11_BUFFER_DESC mbd = {};
+	mbd.Usage = D3D11_USAGE_DYNAMIC;
+	mbd.ByteWidth = sizeof(MatrixBufferType);
+	mbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	mbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	mbd.MiscFlags = 0;
+	mbd.StructureByteStride = 0;
+
+	this->d3d11Device->CreateBuffer(&mbd, nullptr, &matrixBuffer);
+}
+
 /// <summary>
-/// ÆÄ¶ó¹ÌÅÍ ¼³Á¤
+/// íŒŒë¼ë¯¸í„° ì„¤ì •
 /// </summary>
-/// <param name="_w">¿ùµå TM</param>
-/// <param name="_v">ºäÆ÷Æ® TM</param>
-/// <param name="_p">ÇÁ·ÎÁ§¼Ç TM</param>
-void GraphicsEngine::SetParameter(DirectX::XMMATRIX _w, DirectX::XMMATRIX _v, DirectX::XMMATRIX _p)
+/// <param name="_w">ì›”ë“œ TM</param>
+/// <param name="_v">ë·°í¬íŠ¸ TM</param>
+/// <param name="_p">í”„ë¡œì ì…˜ TM</param>
+void GraphicsEngine::BindMatrixParameter(DirectX::XMMATRIX _w, DirectX::XMMATRIX _v, DirectX::XMMATRIX _p, Material _material)
 {
 	HRESULT hr;
-
-	_w = DirectX::XMMatrixTranspose(_w);
-	_v = DirectX::XMMatrixTranspose(_v);
-	_p = DirectX::XMMatrixTranspose(_p);
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 
@@ -442,15 +446,58 @@ void GraphicsEngine::SetParameter(DirectX::XMMATRIX _w, DirectX::XMMATRIX _v, Di
 	MatrixBufferType* dataptr = (MatrixBufferType*)mappedResource.pData;
 
 	dataptr->world = _w;
-	dataptr->view = _v;
-	dataptr->proj = _p;
+	dataptr->wvp = _w * _v * _p;
+	dataptr->worldInversTranspose = DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(nullptr, _w));
+
+	dataptr->world = DirectX::XMMatrixTranspose(_w);
+	dataptr->wvp = DirectX::XMMatrixTranspose(dataptr->wvp);
+	dataptr->worldInversTranspose = DirectX::XMMatrixTranspose(dataptr->worldInversTranspose);
+
+	dataptr->material = _material;
 
 	this->d3d11DeviceContext->Unmap(matrixBuffer, 0);
 	this->d3d11DeviceContext->VSSetConstantBuffers(0, 1, &matrixBuffer);
 }
 
+
+void GraphicsEngine::CreateLightingBffer()
+{
+	D3D11_BUFFER_DESC mbd = {};
+	mbd.Usage = D3D11_USAGE_DYNAMIC;
+	mbd.ByteWidth = sizeof(LightingBufferType);
+	mbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	mbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	mbd.MiscFlags = 0;
+	mbd.StructureByteStride = 0;
+
+	this->d3d11Device->CreateBuffer(&mbd, nullptr, &this->lightBuffer);
+}
+
+void GraphicsEngine::BindLightingParameter(DirectionalLight _directionLight[], UINT _lightCount, DirectX::XMFLOAT3 _cameraPos)
+{
+	HRESULT hr;
+
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+	hr = this->d3d11DeviceContext->Map(this->lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	assert(SUCCEEDED(hr));
+
+	LightingBufferType* dataptr = (LightingBufferType*)mappedResource.pData;
+
+	dataptr->dirLights[0] = _directionLight[0];
+	dataptr->dirLights[1] = _directionLight[1];
+	dataptr->dirLights[2] = _directionLight[2];
+
+	dataptr->lightCount = _lightCount;
+
+	dataptr->eyePosW = _cameraPos;
+
+	this->d3d11DeviceContext->Unmap(this->lightBuffer, 0);
+	this->d3d11DeviceContext->PSSetConstantBuffers(1, 1, &this->lightBuffer);
+}
+
 /// <summary>
-/// ÆÄÀÌÇÁ¶óÀÎ ¹ÙÀÎµù
+/// íŒŒì´í”„ë¼ì¸ ë°”ì¸ë”©
 /// </summary>
 /// <param name="_pipline"></param>
 void GraphicsEngine::BindPipeline(PipeLine& _pipline)
@@ -473,6 +520,11 @@ void GraphicsEngine::WriteText(int x, int y, DirectX::XMFLOAT4 color, TCHAR* tex
 	this->writer->DrawTextColor(x, y, color, text);
 }
 
+/// <summary>
+/// í…ìŠ¤ì³ ë°ì´í„° ìƒì„±
+/// </summary>
+/// <param name="_path">ë°ì´í„° ê²½ë¡œ</param>
+/// <param name="_resourceView">í…ìŠ¤ì³ ë°ì´í„°ë¥¼ ì €ì¥í•  ë Œë” ë¦¬ì†ŒìŠ¤ ë·°</param>
 void GraphicsEngine::CreateTextureData(std::wstring _path, ID3D11ShaderResourceView** _resourceView)
 {
 	HRESULT hr = S_OK;
@@ -482,17 +534,23 @@ void GraphicsEngine::CreateTextureData(std::wstring _path, ID3D11ShaderResourceV
 	texResource->Release();
 }
 
+/// <summary>
+/// í…ìŠ¤ì³ ë¦¬ì†ŒìŠ¤ë¥¼ í”½ì…€ ì…°ì´ë”ì— ì ìš©
+/// </summary>
+/// <param name="_start">ë¦¬ì†ŒìŠ¤ ìŠ¬ë¦‡</param>
+/// <param name="_viewNumbers">ë¦¬ì†ŒìŠ¤ ê°¯ìˆ˜</param>
+/// <param name="_resourceView">ë¦¬ì†ŒìŠ¤ ë·° í¬ì¸í„°</param>
 void GraphicsEngine::SetTexture(UINT _start, UINT _viewNumbers, ID3D11ShaderResourceView** _resourceView)
 {
 	this->d3d11DeviceContext->PSSetShaderResources(_start, _viewNumbers, _resourceView);
 }
 
 /// <summary>
-/// ÀÎµ¦½º ¹öÆÛ »ı¼º
+/// ì¸ë±ìŠ¤ ë²„í¼ ìƒì„±
 /// </summary>
-/// <param name="_indices">ÀÎµ¦½º ¹è¿­</param>
-/// <param name="_size">¹è¿­ÀÇ »çÀÌÁî</param>
-/// <param name="_indexbuffer">¹öÆÛ¸¦ ¹İÈ¯¹ŞÀ» Æ÷ÀÎÅÍ</param>
+/// <param name="_indices">ì¸ë±ìŠ¤ ë°°ì—´</param>
+/// <param name="_size">ë°°ì—´ì˜ ì‚¬ì´ì¦ˆ</param>
+/// <param name="_indexbuffer">ë²„í¼ë¥¼ ë°˜í™˜ë°›ì„ í¬ì¸í„°</param>
 void GraphicsEngine::CreateIndexBuffer(UINT* _indices, UINT _size, ID3D11Buffer** _indexbuffer)
 {
 	HRESULT hr = S_OK;
@@ -512,7 +570,7 @@ void GraphicsEngine::CreateIndexBuffer(UINT* _indices, UINT _size, ID3D11Buffer*
 }
 
 /// <summary>
-/// ±×¸®±â ÀÛ¾÷À» Á¾·áÇÏ°í Ãâ·Â
+/// ê·¸ë¦¬ê¸° ì‘ì—…ì„ ì¢…ë£Œí•˜ê³  ì¶œë ¥
 /// </summary>
 void GraphicsEngine::endDraw()
 {
@@ -520,7 +578,7 @@ void GraphicsEngine::endDraw()
 }
 
 /// <summary>
-/// ±×¸®±â ÀÛ¾÷ ½ÃÀÛ½Ã ÃÊ±âÈ­
+/// ê·¸ë¦¬ê¸° ì‘ì—… ì‹œì‘ì‹œ ì´ˆê¸°í™”
 /// </summary>
 void GraphicsEngine::begineDraw()
 {

@@ -22,6 +22,8 @@ private:
 		L"../Shader/PixelShader.hlsl",
 	};
 
+	Material demoMat;
+
 public:
 	LineObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene);
 	~LineObject();

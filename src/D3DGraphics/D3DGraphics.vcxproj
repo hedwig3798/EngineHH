@@ -135,9 +135,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ASEFile.h" />
     <ClInclude Include="color.h" />
     <ClInclude Include="DXTKFont.h" />
+    <ClInclude Include="GeomObject.h" />
     <ClInclude Include="GraphicsEngine.h" />
+    <ClInclude Include="Mesh.h" />
     <ClInclude Include="ModelParser.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="pipeline.h" />
@@ -145,11 +148,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DXTKFont.cpp" />
+    <ClCompile Include="GeomObject.cpp" />
     <ClCompile Include="GraphicsEngine.cpp" />
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="ModelParser.cpp" />
     <ClCompile Include="Vertex.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="..\Shader\LightHelper.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="..\Shader\PixelShader.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PS</EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
@@ -157,6 +165,7 @@
     <FxCompile Include="..\Shader\PixelShader2.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PS</EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="..\Shader\VertexShader.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS</EntryPointName>
@@ -165,6 +174,7 @@
     <FxCompile Include="..\Shader\VertexShader2.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS</EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
     </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
