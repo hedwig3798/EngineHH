@@ -14,7 +14,7 @@ GeomObject::GeomObject()
 	, positionTrackIndex(0)
 	, rotateTrackIndex(0)
 	, nowTick(0)
-	, oneTick(0.0001f * 10)
+	, oneTick(0.0001f * 1)
 	, accTick(0.0f)
 	, maxTick(0)
 	, isAnimation(false)
@@ -215,39 +215,44 @@ void GeomObject::UpdateAnimation(float _dt)
 	this->localTM = DirectX::XMMatrixIdentity();
 	this->localTM *= DirectX::XMMatrixScalingFromVector(this->localScale);
 
-// 	if (!this->animationRotateTrack.empty())
-// 	{
-// 		if (this->rotateTrackIndex + 1 < (int)animationRotateTrack.size())
-// 		{
-// 			if (this->animationRotateTrack[this->rotateTrackIndex + 1].first <= this->nowTick)
-// 			{
-// 				this->rotateTrackIndex++;
-// 				if (rotateTrackIndex == animationRotateTrack.size())
-// 				{
-// 					this->rotateTrackIndex = (int)this->animationRotateTrack.size() - 1;
-// 				}
-// 			}
-// 		}
-// 
-// 		const DirectX::XMFLOAT4& nowRotate = this->animationRotateTrack[this->rotateTrackIndex].second;
-// 		DirectX::XMVECTOR rotateNowVector = DirectX::XMLoadFloat4(&nowRotate);
-// 
-// 		if (this->rotateTrackIndex != (int)this->animationRotateTrack.size() - 1)
-// 		{
-// 			const DirectX::XMFLOAT4& nextRotate = this->animationRotateTrack[this->rotateTrackIndex + 1].second;
-// 			DirectX::XMVECTOR rotateNextVector = DirectX::XMLoadFloat4(&nextRotate);
-// 			int t1 = this->animationRotateTrack[this->rotateTrackIndex].first;
-// 			int t2 = this->animationRotateTrack[this->rotateTrackIndex + 1].first;
-// 
-// 			rotateNowVector = DirectX::XMQuaternionSlerp(rotateNowVector, rotateNextVector, (float)nowTick / (float)(t1 + t2));
-// 		}
-// 
-// 		this->localTM *= DirectX::XMMatrixRotationQuaternion(rotateNowVector);
-// 	}
-// 	else
-// 	{
-// 		this->localTM *= DirectX::XMMatrixRotationQuaternion(this->localRotate);
-// 	}
+	if (!this->animationRotateTrack.empty())
+	{
+		if (this->rotateTrackIndex < (int)animationRotateTrack.size())
+		{
+			if (this->animationRotateTrack[this->rotateTrackIndex].first <= this->nowTick)
+			{
+				this->rotateTrackIndex++;
+				if (rotateTrackIndex == animationRotateTrack.size())
+				{
+					this->rotateTrackIndex = (int)this->animationRotateTrack.size() - 1;
+				}
+			}
+		}
+
+		const DirectX::XMFLOAT4 nowRotate = this->animationRotateTrack[this->rotateTrackIndex].second;
+		DirectX::XMVECTOR rotateNowVector = DirectX::XMLoadFloat4(&nowRotate);
+
+		if (this->rotateTrackIndex != 0)
+		{
+			const DirectX::XMFLOAT4 prevRotate = this->animationRotateTrack[this->rotateTrackIndex - 1].second;
+			DirectX::XMVECTOR rotatePrevVector = DirectX::XMLoadFloat4(&prevRotate);
+
+			float t1 = this->animationRotateTrack[this->rotateTrackIndex - 1].first;
+			float t2 = this->animationRotateTrack[this->rotateTrackIndex].first;
+			float lerp = (nowTick - t1) / (t2 - t1);
+			if (lerp >= 1.0f) 
+			{
+				lerp = 1.0f;
+			}
+			rotateNowVector = DirectX::XMQuaternionSlerp(rotatePrevVector, rotateNowVector, lerp);
+		}
+
+		this->localTM *= DirectX::XMMatrixRotationQuaternion(rotateNowVector);
+	}
+	else
+	{
+		this->localTM *= DirectX::XMMatrixRotationQuaternion(this->localRotate);
+	}
 
 	if (this->animationPositionTrack.size() > 0)
 	{
