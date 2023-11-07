@@ -261,8 +261,8 @@ void GraphicsEngine::CreateViewport()
 	RECT windowSize;
 	assert(GetWindowRect(hwnd, &windowSize) && "cannot get window rectangle");
 	D3D11_VIEWPORT vp;
-	vp.Width = static_cast<FLOAT>(windowSize.right - windowSize.left);
-	vp.Height = static_cast<FLOAT>(windowSize.bottom - windowSize.top);
+	vp.Width = static_cast<float>(windowSize.right - windowSize.left);
+	vp.Height = static_cast<float>(windowSize.bottom - windowSize.top);
 	vp.MinDepth = 0;
 	vp.MaxDepth = 1;
 	vp.TopLeftX = 0;
