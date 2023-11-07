@@ -3,7 +3,7 @@ EngineH 과 다르게 3D 게임 제작을 위한 게임 엔진 및 그래픽 엔
 공부 목적의 코드이므로 주석이 많이 있습니다.   
 최종적으로 게임 개발에 사용 할 수 있는 lib를 만들고 이를 이용한 플랫포머 게임을 만드는 것이 목표입니다.   
 자세한 내용은 notion을 참고해 주세요!   
-https://www.notion.so/D3D-11-feb27209e87148d883f1ace7b864283a   
+https://savory-text-86d.notion.site/D3D-11-feb27209e87148d883f1ace7b864283a?pvs=4
 
 ---
 ### 기술 스텍 및 외부 라이브러리
