@@ -19,7 +19,7 @@ Mesh::~Mesh()
 	delete[] this->indexes;
 }
 
-void Mesh::Render(GraphicsEngine* gp)
+void Mesh::Render(GraphicsEngine* gp, const DirectX::XMMATRIX& _viewTM, const DirectX::XMMATRIX& _projTM)
 {
 	ChangeVertex(gp);
 	gp->BindPipeline(this->pipeline);

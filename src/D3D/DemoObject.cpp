@@ -98,16 +98,9 @@ void DemoObject::Update(float _dt)
 
 void DemoObject::Render(GraphicsEngine* ge)
 {
-	this->graphicsEngine->BindMatrixParameter(
-		DirectX::XMMatrixIdentity(),
-		this->scene->getCamera()->GetViewTM(),
-		this->scene->getCamera()->GetProjectionTM(),
-		this->demoMat
-	);
-
 	this->graphicsEngine->BindLightingParameter(this->dirLights, lightCount, this->scene->getCamera()->GetPosition());
 	for(auto& g : this->gemoObject) 
 	{
-		g->Render(graphicsEngine);
+		g->Render(graphicsEngine, this->scene->getCamera()->GetViewTM(), this->scene->getCamera()->GetProjectionTM());
 	}
 }

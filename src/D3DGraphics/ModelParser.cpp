@@ -45,6 +45,8 @@ std::vector<RenderObject*> AseParser(std::wstring _filePath)
 
 	std::map<std::string, RenderObject*> dict;
 
+	std::vector<Mesh*> hasBoneMesh;
+
 	std::vector<std::string> s;
 	DirectX::XMMATRIX LTM = DirectX::XMMatrixIdentity();
 
@@ -61,8 +63,7 @@ std::vector<RenderObject*> AseParser(std::wstring _filePath)
 	int tickPerFrame = 0;
 
 	Mesh* nowMesh = nullptr;
-	RenderObject* nowGeom = nullptr;
-
+	RenderObject* nowRenderObject = nullptr;
 	RenderObject* parentObj = nullptr;
 
 	if (file.is_open())
@@ -75,37 +76,40 @@ std::vector<RenderObject*> AseParser(std::wstring _filePath)
 			/// 매쉬 생성
 			if (s[0] == Token[_ASEToken::TOKENR_MESH])
 			{
-				assert(nowGeom && "no geomatry object\n");
+				assert(nowRenderObject && "no geomatry object\n");
 				nowMesh = new Mesh();
-				nowGeom->AddMesh(nowMesh);
+				nowRenderObject->AddMesh(nowMesh);
 				optimizeIndex = 0;
 				optimizeSize = 0;
 			}
-			else if (s[0] == Token[_ASEToken::TOKENR_GEOMOBJECT])
+			else if (
+				s[0] == Token[_ASEToken::TOKENR_GEOMOBJECT] ||
+				s[0] == Token[_ASEToken::TOKENR_HELPEROBJECT] ||
+				s[0] == Token[_ASEToken::TOKENR_SHAPEOBJECT]
+				)
 			{
-				nowGeom = new RenderObject();
-				nowGeom->maxTick = lastFrame * tickPerFrame;
+				nowRenderObject = new RenderObject();
+				nowRenderObject->maxTick = lastFrame * tickPerFrame;
 				parentObj = nullptr;
-			}
-			else if (s[0] == Token[_ASEToken::TOKENR_HELPEROBJECT])
-			{
-				nowGeom = new RenderObject();
-				nowGeom->maxTick = lastFrame * tickPerFrame;
-				parentObj = nullptr;
-				nowGeom->isHelper = true;
-			}
-			else if (s[0] == Token[_ASEToken::TOKENR_SHAPEOBJECT])
-			{
-				nowGeom = new RenderObject();
-				nowGeom->maxTick = lastFrame * tickPerFrame;
-				parentObj = nullptr;
-				nowGeom->isHelper = true;
+
+				if (s[0] == Token[_ASEToken::TOKENR_GEOMOBJECT])
+				{
+					nowRenderObject->type = RENDER_OBJECT_TYPE::GEOMOBJCT;
+				}
+				else if (s[0] == Token[_ASEToken::TOKENR_HELPEROBJECT])
+				{
+					nowRenderObject->type = RENDER_OBJECT_TYPE::HELPEROBJECT;
+				}
+				else if (s[0] == Token[_ASEToken::TOKENR_SHAPEOBJECT])
+				{
+					nowRenderObject->type = RENDER_OBJECT_TYPE::SHAPEOBJECT;
+				}
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_NODE_NAME])
 			{
-				assert(nowGeom && "no geomatry object\n");
-				nowGeom->SetName(s[1]);
-				dict[s[1]] = nowGeom;
+				assert(nowRenderObject && "no geomatry object\n");
+				nowRenderObject->SetName(s[1]);
+				dict[s[1]] = nowRenderObject;
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_NODE_PARENT])
 			{
@@ -113,62 +117,62 @@ std::vector<RenderObject*> AseParser(std::wstring _filePath)
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_NODE_TM])
 			{
-				nowGeom->SetParent(parentObj);
+				nowRenderObject->SetParent(parentObj);
 				if (parentObj)
 				{
-					parentObj->AddChild(nowGeom);
+					parentObj->AddChild(nowRenderObject);
 				}
 				else
 				{
-					result.push_back(nowGeom);
+					result.push_back(nowRenderObject);
 				}
 
 			}
 			/// TM 데이터
 			else if (s[0] == Token[_ASEToken::TOKENR_TM_ROW0])
 			{
-				assert(nowGeom && "no geomatry object\n");
-				nowGeom->nodeTM.r[0] = DirectX::XMVECTOR{ std::stof(s[1]), std::stof(s[3]), std::stof(s[2]) , 0.0f };
+				assert(nowRenderObject && "no geomatry object\n");
+				nowRenderObject->nodeTM.r[0] = DirectX::XMVECTOR{ std::stof(s[1]), std::stof(s[3]), std::stof(s[2]) , 0.0f };
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_TM_ROW1])
 			{
-				assert(nowGeom && "no geomatry object\n");
-				nowGeom->nodeTM.r[2] = DirectX::XMVECTOR{ std::stof(s[1]), std::stof(s[3]), std::stof(s[2]) , 0.0f };
+				assert(nowRenderObject && "no geomatry object\n");
+				nowRenderObject->nodeTM.r[2] = DirectX::XMVECTOR{ std::stof(s[1]), std::stof(s[3]), std::stof(s[2]) , 0.0f };
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_TM_ROW2])
 			{
-				assert(nowGeom && "no geomatry object\n");
-				nowGeom->nodeTM.r[1] = DirectX::XMVECTOR{ std::stof(s[1]), std::stof(s[3]), std::stof(s[2]) , 0.0f };
+				assert(nowRenderObject && "no geomatry object\n");
+				nowRenderObject->nodeTM.r[1] = DirectX::XMVECTOR{ std::stof(s[1]), std::stof(s[3]), std::stof(s[2]) , 0.0f };
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_TM_ROW3])
 			{
-				assert(nowGeom && "no geomatry object\n");
-				nowGeom->nodeTM.r[3] = DirectX::XMVECTOR{ std::stof(s[1]), std::stof(s[3]), std::stof(s[2]) , 1.0f };
+				assert(nowRenderObject && "no geomatry object\n");
+				nowRenderObject->nodeTM.r[3] = DirectX::XMVECTOR{ std::stof(s[1]), std::stof(s[3]), std::stof(s[2]) , 1.0f };
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_TM_POS])
 			{
-				assert(nowGeom && "no geomatry object\n");
-				nowGeom->filePosition = DirectX::XMVECTOR{ std::stof(s[1]), std::stof(s[3]), std::stof(s[2]) };
+				assert(nowRenderObject && "no geomatry object\n");
+				nowRenderObject->filePosition = DirectX::XMVECTOR{ std::stof(s[1]), std::stof(s[3]), std::stof(s[2]) };
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_TM_ROTAXIS])
 			{
-				assert(nowGeom && "no geomatry object\n");
-				nowGeom->fileRotate = DirectX::XMVECTOR{ std::stof(s[1]), std::stof(s[3]), std::stof(s[2]) };
+				assert(nowRenderObject && "no geomatry object\n");
+				nowRenderObject->fileRotate = DirectX::XMVECTOR{ std::stof(s[1]), std::stof(s[3]), std::stof(s[2]) };
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_TM_ROTANGLE])
 			{
-				assert(nowGeom && "no geomatry object\n");
-				nowGeom->fileRotate.m128_f32[3] = std::stof(s[1]);
+				assert(nowRenderObject && "no geomatry object\n");
+				nowRenderObject->fileRotate.m128_f32[3] = std::stof(s[1]);
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_TM_SCALEAXIS])
 			{
-				assert(nowGeom && "no geomatry object\n");
-				nowGeom->fileScale = DirectX::XMVECTOR{ std::stof(s[1]), std::stof(s[3]), std::stof(s[2]) };
+				assert(nowRenderObject && "no geomatry object\n");
+				nowRenderObject->fileScale = DirectX::XMVECTOR{ std::stof(s[1]), std::stof(s[3]), std::stof(s[2]) };
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_TM_SCALEAXISANG])
 			{
-				assert(nowGeom && "no geomatry object\n");
-				nowGeom->fileScale.m128_f32[3] = std::stof(s[1]);
+				assert(nowRenderObject && "no geomatry object\n");
+				nowRenderObject->fileScale.m128_f32[3] = std::stof(s[1]);
 			}
 			/// 정점과 면의 갯수
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_NUMVERTEX])
@@ -227,8 +231,8 @@ std::vector<RenderObject*> AseParser(std::wstring _filePath)
 			/// 에니메이션 데이터
 			else if (s[0] == Token[_ASEToken::TOKENR_CONTROL_POS_SAMPLE])
 			{
-				assert(nowGeom && "no geomatry object\n");
-				nowGeom->animationPositionTrack.push_back(
+				assert(nowRenderObject && "no geomatry object\n");
+				nowRenderObject->animationPositionTrack.push_back(
 					std::make_pair(
 						std::stoi(s[1]),
 						DirectX::XMFLOAT3{ std::stof(s[2]), std::stof(s[4]), std::stof(s[3]) }
@@ -237,8 +241,8 @@ std::vector<RenderObject*> AseParser(std::wstring _filePath)
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_CONTROL_ROT_SAMPLE])
 			{
-				assert(nowGeom && "no geomatry object\n");
-				nowGeom->animationRotateTrack.push_back(
+				assert(nowRenderObject && "no geomatry object\n");
+				nowRenderObject->animationRotateTrack.push_back(
 					std::make_pair(
 						std::stoi(s[1]),
 						DirectX::XMFLOAT4{ std::stof(s[2]), std::stof(s[4]), std::stof(s[3]), std::stof(s[5]) }
@@ -252,6 +256,19 @@ std::vector<RenderObject*> AseParser(std::wstring _filePath)
 			else if (s[0] == Token[_ASEToken::TOKENR_SCENE_TICKSPERFRAME])
 			{
 				tickPerFrame = std::stoi(s[1]);
+			}
+			/// Bone 데이터
+			else if (s[0] == Token[_ASEToken::TOKENR_BONE_LIST])
+			{
+				hasBoneMesh.push_back(nowMesh);
+			}
+			else if (s[0] == Token[_ASEToken::TOKENR_BONE_NAME])
+			{
+
+			}
+			else if (s[0] == Token[_ASEToken::TOKENR_BONE_NAME])
+			{
+
 			}
 		}
 	}

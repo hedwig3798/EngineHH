@@ -1,5 +1,6 @@
 #include "RenderObject.h"
 #include "Mesh.h"
+#include "GraphicsEngine.h"
 
 RenderObject::RenderObject()
 	: name{}
@@ -26,7 +27,14 @@ RenderObject::RenderObject()
 	, nodeRotate{}
 	, nodeScale{}
 	, isNegative(false)
+	, fileScale{}
+	, fileRotate{}
+	, filePosition{}
+	, type(RENDER_OBJECT_TYPE::GEOMOBJCT)
 {
+	this->demoMat.Ambient = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	this->demoMat.Diffuse = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
+	this->demoMat.Specular = XMFLOAT4(0.8f, 0.8f, 0.8f, 16.0f);
 }
 
 void RenderObject::AddMesh(Mesh* _mesh)
@@ -44,15 +52,22 @@ void RenderObject::SetParent(RenderObject* _parent)
 	this->parent = _parent;
 }
 
-void RenderObject::Render(GraphicsEngine* _graphicsEngine)
+void RenderObject::Render(GraphicsEngine* _graphicsEngine, const DirectX::XMMATRIX& _viewTM, const DirectX::XMMATRIX& _projTM)
 {
+	_graphicsEngine->BindMatrixParameter(
+		this->nodeTM,
+		_viewTM,
+		_projTM,
+		this->demoMat
+	);
+
 	for (auto& m : this->meshes)
 	{
-		m->Render(_graphicsEngine);
+		m->Render(_graphicsEngine, _viewTM, _projTM);
 	}
 	for (auto& c : this->children)
 	{
-		c->Render(_graphicsEngine);
+		c->Render(_graphicsEngine, _viewTM, _projTM);
 	}
 }
 
@@ -152,6 +167,7 @@ void RenderObject::Localize(GraphicsEngine* _graphicsEngine)
 			DirectX::XMStoreFloat3(&m->worldVertexes[i].normal, normal);
 		}
 	}
+	SetLocal(true);
 }
 
 void RenderObject::SetLocal(bool _isLocal)

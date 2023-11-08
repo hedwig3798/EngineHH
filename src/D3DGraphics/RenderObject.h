@@ -1,8 +1,16 @@
 #pragma once
 #include "pch.h"
-
+#include "LightHelper.h"
 class Mesh;
 class GraphicsEngine;
+
+enum class RENDER_OBJECT_TYPE
+{
+	GEOMOBJCT,
+	HELPEROBJECT,
+	SHAPEOBJECT,
+	BONE,
+};
 
 class RenderObject
 {
@@ -36,6 +44,8 @@ public:
 	DirectX::XMVECTOR fileRotate;
 	DirectX::XMVECTOR filePosition;
 
+	RENDER_OBJECT_TYPE type;
+
 public:
 	bool isHelper;
 	DirectX::XMMATRIX nodeTM;
@@ -51,6 +61,8 @@ public:
 		L"../Shader/PixelShader2.hlsl",
 	};
 
+	Material demoMat;
+
 public:
 	RenderObject();
 
@@ -61,7 +73,7 @@ public:
 	std::string GetName() const { return name; }
 	void SetName(std::string val) { name = val; }
 
-	void Render(GraphicsEngine* _graphicsEngine);
+	void Render(GraphicsEngine* _graphicsEngine, const DirectX::XMMATRIX& _viewTM, const DirectX::XMMATRIX& _projTM);
 
 	void Initalize(GraphicsEngine* _graphicsEngine);
 
