@@ -39,7 +39,7 @@
     <ClCompile Include="ModelParser.cpp">
       <Filter>Parser</Filter>
     </ClCompile>
-    <ClCompile Include="GeomObject.cpp">
+    <ClCompile Include="RenderObject.cpp">
       <Filter>Mesh</Filter>
     </ClCompile>
   </ItemGroup>
@@ -65,7 +65,7 @@
     <ClInclude Include="ModelParser.h">
       <Filter>Parser</Filter>
     </ClInclude>
-    <ClInclude Include="GeomObject.h">
+    <ClInclude Include="RenderObject.h">
       <Filter>Mesh</Filter>
     </ClInclude>
   </ItemGroup>

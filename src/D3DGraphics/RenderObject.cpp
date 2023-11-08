@@ -1,13 +1,13 @@
-#include "GeomObject.h"
+#include "RenderObject.h"
 #include "Mesh.h"
 
-GeomObject::GeomObject()
+RenderObject::RenderObject()
 	: name{}
 	, nodeTM(DirectX::XMMatrixIdentity())
 	, isHelper(false)
 	, meshes(std::vector<Mesh*>())
 	, parent(nullptr)
-	, children(std::vector<GeomObject*>())
+	, children(std::vector<RenderObject*>())
 	, localTM(DirectX::XMMatrixIdentity())
 	, animationPositionTrack(std::vector<std::pair<int, DirectX::XMFLOAT3>>())
 	, animationRotateTrack(std::vector<std::pair<int, DirectX::XMFLOAT4>>())
@@ -29,22 +29,22 @@ GeomObject::GeomObject()
 {
 }
 
-void GeomObject::AddMesh(Mesh* _mesh)
+void RenderObject::AddMesh(Mesh* _mesh)
 {
 	meshes.push_back(_mesh);
 }
 
-void GeomObject::AddChild(GeomObject* _child)
+void RenderObject::AddChild(RenderObject* _child)
 {
 	children.push_back(_child);
 }
 
-void GeomObject::SetParent(GeomObject* _parent)
+void RenderObject::SetParent(RenderObject* _parent)
 {
 	this->parent = _parent;
 }
 
-void GeomObject::Render(GraphicsEngine* _graphicsEngine)
+void RenderObject::Render(GraphicsEngine* _graphicsEngine)
 {
 	for (auto& m : this->meshes)
 	{
@@ -56,7 +56,7 @@ void GeomObject::Render(GraphicsEngine* _graphicsEngine)
 	}
 }
 
-void GeomObject::Initalize(GraphicsEngine* _graphicsEngine)
+void RenderObject::Initalize(GraphicsEngine* _graphicsEngine)
 {
 	for (auto& m : this->meshes)
 	{
@@ -71,7 +71,7 @@ void GeomObject::Initalize(GraphicsEngine* _graphicsEngine)
 	}
 }
 
-void GeomObject::Localize(GraphicsEngine* _graphicsEngine)
+void RenderObject::Localize(GraphicsEngine* _graphicsEngine)
 {
 	assert(DirectX::XMMatrixDecompose(&this->nodeScale, &this->nodeRotate, &this->nodePosition, this->nodeTM) &&
 		"cannot decompose node Tm");
@@ -154,7 +154,7 @@ void GeomObject::Localize(GraphicsEngine* _graphicsEngine)
 	}
 }
 
-void GeomObject::SetLocal(bool _isLocal)
+void RenderObject::SetLocal(bool _isLocal)
 {
 	for (auto& m : this->meshes)
 	{
@@ -166,7 +166,7 @@ void GeomObject::SetLocal(bool _isLocal)
 	}
 }
 
-void GeomObject::Update(float _dt)
+void RenderObject::Update(float _dt)
 {
 	UpdateAnimation(_dt);
 
@@ -205,24 +205,24 @@ void GeomObject::Update(float _dt)
 
 }
 
-void GeomObject::Translate(float _x, float _y, float _z)
+void RenderObject::Translate(float _x, float _y, float _z)
 {
 	this->localTM *= DirectX::XMMatrixTranslation(_x, _y, _z);
 }
 
-void GeomObject::RoateBaseAxis(float _x, float _y, float _z)
+void RenderObject::RoateBaseAxis(float _x, float _y, float _z)
 {
 	this->localTM *= DirectX::XMMatrixRotationX(_x);
 	this->localTM *= DirectX::XMMatrixRotationY(_y);
 	this->localTM *= DirectX::XMMatrixRotationZ(_z);
 }
 
-void GeomObject::Scale(float _x, float _y, float _z)
+void RenderObject::Scale(float _x, float _y, float _z)
 {
 
 }
 
-void GeomObject::UpdateAnimation(float _dt)
+void RenderObject::UpdateAnimation(float _dt)
 {
 	this->accTick += _dt * 1;
 	while (this->accTick >= this->oneTick)

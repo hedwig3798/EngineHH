@@ -4,15 +4,15 @@
 class Mesh;
 class GraphicsEngine;
 
-class GeomObject
+class RenderObject
 {
 public:
 	std::string name;
 
 	std::vector<Mesh*> meshes;
 
-	GeomObject* parent;
-	std::vector<GeomObject*> children;
+	RenderObject* parent;
+	std::vector<RenderObject*> children;
 
 	bool isAnimation;
 	int nowTick;
@@ -52,11 +52,11 @@ public:
 	};
 
 public:
-	GeomObject();
+	RenderObject();
 
 	void AddMesh(Mesh* _mesh);
-	void AddChild(GeomObject* _child);
-	void SetParent(GeomObject* _parent);
+	void AddChild(RenderObject* _child);
+	void SetParent(RenderObject* _parent);
 
 	std::string GetName() const { return name; }
 	void SetName(std::string val) { name = val; }

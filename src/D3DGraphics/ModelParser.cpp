@@ -36,14 +36,14 @@ void GetVertexAndIndex(std::vector<VertexC::Data>& _vertexes, std::vector<UINT>&
 	}
 }
 
-std::vector<GeomObject*> AseParser(std::wstring _filePath)
+std::vector<RenderObject*> AseParser(std::wstring _filePath)
 {
 	std::string line;
 	std::ifstream file(_filePath);
 
-	std::vector<GeomObject*> result;
+	std::vector<RenderObject*> result;
 
-	std::map<std::string, GeomObject*> dict;
+	std::map<std::string, RenderObject*> dict;
 
 	std::vector<std::string> s;
 	DirectX::XMMATRIX LTM = DirectX::XMMatrixIdentity();
@@ -61,9 +61,9 @@ std::vector<GeomObject*> AseParser(std::wstring _filePath)
 	int tickPerFrame = 0;
 
 	Mesh* nowMesh = nullptr;
-	GeomObject* nowGeom = nullptr;
+	RenderObject* nowGeom = nullptr;
 
-	GeomObject* parentObj = nullptr;
+	RenderObject* parentObj = nullptr;
 
 	if (file.is_open())
 	{
@@ -83,20 +83,20 @@ std::vector<GeomObject*> AseParser(std::wstring _filePath)
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_GEOMOBJECT])
 			{
-				nowGeom = new GeomObject();
+				nowGeom = new RenderObject();
 				nowGeom->maxTick = lastFrame * tickPerFrame;
 				parentObj = nullptr;
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_HELPEROBJECT])
 			{
-				nowGeom = new GeomObject();
+				nowGeom = new RenderObject();
 				nowGeom->maxTick = lastFrame * tickPerFrame;
 				parentObj = nullptr;
 				nowGeom->isHelper = true;
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_SHAPEOBJECT])
 			{
-				nowGeom = new GeomObject();
+				nowGeom = new RenderObject();
 				nowGeom->maxTick = lastFrame * tickPerFrame;
 				parentObj = nullptr;
 				nowGeom->isHelper = true;
