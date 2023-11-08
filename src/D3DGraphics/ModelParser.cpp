@@ -62,6 +62,8 @@ std::vector<RenderObject*> AseParser(std::wstring _filePath)
 	int lastFrame = 0;
 	int tickPerFrame = 0;
 
+	int meshWeightIndex = 0;
+
 	Mesh* nowMesh = nullptr;
 	RenderObject* nowRenderObject = nullptr;
 	RenderObject* parentObj = nullptr;
@@ -261,14 +263,25 @@ std::vector<RenderObject*> AseParser(std::wstring _filePath)
 			else if (s[0] == Token[_ASEToken::TOKENR_BONE_LIST])
 			{
 				hasBoneMesh.push_back(nowMesh);
+				nowMesh->weight = std::vector<float>(vertexData.size());
 			}
+			else if (s[0] == Token[_ASEToken::TOKENR_MESH_NUMBONE])
+			{
+				assert(nowMesh && "Ase parser error. no mesh in data");
+				nowMesh->weight = std::vector<float>(std::stoi(s[1]));
+				}
 			else if (s[0] == Token[_ASEToken::TOKENR_BONE_NAME])
 			{
-
+				assert(nowMesh && "Ase parser error. no mesh in data");
+				nowMesh->boneNames.push_back(s[1]);
 			}
-			else if (s[0] == Token[_ASEToken::TOKENR_BONE_NAME])
+			else if (s[0] == Token[_ASEToken::TOKENR_MESH_WEIGHT])
 			{
-
+				meshWeightIndex = std::stoi(s[1]);
+			}
+			else if (s[0] == Token[_ASEToken::TOKENR_BONE_BLENGING_WEIGHT])
+			{
+				
 			}
 		}
 	}

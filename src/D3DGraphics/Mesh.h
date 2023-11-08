@@ -20,6 +20,7 @@ public:
 	bool isLocal;
 
 	std::vector<RenderObject*> bones;
+	std::vector<float> weight;
 	std::vector<std::string> boneNames;
 
 	Material demoMat;

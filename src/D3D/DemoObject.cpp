@@ -15,7 +15,7 @@ DemoObject::DemoObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene, Man
 {
 	std::vector<VertexT::Data> vertexInfo;
 	std::vector<UINT> indexInfo;
-	this->gemoObject = AseParser(L"../Model/03IK-Joe.ASE");
+	this->gemoObject = AseParser(L"../Model/Cylinder.ASE");
 
 	for (auto& g : this->gemoObject)
 	{
