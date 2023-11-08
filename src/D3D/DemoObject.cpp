@@ -69,22 +69,6 @@ void DemoObject::Update(float _dt)
 	{
 		lightCount = 3;
 	}
-	if (this->managers->keyManager->GetKeyState(KEY::N_4) == KEY_STATE::DOWN && !isLocal)
-	{
-		isLocal = true;
-		for (auto& geo : this->gemoObject)
-		{
-			geo->SetLocal(isLocal);
-		}
-	}
-	if (this->managers->keyManager->GetKeyState(KEY::N_5) == KEY_STATE::DOWN && isLocal)
-	{
-		isLocal = false;
-		for (auto& geo : this->gemoObject)
-		{
-			geo->SetLocal(isLocal);
-		}
-	}
 	if (this->managers->keyManager->GetKeyState(KEY::N_6) == KEY_STATE::HOLD)
 	{
 		for (auto& geo : this->gemoObject)

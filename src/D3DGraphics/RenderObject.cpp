@@ -156,19 +156,6 @@ void RenderObject::Localize(GraphicsEngine* _graphicsEngine)
 		}
 		m->CreatePipeline(_graphicsEngine, this->path, L" ");
 	}
-	SetLocal(true);
-}
-
-void RenderObject::SetLocal(bool _isLocal)
-{
-	for (auto& m : this->meshes)
-	{
-		m->isLocal = _isLocal;
-	}
-	for (auto& c : this->children)
-	{
-		c->SetLocal(_isLocal);
-	}
 }
 
 void RenderObject::Update(float _dt)
