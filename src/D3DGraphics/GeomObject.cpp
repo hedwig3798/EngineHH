@@ -272,8 +272,8 @@ void GeomObject::UpdateAnimation(float _dt)
 			const DirectX::XMFLOAT4 prevRotate = this->animationRotateTrack[this->rotateTrackIndex - 1].second;
 			DirectX::XMVECTOR rotatePrevVector = DirectX::XMLoadFloat4(&prevRotate);
 
-			float t1 = this->animationRotateTrack[this->rotateTrackIndex - 1].first;
-			float t2 = this->animationRotateTrack[this->rotateTrackIndex].first;
+			float t1 = (float)this->animationRotateTrack[this->rotateTrackIndex - 1].first;
+			float t2 = (float)this->animationRotateTrack[this->rotateTrackIndex].first;
 			float lerp = (nowTick - t1) / (t2 - t1);
 			if (lerp >= 1.0f)
 			{
@@ -306,8 +306,8 @@ void GeomObject::UpdateAnimation(float _dt)
 		if (this->positionTrackIndex != 0)
 		{
 			const DirectX::XMFLOAT3 prevPosition = this->animationPositionTrack[this->positionTrackIndex - 1].second;
-			float t1 = this->animationPositionTrack[this->positionTrackIndex - 1].first;
-			float t2 = this->animationPositionTrack[this->positionTrackIndex].first;
+			float t1 = (float)this->animationPositionTrack[this->positionTrackIndex - 1].first;
+			float t2 = (float)this->animationPositionTrack[this->positionTrackIndex].first;
 			float lerp = (nowTick - t1) / (t2 - t1);
 
 			if (lerp >= 1.0f)
