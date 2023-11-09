@@ -53,16 +53,29 @@ void Mesh::SetVertexesData()
 		data.position = this->position[this->normalIndex[i]];
 		data.normal = this->normal[i];
 
-		if (this->textureIndex.size() > 0)
+		if (!this->textureIndex.empty())
 		{
 			data.texture = this->texture[this->textureIndex[i]];
 		}
-		data.weight = DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f };
-		data.BoneIndices[0] = 0;
-		data.BoneIndices[1] = 1;
-		data.BoneIndices[2] = 2;
-		data.BoneIndices[3] = 3;
 
+		if (!this->weight.empty())
+		{
+			DirectX::XMVECTOR tempWeight = { 0.0f, 0.0f, 0.0f, 0.0f };
+			for (int j = 0; j < (int)this->weight[this->normalIndex[i]].size(); j++)
+			{
+				tempWeight.m128_f32[j] = this->weight[this->normalIndex[i]][j];
+			}
+			DirectX::XMStoreFloat3(&data.weight, tempWeight);
+			data.BoneIndices[0] = 0;
+			data.BoneIndices[1] = 0;
+			data.BoneIndices[2] = 0;
+			data.BoneIndices[3] = 0;
+
+			for (int j = 0; j < (int)this->boneIndex[this->normalIndex[i]].size(); j++)
+			{
+				data.BoneIndices[j] = this->boneIndex[this->normalIndex[i]][j];
+			}
+		}
 		this->vertexList[i] = data;
 	}
 

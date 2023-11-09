@@ -47,6 +47,8 @@ std::vector<RenderObject*> AseParser(std::wstring _filePath)
 
 	std::vector<std::string> s;
 
+	std::vector<Mesh*> hasBoneMesh;
+
 	int optimizeSize = 0;
 	int optimizeIndex = 0;
 
@@ -56,7 +58,6 @@ std::vector<RenderObject*> AseParser(std::wstring _filePath)
 	int tickPerFrame = 0;
 
 	int meshWeight = 0;
-	int meshWeighIndex = 0;
 
 	Mesh* nowMesh = nullptr;
 	RenderObject* nowRenderObject = nullptr;
@@ -255,18 +256,26 @@ std::vector<RenderObject*> AseParser(std::wstring _filePath)
 			/// Bone µ¥ÀÌÅÍ
 			else if (s[0] == Token[_ASEToken::TOKENR_BONE_LIST])
 			{
-			}
-			else if (s[0] == Token[_ASEToken::TOKENR_MESH_NUMBONE])
-			{
+				assert(nowMesh && "Ase parser error. no mesh in data");
+				nowMesh->weight.resize(nowMesh->position.size());
+				nowMesh->boneIndex.resize(nowMesh->position.size());
+				hasBoneMesh.push_back(nowMesh);
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_BONE_NAME])
 			{
+				assert(nowMesh && "Ase parser error. no mesh in data");
+				nowMesh->boneNames.push_back(s[1]);
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_WEIGHT])
 			{
+				assert(nowMesh && "Ase parser error. no mesh in data");
+				meshWeight = std::stoi(s[1]);
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_BONE_BLENGING_WEIGHT])
 			{
+				assert(nowMesh && "Ase parser error. no mesh in data");
+				nowMesh->boneIndex[meshWeight].push_back(std::stoi(s[1]));
+				nowMesh->weight[meshWeight].push_back(std::stof(s[2]));
 			}
 		}
 	}
@@ -274,6 +283,16 @@ std::vector<RenderObject*> AseParser(std::wstring _filePath)
 	{
 		assert(false && "cannot read 3d model object");
 	}
+
+	for(auto& m : hasBoneMesh) 
+	{
+		m->bones.resize(m->boneNames.size());
+		for (int i = 0; i < (int)m->boneNames.size(); i++)
+		{
+			m->bones[i] = dict[m->boneNames[i]];
+		}
+	}
+
 	return result;
 }
 
