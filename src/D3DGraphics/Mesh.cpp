@@ -93,6 +93,11 @@ void Mesh::SetVertexesData()
 		this->vertexes[i].position = this->vertexList[i].position;
 		this->vertexes[i].normal = this->vertexList[i].normal;
 		this->vertexes[i].texture = this->vertexList[i].texture;
+		this->vertexes[i].weight = this->vertexList[i].weight;
+		this->vertexes[i].BoneIndices[0] = this->vertexList[i].BoneIndices[0];
+		this->vertexes[i].BoneIndices[1] = this->vertexList[i].BoneIndices[1];
+		this->vertexes[i].BoneIndices[2] = this->vertexList[i].BoneIndices[2];
+		this->vertexes[i].BoneIndices[3] = this->vertexList[i].BoneIndices[3];
 	}
 
 	// 	this->indexes = new UINT[(int)this->indexList.size()];

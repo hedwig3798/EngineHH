@@ -50,16 +50,31 @@ VertexOut VS(VertexIn vin)
 	// 출력
 	VertexOut vout;
 	
+	float weight[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+	weight[0] = vin.Weight.x;
+	weight[1] = vin.Weight.y;
+	weight[2] = vin.Weight.z;
+	weight[3] = vin.Weight.x + vin.Weight.y + vin.Weight.z - 1.0f;
+
+	float3 posL = float3(0.0f, 0.0f, 0.0f);
+	float3 normalL = float3(0.0f, 0.0f, 0.0f);
+
+	for(int i = 0 ; i < 4 ; i++)
+	{
+		posL += weight[i] * mul(float4(vin.PosL, 1.0f), bones[vin.BoneIndices[i]]).xyz;
+		normalL += weight[i] * mul(vin.NormalL, (float3x3)bones[vin.BoneIndices[i]]);
+	}
+
 	// 정점의 월드공간 좌표
-	vout.PosW = mul(float4(vin.PosL, 1.0f), g_world).xyz;
+	vout.PosW = mul(float4(posL, 1.0f), g_world).xyz;
 	// 정점의 뷰포트 좌표
-	vout.PosH = mul(float4(vin.PosL, 1.0f), g_wvp);
+	vout.PosH = mul(float4(posL, 1.0f), g_wvp);
 
 	// 텍스쳐의 좌표 (texcoord를 그대로 픽셀쉐이더로 넘겨 준다)
 	vout.Tex = vin.Tex;
 
 	//정점의 월드 공간에서 법선 벡터
-	vout.NormalW = mul(vin.NormalL, (float3x3)g_worldInvTranspose);
+	vout.NormalW = mul(normalL, (float3x3)g_worldInvTranspose);
 	// vout.NormalW = vin.NormalL;
 	
 	
