@@ -28,6 +28,12 @@ void Mesh::Render(GraphicsEngine* gp, const DirectX::XMMATRIX& _worldTM, const D
 		_projTM,
 		this->demoMat
 	);
+
+	if (!this->bones.empty())
+	{
+		gp->BindBonesData(bones);
+	}
+
 	gp->BindPipeline(this->pipeline);
 	gp->SetTexture(0, 1, &this->pipeline.textureView);
 	gp->RenderByIndex(this->pipeline, (int)this->indexList.size());

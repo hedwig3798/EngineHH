@@ -4,6 +4,7 @@
 #include "DirectXTex.h"
 #include "DDSTextureLoader.h"
 #include "LightHelper.h"
+#include "RenderObject.h"
 
 GraphicsEngine::GraphicsEngine()
 	: featureLevel{}
@@ -56,6 +57,7 @@ void GraphicsEngine::Initialize(HWND _hwnd)
 	CreateWriter();
 	CreateMatrixBuffer();
 	CreateLightingBffer();
+	CreateBoneBuffer();
 }
 
 /// <summary>
@@ -459,6 +461,36 @@ void GraphicsEngine::BindMatrixParameter(DirectX::XMMATRIX _w, DirectX::XMMATRIX
 	this->d3d11DeviceContext->VSSetConstantBuffers(0, 1, &matrixBuffer);
 }
 
+
+void GraphicsEngine::CreateBoneBuffer()
+{
+	D3D11_BUFFER_DESC mbd = {};
+	mbd.Usage = D3D11_USAGE_DYNAMIC;
+	mbd.ByteWidth = sizeof(BonesBufferType);
+	mbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	mbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	mbd.MiscFlags = 0;
+	mbd.StructureByteStride = 0;
+
+	this->d3d11Device->CreateBuffer(&mbd, nullptr, &this->boneBuffer);
+}
+
+void GraphicsEngine::BindBonesData(std::vector<RenderObject*>& _bones)
+{
+	HRESULT hr;
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+	hr = this->d3d11DeviceContext->Map(this->boneBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	assert(SUCCEEDED(hr));
+
+	BonesBufferType* dataptr = (BonesBufferType*)mappedResource.pData;
+	for (int i = 0; i < (int)_bones.size(); i++)
+	{
+		dataptr->bones[i] = _bones[i]->nodeTM;
+	}
+	this->d3d11DeviceContext->Unmap(this->boneBuffer, 0);
+	this->d3d11DeviceContext->VSSetConstantBuffers(2, 1, &boneBuffer);
+}
 
 void GraphicsEngine::CreateLightingBffer()
 {

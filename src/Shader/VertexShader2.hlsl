@@ -20,6 +20,13 @@ cbuffer cbPerFrame : register(b1)
 // 	float4 g_fogColor;
 };
 
+cbuffer cbPerObject : register(b2)
+{
+	// 일단 하드코딩으로 본 최대 갯수를 100개로 설정
+	// 유동적인 상수 버퍼를 만들 방법이 없을까?
+    matrix bones[100];
+};
+
 struct VertexIn
 {
 	float3 PosL    : POSITION;
@@ -27,8 +34,6 @@ struct VertexIn
 	float2 Tex     : TEXCOORD;
     float3 Weight : WEIGHT;
     uint4 BoneIndices : BONEINDICES;
-// 	uint i2  : WINDEX2;
-// 	uint i3  : WINDEX3;
 };
 
 struct VertexOut
