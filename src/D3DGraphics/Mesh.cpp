@@ -36,7 +36,7 @@ void Mesh::Render(GraphicsEngine* gp, const DirectX::XMMATRIX& _worldTM, const D
 void Mesh::CreatePipeline(GraphicsEngine* graphicsEngine, std::wstring _sPath[], std::wstring _texturePath)
 {
 	// graphicsEngine->CreateTextureData(_texturePath, &this->pipeline.textureView);
-	graphicsEngine->CreateInputLayer(this->pipeline, VertexT::defaultInputLayerDECS, _sPath, 3);
+	graphicsEngine->CreateInputLayer(this->pipeline, VertexT::defaultInputLayerDECS, _sPath, 5);
 	graphicsEngine->CreateVertexBuffer(this->vertexes, (UINT)this->vertexList.size() * VertexT::Size(), &this->pipeline.vertexBuffer);
 	graphicsEngine->CreateIndexBuffer(this->indexes, (UINT)this->indexList.size(), &this->pipeline.IndexBuffer);
 	graphicsEngine->CreateRasterizerState(&this->pipeline.rasterizerState);

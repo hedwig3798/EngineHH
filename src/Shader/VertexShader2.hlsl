@@ -25,6 +25,10 @@ struct VertexIn
 	float3 PosL    : POSITION;
 	float3 NormalL : NORMAL;
 	float2 Tex     : TEXCOORD;
+    float3 Weight : WEIGHT;
+    uint4 BoneIndices : BONEINDICES;
+// 	uint i2  : WINDEX2;
+// 	uint i3  : WINDEX3;
 };
 
 struct VertexOut
