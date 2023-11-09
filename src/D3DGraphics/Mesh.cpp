@@ -31,7 +31,7 @@ void Mesh::Render(GraphicsEngine* gp, const DirectX::XMMATRIX& _worldTM, const D
 
 	if (!this->bones.empty())
 	{
-		gp->BindBonesData(bones);
+		gp->BindBonesData(bones, _worldTM);
 	}
 
 	gp->BindPipeline(this->pipeline);

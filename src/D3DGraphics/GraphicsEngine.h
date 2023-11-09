@@ -106,7 +106,7 @@ public:
 	void BindMatrixParameter(DirectX::XMMATRIX _w, DirectX::XMMATRIX _v, DirectX::XMMATRIX _p, Material _material);
 
 	void CreateBoneBuffer();
-	void BindBonesData(std::vector<RenderObject*>& bones);
+	void BindBonesData(std::vector<RenderObject*>& bones, DirectX::XMMATRIX _worldTM);
 
 	void CreateLightingBffer();
 	void BindLightingParameter(DirectionalLight _directionLight[], UINT _lightCount, DirectX::XMFLOAT3 _cameraPos);

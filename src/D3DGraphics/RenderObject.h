@@ -49,6 +49,7 @@ public:
 public:
 	bool isHelper;
 	DirectX::XMMATRIX nodeTM;
+	DirectX::XMMATRIX originalNodeTM;
 	DirectX::XMMATRIX localTM;
 	DirectX::XMMATRIX animationTM;
 

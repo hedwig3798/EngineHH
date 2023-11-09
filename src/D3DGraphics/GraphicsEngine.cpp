@@ -475,7 +475,7 @@ void GraphicsEngine::CreateBoneBuffer()
 	this->d3d11Device->CreateBuffer(&mbd, nullptr, &this->boneBuffer);
 }
 
-void GraphicsEngine::BindBonesData(std::vector<RenderObject*>& _bones)
+void GraphicsEngine::BindBonesData(std::vector<RenderObject*>& _bones, DirectX::XMMATRIX _worldTM)
 {
 	HRESULT hr;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -486,7 +486,18 @@ void GraphicsEngine::BindBonesData(std::vector<RenderObject*>& _bones)
 	BonesBufferType* dataptr = (BonesBufferType*)mappedResource.pData;
 	for (int i = 0; i < (int)_bones.size(); i++)
 	{
-		dataptr->bones[i] = _bones[i]->nodeTM;
+		DirectX::XMMATRIX boneWorldTM = _bones[i]->nodeTM;
+		DirectX::XMMATRIX boneNodeTM = _bones[i]->originalNodeTM;
+
+		DirectX::XMMATRIX skinWorldTM = _worldTM;
+		DirectX::XMMATRIX skinWorldTMInverse = DirectX::XMMatrixInverse(nullptr, skinWorldTM);
+
+		DirectX::XMMATRIX boneoffsetTM = boneNodeTM * skinWorldTMInverse;
+		DirectX::XMMATRIX boneoffsetTM_Inverse = DirectX::XMMatrixInverse(nullptr, boneoffsetTM);
+
+		DirectX::XMMATRIX finalboneTM = boneoffsetTM_Inverse * boneWorldTM;
+
+		dataptr->bones[i] = DirectX::XMMatrixTranspose(finalboneTM);
 	}
 	this->d3d11DeviceContext->Unmap(this->boneBuffer, 0);
 	this->d3d11DeviceContext->VSSetConstantBuffers(2, 1, &boneBuffer);

@@ -66,6 +66,7 @@ void RenderObject::Render(GraphicsEngine* _graphicsEngine, const DirectX::XMMATR
 
 void RenderObject::Initalize(GraphicsEngine* _graphicsEngine)
 {
+	this->originalNodeTM = this->nodeTM;
 	for (auto& m : this->meshes)
 	{
 		m->SetVertexesData();

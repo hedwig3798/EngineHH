@@ -61,6 +61,8 @@ VertexOut VS(VertexIn vin)
 	//정점의 월드 공간에서 법선 벡터
 	vout.NormalW = mul(vin.NormalL, (float3x3)g_worldInvTranspose);
 	// vout.NormalW = vin.NormalL;
+	
+	
 
 	vout.material = g_material;
 	return vout;
