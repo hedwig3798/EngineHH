@@ -12,6 +12,22 @@ class Mesh
 public:
 	std::vector<VertexT::Data> vertexList;
 	std::vector<UINT> indexList;
+
+	std::vector<DirectX::XMFLOAT3> position;
+
+	std::vector<int> normalIndex;
+	std::vector<DirectX::XMFLOAT3> normal;
+
+	std::vector<int> textureIndex;
+	std::vector<DirectX::XMFLOAT2> texture;
+
+	std::vector<std::vector<float>> weight;
+	std::vector<std::vector<int>> boneIndex;
+
+	std::vector<std::string> boneNames;
+	std::vector<RenderObject*> bones;
+
+
 	PipeLine pipeline;
 
 	VertexT::Data* vertexes;
@@ -19,9 +35,6 @@ public:
 
 	bool isLocal;
 
-	std::vector<RenderObject*> bones;
-	std::vector<float> weight;
-	std::vector<std::string> boneNames;
 
 	Material demoMat;
 

@@ -45,14 +45,7 @@ std::vector<RenderObject*> AseParser(std::wstring _filePath)
 
 	std::map<std::string, RenderObject*> dict;
 
-	std::vector<Mesh*> hasBoneMesh;
-
 	std::vector<std::string> s;
-	DirectX::XMMATRIX LTM = DirectX::XMMatrixIdentity();
-
-	std::vector<DirectX::XMFLOAT3> vertexData;
-	std::vector<DirectX::XMFLOAT2> textureData;
-	std::vector<UINT> textureIndexData;
 
 	int optimizeSize = 0;
 	int optimizeIndex = 0;
@@ -62,7 +55,8 @@ std::vector<RenderObject*> AseParser(std::wstring _filePath)
 	int lastFrame = 0;
 	int tickPerFrame = 0;
 
-	int meshWeightIndex = 0;
+	int meshWeight = 0;
+	int meshWeighIndex = 0;
 
 	Mesh* nowMesh = nullptr;
 	RenderObject* nowRenderObject = nullptr;
@@ -179,15 +173,18 @@ std::vector<RenderObject*> AseParser(std::wstring _filePath)
 			/// 정점과 면의 갯수
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_NUMVERTEX])
 			{
-				vertexData = std::vector<DirectX::XMFLOAT3>(std::stoi(s[1]));
+				assert(nowMesh && "Ase parser error. no mesh in data");
+				nowMesh->position = std::vector<DirectX::XMFLOAT3>(std::stoi(s[1]));
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_NUMTVERTEX])
 			{
-				textureData = std::vector<DirectX::XMFLOAT2>(std::stoi(s[1]));
+				assert(nowMesh && "Ase parser error. no mesh in data");
+				nowMesh->texture = std::vector<DirectX::XMFLOAT2>(std::stoi(s[1]));
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_NUMTVFACES])
 			{
-				textureIndexData = std::vector<UINT>(std::stoi(s[1]) * 3);
+				assert(nowMesh && "Ase parser error. no mesh in data");
+				nowMesh->textureIndex = std::vector<int>(std::stoi(s[1]) * 3);
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_NUMFACES])
 			{
@@ -195,40 +192,36 @@ std::vector<RenderObject*> AseParser(std::wstring _filePath)
 				optimizeSize = std::stoi(s[1]) * 3;
 				nowMesh->indexList = std::vector<UINT>(optimizeSize);
 				nowMesh->vertexList = std::vector<VertexT::Data>(optimizeSize);
-				// result.back()->optimizeVertexList = std::vector<VertexT::Data>(std::stoi(s[1]) * 3);
 			}
 			/// 정점 데이터 파싱
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_VERTEX])
 			{
-				vertexData[std::stoi(s[1])] = DirectX::XMFLOAT3{ std::stof(s[2]), std::stof(s[4]), std::stof(s[3]) };
+				assert(nowMesh && "Ase parser error. no mesh in data");
+				nowMesh->position[std::stoi(s[1])] = DirectX::XMFLOAT3{ std::stof(s[2]), std::stof(s[4]), std::stof(s[3]) };
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_FACE])
 			{
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_VERTEXNORMAL])
 			{
-				DirectX::XMFLOAT2 textureInput = (textureData.size() == 0) ? DirectX::XMFLOAT2{ 0, 0 } : textureData[textureIndexData[optimizeIndex]];
-
 				assert(nowMesh && "Ase parser error. no mesh in data");
-				VertexT::Data input = {
-					vertexData[std::stoi(s[1])],
-					DirectX::XMFLOAT3{ std::stof(s[2]), std::stof(s[4]), std::stof(s[3]) },
-					textureInput
-				};
-				nowMesh->vertexList[optimizeIndex++] = input;
+				nowMesh->normalIndex.push_back(std::stoi(s[1]));
+				nowMesh->normal.push_back(DirectX::XMFLOAT3{ std::stof(s[2]), std::stof(s[4]), std::stof(s[3]) });
 			}
 			/// 텍스쳐 데이터 파싱
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_TVERT])
 			{
+				assert(nowMesh && "Ase parser error. no mesh in data");
 				DirectX::XMFLOAT2 input = { std::stof(s[2]), 1 - std::stof(s[3]) };
-				textureData[std::stoi(s[1])] = std::move(input);
+				nowMesh->texture[std::stoi(s[1])] = std::move(input);
 			}
 			else if (s[0] == Token[TOKENR_MESH_TFACE])
 			{
+				assert(nowMesh && "Ase parser error. no mesh in data");
 				int startIndex = std::stoi(s[1]) * 3;
-				textureIndexData[startIndex] = std::stoi(s[2]);
-				textureIndexData[startIndex + 1] = std::stoi(s[3]);
-				textureIndexData[startIndex + 2] = std::stoi(s[4]);
+				nowMesh->textureIndex[startIndex] = std::stoi(s[2]);
+				nowMesh->textureIndex[startIndex + 1] = std::stoi(s[3]);
+				nowMesh->textureIndex[startIndex + 2] = std::stoi(s[4]);
 			}
 			/// 에니메이션 데이터
 			else if (s[0] == Token[_ASEToken::TOKENR_CONTROL_POS_SAMPLE])
@@ -262,26 +255,18 @@ std::vector<RenderObject*> AseParser(std::wstring _filePath)
 			/// Bone 데이터
 			else if (s[0] == Token[_ASEToken::TOKENR_BONE_LIST])
 			{
-				hasBoneMesh.push_back(nowMesh);
-				nowMesh->weight = std::vector<float>(vertexData.size());
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_NUMBONE])
 			{
-				assert(nowMesh && "Ase parser error. no mesh in data");
-				nowMesh->weight = std::vector<float>(std::stoi(s[1]));
-				}
+			}
 			else if (s[0] == Token[_ASEToken::TOKENR_BONE_NAME])
 			{
-				assert(nowMesh && "Ase parser error. no mesh in data");
-				nowMesh->boneNames.push_back(s[1]);
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_WEIGHT])
 			{
-				meshWeightIndex = std::stoi(s[1]);
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_BONE_BLENGING_WEIGHT])
 			{
-				
 			}
 		}
 	}

@@ -37,8 +37,8 @@ void Mesh::CreatePipeline(GraphicsEngine* graphicsEngine, std::wstring _sPath[],
 {
 	// graphicsEngine->CreateTextureData(_texturePath, &this->pipeline.textureView);
 	graphicsEngine->CreateInputLayer(this->pipeline, VertexT::defaultInputLayerDECS, _sPath, 5);
-	graphicsEngine->CreateVertexBuffer(this->vertexes, (UINT)this->vertexList.size() * VertexT::Size(), &this->pipeline.vertexBuffer);
-	graphicsEngine->CreateIndexBuffer(this->indexes, (UINT)this->indexList.size(), &this->pipeline.IndexBuffer);
+	graphicsEngine->CreateVertexBuffer(this->vertexes, static_cast<UINT>(this->vertexList.size()) * VertexT::Size(), &this->pipeline.vertexBuffer);
+	graphicsEngine->CreateIndexBuffer(this->indexes, static_cast<UINT>(this->indexList.size()), &this->pipeline.IndexBuffer);
 	graphicsEngine->CreateRasterizerState(&this->pipeline.rasterizerState);
 	pipeline.primitiveTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	pipeline.vertexStructSize = VertexT::Size();
@@ -46,6 +46,27 @@ void Mesh::CreatePipeline(GraphicsEngine* graphicsEngine, std::wstring _sPath[],
 
 void Mesh::SetVertexesData()
 {
+	this->vertexList.resize(this->normal.size());
+	for (int i = 0; i < (int)this->normal.size(); i++)
+	{
+		VertexT::Data data;
+		data.position = this->position[this->normalIndex[i]];
+		data.normal = this->normal[i];
+
+		if (this->textureIndex.size() > 0)
+		{
+			data.texture = this->texture[this->textureIndex[i]];
+		}
+		data.weight = DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f };
+		data.BoneIndices[0] = 0;
+		data.BoneIndices[1] = 1;
+		data.BoneIndices[2] = 2;
+		data.BoneIndices[3] = 3;
+
+		this->vertexList[i] = data;
+	}
+
+
 	int vertexSize = static_cast<int>(this->vertexList.size());
 	this->vertexes = new VertexT::Data[vertexSize];
 	for (int i = 0; i < vertexSize; i++)

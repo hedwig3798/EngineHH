@@ -37,7 +37,7 @@ namespace VertexT
 
 	static UINT Size()
 	{
-		return (UINT)60;
+		return static_cast<UINT>(sizeof(Data));
 	}
 
 	static D3D11_INPUT_ELEMENT_DESC defaultInputLayerDECS[5] =
