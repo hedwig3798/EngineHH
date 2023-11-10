@@ -15,11 +15,11 @@ DemoObject::DemoObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene, Man
 {
 	std::vector<VertexT::Data> vertexInfo;
 	std::vector<UINT> indexInfo;
-	this->gemoObject = AseParser(L"../Model/Cylinder.ASE");
+	this->gemoObject = AseParser(L"../Model/babypig_walk_6x.ASE");
 
 	for (auto& g : this->gemoObject)
 	{
-		g->Initalize(graphicsEngine);
+		g->Initalize(graphicsEngine, this->texturePath);
 	}
 
 	dirLights[0].Ambient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);

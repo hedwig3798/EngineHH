@@ -41,7 +41,10 @@ void Mesh::Render(GraphicsEngine* gp, const DirectX::XMMATRIX& _worldTM, const D
 
 void Mesh::CreatePipeline(GraphicsEngine* graphicsEngine, std::wstring _sPath[], std::wstring _texturePath)
 {
-	// graphicsEngine->CreateTextureData(_texturePath, &this->pipeline.textureView);
+	if (_texturePath != L" ")
+	{
+		graphicsEngine->CreateTextureData(_texturePath, &this->pipeline.textureView);
+	}
 	graphicsEngine->CreateInputLayer(this->pipeline, VertexT::defaultInputLayerDECS, _sPath, 5);
 	graphicsEngine->CreateVertexBuffer(this->vertexes, static_cast<UINT>(this->vertexList.size()) * VertexT::Size(), &this->pipeline.vertexBuffer);
 	graphicsEngine->CreateIndexBuffer(this->indexes, static_cast<UINT>(this->indexList.size()), &this->pipeline.IndexBuffer);

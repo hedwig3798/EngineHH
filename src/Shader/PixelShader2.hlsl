@@ -48,6 +48,6 @@ float4 PS(VertexOut pin) : SV_Target
 	float4 textureColor = diffuseMap.Sample(samAnisotropic, pin.Tex);
 	textureColor.a = 1.0f;
 
-	float4 result = litColor; //* textureColor;
-    return litColor;
+	float4 result = litColor * textureColor;
+    return result;
 }

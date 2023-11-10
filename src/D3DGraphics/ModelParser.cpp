@@ -105,12 +105,24 @@ std::vector<RenderObject*> AseParser(std::wstring _filePath)
 			else if (s[0] == Token[_ASEToken::TOKENR_NODE_NAME])
 			{
 				assert(nowRenderObject && "no geomatry object\n");
-				nowRenderObject->SetName(s[1]);
-				dict[s[1]] = nowRenderObject;
+				std::string fullName = "";
+
+				for (size_t i = 1; i < s.size(); i++)
+				{
+					fullName += s[i];
+				}
+				nowRenderObject->SetName(fullName);
+
+				dict[fullName] = nowRenderObject;
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_NODE_PARENT])
 			{
-				parentObj = dict[s[1]];
+				std::string fullName = "";
+				for (size_t i = 1; i < s.size(); i++)
+				{
+					fullName += s[i];
+				}
+				parentObj = dict[fullName];
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_NODE_TM])
 			{
@@ -264,7 +276,12 @@ std::vector<RenderObject*> AseParser(std::wstring _filePath)
 			else if (s[0] == Token[_ASEToken::TOKENR_BONE_NAME])
 			{
 				assert(nowMesh && "Ase parser error. no mesh in data");
-				nowMesh->boneNames.push_back(s[1]);
+				std::string fullName = "";
+				for (size_t i = 1; i < s.size(); i++)
+				{
+					fullName += s[i];
+				}
+				nowMesh->boneNames.push_back(fullName);
 			}
 			else if (s[0] == Token[_ASEToken::TOKENR_MESH_WEIGHT])
 			{

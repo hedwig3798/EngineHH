@@ -21,7 +21,7 @@ private:
 		L"../Shader/PixelShader2.hlsl",
 	};
 
-	std::wstring texturePath = L"../Model/genji_ori.dds";
+	std::wstring texturePath = L"../Model/RainbowTree_Texture01.dds";
 
 	Material demoMat;
 	DirectionalLight dirLights[3];

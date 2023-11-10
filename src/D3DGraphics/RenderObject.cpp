@@ -64,7 +64,7 @@ void RenderObject::Render(GraphicsEngine* _graphicsEngine, const DirectX::XMMATR
 	}
 }
 
-void RenderObject::Initalize(GraphicsEngine* _graphicsEngine)
+void RenderObject::Initalize(GraphicsEngine* _graphicsEngine, std::wstring _path)
 {
 	this->originalNodeTM = this->nodeTM;
 	for (auto& m : this->meshes)
@@ -72,7 +72,7 @@ void RenderObject::Initalize(GraphicsEngine* _graphicsEngine)
 		m->SetVertexesData();
 	}
 
-	this->Localize(_graphicsEngine);
+	this->Localize(_graphicsEngine, _path);
 
 	for (auto& c : this->children)
 	{
@@ -80,7 +80,7 @@ void RenderObject::Initalize(GraphicsEngine* _graphicsEngine)
 	}
 }
 
-void RenderObject::Localize(GraphicsEngine* _graphicsEngine)
+void RenderObject::Localize(GraphicsEngine* _graphicsEngine, std::wstring _path)
 {
 	assert(DirectX::XMMatrixDecompose(&this->nodeScale, &this->nodeRotate, &this->nodePosition, this->nodeTM) &&
 		"cannot decompose node Tm");
@@ -155,7 +155,7 @@ void RenderObject::Localize(GraphicsEngine* _graphicsEngine)
 			position = DirectX::XMVector4Transform(position, invers);
 			DirectX::XMStoreFloat3(&m->vertexes[i].position, position);
 		}
-		m->CreatePipeline(_graphicsEngine, this->path, L" ");
+		m->CreatePipeline(_graphicsEngine, this->path, _path);
 	}
 }
 

@@ -76,9 +76,9 @@ public:
 
 	void Render(GraphicsEngine* _graphicsEngine, const DirectX::XMMATRIX& _viewTM, const DirectX::XMMATRIX& _projTM);
 
-	void Initalize(GraphicsEngine* _graphicsEngine);
+	void Initalize(GraphicsEngine* _graphicsEngine, std::wstring _path = L" ");
 
-	void Localize(GraphicsEngine* _graphicsEngine);
+	void Localize(GraphicsEngine* _graphicsEngine, std::wstring _path = L" ");
 
 	void Update(float _dt);
 
