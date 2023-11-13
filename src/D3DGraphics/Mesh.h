@@ -2,28 +2,48 @@
 #include "pch.h"
 #include "Vertex.h"
 #include "pipeline.h"
+#include "LightHelper.h"
+
 class GraphicsEngine;
+class RenderObject;
 
 class Mesh
 {
 public:
 	std::vector<VertexT::Data> vertexList;
 	std::vector<UINT> indexList;
+
+	std::vector<DirectX::XMFLOAT3> position;
+
+	std::vector<int> normalIndex;
+	std::vector<DirectX::XMFLOAT3> normal;
+
+	std::vector<int> textureIndex;
+	std::vector<DirectX::XMFLOAT2> texture;
+
+	std::vector<std::vector<float>> weight;
+	std::vector<std::vector<int>> boneIndex;
+
+	std::vector<std::string> boneNames;
+	std::vector<RenderObject*> bones;
+
+
 	PipeLine pipeline;
 
-	VertexT::Data* worldVertexes;
-	VertexT::Data* localVertexes;
+	VertexT::Data* vertexes;
 	UINT* indexes;
 
 	bool isLocal;
+
+
+	Material demoMat;
 
 public:
 	Mesh();
 	~Mesh();
 
-	void Render(GraphicsEngine* gp);
+	void Render(GraphicsEngine* gp, const DirectX::XMMATRIX& _worldTM, const DirectX::XMMATRIX& _viewTM, const DirectX::XMMATRIX& _projTM);
 	void CreatePipeline(GraphicsEngine* gp, std::wstring _sPath[], std::wstring _texturePath);
-
-	void ChangeVertex(GraphicsEngine* gp);
+	void SetVertexesData();
 };
 

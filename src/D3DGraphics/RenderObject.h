@@ -1,18 +1,26 @@
 #pragma once
 #include "pch.h"
-
+#include "LightHelper.h"
 class Mesh;
 class GraphicsEngine;
 
-class GeomObject
+enum class RENDER_OBJECT_TYPE
+{
+	GEOMOBJCT,
+	HELPEROBJECT,
+	SHAPEOBJECT,
+	BONE,
+};
+
+class RenderObject
 {
 public:
 	std::string name;
 
 	std::vector<Mesh*> meshes;
 
-	GeomObject* parent;
-	std::vector<GeomObject*> children;
+	RenderObject* parent;
+	std::vector<RenderObject*> children;
 
 	bool isAnimation;
 	int nowTick;
@@ -36,9 +44,12 @@ public:
 	DirectX::XMVECTOR fileRotate;
 	DirectX::XMVECTOR filePosition;
 
+	RENDER_OBJECT_TYPE type;
+
 public:
 	bool isHelper;
 	DirectX::XMMATRIX nodeTM;
+	DirectX::XMMATRIX originalNodeTM;
 	DirectX::XMMATRIX localTM;
 	DirectX::XMMATRIX animationTM;
 
@@ -51,22 +62,23 @@ public:
 		L"../Shader/PixelShader2.hlsl",
 	};
 
+	Material demoMat;
+
 public:
-	GeomObject();
+	RenderObject();
 
 	void AddMesh(Mesh* _mesh);
-	void AddChild(GeomObject* _child);
-	void SetParent(GeomObject* _parent);
+	void AddChild(RenderObject* _child);
+	void SetParent(RenderObject* _parent);
 
 	std::string GetName() const { return name; }
 	void SetName(std::string val) { name = val; }
 
-	void Render(GraphicsEngine* _graphicsEngine);
+	void Render(GraphicsEngine* _graphicsEngine, const DirectX::XMMATRIX& _viewTM, const DirectX::XMMATRIX& _projTM);
 
-	void Initalize(GraphicsEngine* _graphicsEngine);
+	void Initalize(GraphicsEngine* _graphicsEngine, std::wstring _path = L" ");
 
-	void Localize(GraphicsEngine* _graphicsEngine);
-	void SetLocal(bool _isLocal);
+	void Localize(GraphicsEngine* _graphicsEngine, std::wstring _path = L" ");
 
 	void Update(float _dt);
 

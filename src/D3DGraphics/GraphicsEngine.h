@@ -14,6 +14,7 @@
 /// </summary>
 
 class DXTKFont;
+class RenderObject;
 
 class GraphicsEngine
 {
@@ -37,6 +38,11 @@ private:
 		// 	float  g_fogStart;
 		// 	float  g_fogRange;
 		// 	float4 g_fogColor;
+	};
+
+	struct BonesBufferType
+	{
+		DirectX::XMMATRIX bones[100];
 	};
 
 	// D3D 기능 레벨
@@ -66,6 +72,7 @@ private:
 
 	ID3D11Buffer* matrixBuffer;
 	ID3D11Buffer* lightBuffer;
+	ID3D11Buffer* boneBuffer;
 
 	bool useMSAA;
 
@@ -97,6 +104,9 @@ public:
 
 	void CreateMatrixBuffer();
 	void BindMatrixParameter(DirectX::XMMATRIX _w, DirectX::XMMATRIX _v, DirectX::XMMATRIX _p, Material _material);
+
+	void CreateBoneBuffer();
+	void BindBonesData(std::vector<RenderObject*>& bones, DirectX::XMMATRIX _worldTM);
 
 	void CreateLightingBffer();
 	void BindLightingParameter(DirectionalLight _directionLight[], UINT _lightCount, DirectX::XMFLOAT3 _cameraPos);

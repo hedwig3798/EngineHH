@@ -1,13 +1,14 @@
-#include "GeomObject.h"
+#include "RenderObject.h"
 #include "Mesh.h"
+#include "GraphicsEngine.h"
 
-GeomObject::GeomObject()
+RenderObject::RenderObject()
 	: name{}
 	, nodeTM(DirectX::XMMatrixIdentity())
 	, isHelper(false)
 	, meshes(std::vector<Mesh*>())
 	, parent(nullptr)
-	, children(std::vector<GeomObject*>())
+	, children(std::vector<RenderObject*>())
 	, localTM(DirectX::XMMatrixIdentity())
 	, animationPositionTrack(std::vector<std::pair<int, DirectX::XMFLOAT3>>())
 	, animationRotateTrack(std::vector<std::pair<int, DirectX::XMFLOAT4>>())
@@ -26,44 +27,52 @@ GeomObject::GeomObject()
 	, nodeRotate{}
 	, nodeScale{}
 	, isNegative(false)
+	, fileScale{}
+	, fileRotate{}
+	, filePosition{}
+	, type(RENDER_OBJECT_TYPE::GEOMOBJCT)
 {
+	this->demoMat.Ambient = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	this->demoMat.Diffuse = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
+	this->demoMat.Specular = XMFLOAT4(0.8f, 0.8f, 0.8f, 16.0f);
 }
 
-void GeomObject::AddMesh(Mesh* _mesh)
+void RenderObject::AddMesh(Mesh* _mesh)
 {
 	meshes.push_back(_mesh);
 }
 
-void GeomObject::AddChild(GeomObject* _child)
+void RenderObject::AddChild(RenderObject* _child)
 {
 	children.push_back(_child);
 }
 
-void GeomObject::SetParent(GeomObject* _parent)
+void RenderObject::SetParent(RenderObject* _parent)
 {
 	this->parent = _parent;
 }
 
-void GeomObject::Render(GraphicsEngine* _graphicsEngine)
+void RenderObject::Render(GraphicsEngine* _graphicsEngine, const DirectX::XMMATRIX& _viewTM, const DirectX::XMMATRIX& _projTM)
 {
 	for (auto& m : this->meshes)
 	{
-		m->Render(_graphicsEngine);
+		m->Render(_graphicsEngine, this->nodeTM, _viewTM, _projTM);
 	}
 	for (auto& c : this->children)
 	{
-		c->Render(_graphicsEngine);
+		c->Render(_graphicsEngine, _viewTM, _projTM);
 	}
 }
 
-void GeomObject::Initalize(GraphicsEngine* _graphicsEngine)
+void RenderObject::Initalize(GraphicsEngine* _graphicsEngine, std::wstring _path)
 {
+	this->originalNodeTM = this->nodeTM;
 	for (auto& m : this->meshes)
 	{
-		m->CreatePipeline(_graphicsEngine, this->path, L" ");
+		m->SetVertexesData();
 	}
 
-	this->Localize(_graphicsEngine);
+	this->Localize(_graphicsEngine, _path);
 
 	for (auto& c : this->children)
 	{
@@ -71,7 +80,7 @@ void GeomObject::Initalize(GraphicsEngine* _graphicsEngine)
 	}
 }
 
-void GeomObject::Localize(GraphicsEngine* _graphicsEngine)
+void RenderObject::Localize(GraphicsEngine* _graphicsEngine, std::wstring _path)
 {
 	assert(DirectX::XMMatrixDecompose(&this->nodeScale, &this->nodeRotate, &this->nodePosition, this->nodeTM) &&
 		"cannot decompose node Tm");
@@ -141,32 +150,16 @@ void GeomObject::Localize(GraphicsEngine* _graphicsEngine)
 	{
 		for (int i = 0; i < m->vertexList.size(); i++)
 		{
-			DirectX::XMVECTOR position = DirectX::XMLoadFloat3(&m->worldVertexes[i].position);
+			DirectX::XMVECTOR position = DirectX::XMLoadFloat3(&m->vertexes[i].position);
 			position.m128_f32[3] = 1.0f;
 			position = DirectX::XMVector4Transform(position, invers);
-			DirectX::XMStoreFloat3(&m->localVertexes[i].position, position);
-
-			DirectX::XMVECTOR normal = DirectX::XMLoadFloat3(&m->localVertexes[i].normal);
-			normal.m128_f32[3] = 1.0f;
-			normal = DirectX::XMVector3Normalize(DirectX::XMVector4Transform(normal, inversTarnspose));
-			DirectX::XMStoreFloat3(&m->worldVertexes[i].normal, normal);
+			DirectX::XMStoreFloat3(&m->vertexes[i].position, position);
 		}
+		m->CreatePipeline(_graphicsEngine, this->path, _path);
 	}
 }
 
-void GeomObject::SetLocal(bool _isLocal)
-{
-	for (auto& m : this->meshes)
-	{
-		m->isLocal = _isLocal;
-	}
-	for (auto& c : this->children)
-	{
-		c->SetLocal(_isLocal);
-	}
-}
-
-void GeomObject::Update(float _dt)
+void RenderObject::Update(float _dt)
 {
 	UpdateAnimation(_dt);
 
@@ -179,25 +172,6 @@ void GeomObject::Update(float _dt)
 		this->nodeTM = this->localTM;
 	}
 
-	DirectX::XMMATRIX invers = DirectX::XMMatrixInverse(nullptr, nodeTM);
-	DirectX::XMMATRIX inversTarnspose = DirectX::XMMatrixTranspose(invers);
-
-	for (auto& m : this->meshes)
-	{
-		for (int i = 0; i < m->vertexList.size(); i++)
-		{
-			DirectX::XMVECTOR position = DirectX::XMLoadFloat3(&m->localVertexes[i].position);
-			position.m128_f32[3] = 1.0f;
-			position = DirectX::XMVector4Transform(position, nodeTM);
-			DirectX::XMStoreFloat3(&m->worldVertexes[i].position, position);
-
-			DirectX::XMVECTOR normal = DirectX::XMLoadFloat3(&m->localVertexes[i].normal);
-			normal.m128_f32[3] = 1.0f;
-			normal = DirectX::XMVector3Normalize(DirectX::XMVector4Transform(normal, inversTarnspose));
-			DirectX::XMStoreFloat3(&m->worldVertexes[i].normal, normal);
-		}
-	}
-
 	for (auto& c : this->children)
 	{
 		c->Update(_dt);
@@ -205,24 +179,24 @@ void GeomObject::Update(float _dt)
 
 }
 
-void GeomObject::Translate(float _x, float _y, float _z)
+void RenderObject::Translate(float _x, float _y, float _z)
 {
 	this->localTM *= DirectX::XMMatrixTranslation(_x, _y, _z);
 }
 
-void GeomObject::RoateBaseAxis(float _x, float _y, float _z)
+void RenderObject::RoateBaseAxis(float _x, float _y, float _z)
 {
 	this->localTM *= DirectX::XMMatrixRotationX(_x);
 	this->localTM *= DirectX::XMMatrixRotationY(_y);
 	this->localTM *= DirectX::XMMatrixRotationZ(_z);
 }
 
-void GeomObject::Scale(float _x, float _y, float _z)
+void RenderObject::Scale(float _x, float _y, float _z)
 {
 
 }
 
-void GeomObject::UpdateAnimation(float _dt)
+void RenderObject::UpdateAnimation(float _dt)
 {
 	this->accTick += _dt * 1;
 	while (this->accTick >= this->oneTick)
@@ -272,8 +246,8 @@ void GeomObject::UpdateAnimation(float _dt)
 			const DirectX::XMFLOAT4 prevRotate = this->animationRotateTrack[this->rotateTrackIndex - 1].second;
 			DirectX::XMVECTOR rotatePrevVector = DirectX::XMLoadFloat4(&prevRotate);
 
-			float t1 = this->animationRotateTrack[this->rotateTrackIndex - 1].first;
-			float t2 = this->animationRotateTrack[this->rotateTrackIndex].first;
+			float t1 = (float)this->animationRotateTrack[this->rotateTrackIndex - 1].first;
+			float t2 = (float)this->animationRotateTrack[this->rotateTrackIndex].first;
 			float lerp = (nowTick - t1) / (t2 - t1);
 			if (lerp >= 1.0f)
 			{
@@ -306,8 +280,8 @@ void GeomObject::UpdateAnimation(float _dt)
 		if (this->positionTrackIndex != 0)
 		{
 			const DirectX::XMFLOAT3 prevPosition = this->animationPositionTrack[this->positionTrackIndex - 1].second;
-			float t1 = this->animationPositionTrack[this->positionTrackIndex - 1].first;
-			float t2 = this->animationPositionTrack[this->positionTrackIndex].first;
+			float t1 = (float)this->animationPositionTrack[this->positionTrackIndex - 1].first;
+			float t2 = (float)this->animationPositionTrack[this->positionTrackIndex].first;
 			float lerp = (nowTick - t1) / (t2 - t1);
 
 			if (lerp >= 1.0f)

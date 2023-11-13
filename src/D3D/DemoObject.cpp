@@ -15,11 +15,11 @@ DemoObject::DemoObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene, Man
 {
 	std::vector<VertexT::Data> vertexInfo;
 	std::vector<UINT> indexInfo;
-	this->gemoObject = AseParser(L"../Model/03IK-Joe.ASE");
+	this->gemoObject = AseParser(L"../Model/babypig_walk_6x.ASE");
 
 	for (auto& g : this->gemoObject)
 	{
-		g->Initalize(graphicsEngine);
+		g->Initalize(graphicsEngine, this->texturePath);
 	}
 
 	dirLights[0].Ambient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
@@ -69,22 +69,6 @@ void DemoObject::Update(float _dt)
 	{
 		lightCount = 3;
 	}
-	if (this->managers->keyManager->GetKeyState(KEY::N_4) == KEY_STATE::DOWN && !isLocal)
-	{
-		isLocal = true;
-		for (auto& geo : this->gemoObject)
-		{
-			geo->SetLocal(isLocal);
-		}
-	}
-	if (this->managers->keyManager->GetKeyState(KEY::N_5) == KEY_STATE::DOWN && isLocal)
-	{
-		isLocal = false;
-		for (auto& geo : this->gemoObject)
-		{
-			geo->SetLocal(isLocal);
-		}
-	}
 	if (this->managers->keyManager->GetKeyState(KEY::N_6) == KEY_STATE::HOLD)
 	{
 		for (auto& geo : this->gemoObject)
@@ -98,16 +82,9 @@ void DemoObject::Update(float _dt)
 
 void DemoObject::Render(GraphicsEngine* ge)
 {
-	this->graphicsEngine->BindMatrixParameter(
-		DirectX::XMMatrixIdentity(),
-		this->scene->getCamera()->GetViewTM(),
-		this->scene->getCamera()->GetProjectionTM(),
-		this->demoMat
-	);
-
 	this->graphicsEngine->BindLightingParameter(this->dirLights, lightCount, this->scene->getCamera()->GetPosition());
 	for(auto& g : this->gemoObject) 
 	{
-		g->Render(graphicsEngine);
+		g->Render(graphicsEngine, this->scene->getCamera()->GetViewTM(), this->scene->getCamera()->GetProjectionTM());
 	}
 }
