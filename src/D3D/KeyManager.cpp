@@ -139,22 +139,22 @@ void KeyManager::Update()
 		{
 			if (this->mouseInfomation[i].prevPush)
 			{
-				this->mouseInfomation[i].state == KEY_STATE::HOLD;
+				this->mouseInfomation[i].state = KEY_STATE::HOLD;
 			}
 			else
 			{
-				this->mouseInfomation[i].state == KEY_STATE::DOWN;
+				this->mouseInfomation[i].state = KEY_STATE::DOWN;
 			}
 		}
 		else
 		{
 			if (this->mouseInfomation[i].prevPush)
 			{
-				this->mouseInfomation[i].state == KEY_STATE::UP;
+				this->mouseInfomation[i].state = KEY_STATE::UP;
 			}
 			else
 			{
-				this->mouseInfomation[i].state == KEY_STATE::NONE;
+				this->mouseInfomation[i].state = KEY_STATE::NONE;
 			}
 		}
 	}
