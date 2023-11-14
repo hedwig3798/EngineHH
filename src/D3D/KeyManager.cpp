@@ -3,6 +3,12 @@
 KeyManager::KeyManager()
 	: keyInfomation()
 	, hwnd(nullptr)
+	, mousePosY(0)
+	, mousePosX(0)
+	, mouseClickPosX(0)
+	, mouseClickPosY(0)
+	, mouseInfomation()
+	, mouseClick()
 {
 
 }
@@ -10,6 +16,32 @@ KeyManager::KeyManager()
 KeyManager::~KeyManager()
 {
 
+}
+
+void KeyManager::OnMouseLeftUp(int _x, int _y)
+{
+	this->mouseClick[(int)MOUSE::LEFT] = false;
+}
+
+void KeyManager::OnMouseLeftDown(int _x, int _y)
+{
+	this->mouseClick[(int)MOUSE::LEFT] = true;
+}
+
+void KeyManager::OnMouseRightUp(int _x, int _y)
+{
+	this->mouseClick[(int)MOUSE::RIGHT] = false;
+}
+
+void KeyManager::OnMouseRightDown(int _x, int _y)
+{
+	this->mouseClick[(int)MOUSE::RIGHT] = true;
+}
+
+void KeyManager::OnMouseMove(int _btnState, int _x, int _y)
+{
+	this->mousePosX = _x;
+	this->mousePosY = _y;
 }
 
 void KeyManager::Initalize(HWND _hwnd)
@@ -44,6 +76,20 @@ void KeyManager::Update()
 			if (keyInfomation[i].state == KEY_STATE::UP)
 			{
 				keyInfomation[i].state = KEY_STATE::NONE;
+			}
+		}
+
+		for (size_t i = 0; i < (size_t)MOUSE::END; i++)
+		{
+			mouseInfomation[i].prevPush = false;
+
+			if (mouseInfomation[i].state == KEY_STATE::DOWN || mouseInfomation[i].state == KEY_STATE::HOLD)
+			{
+				mouseInfomation[i].state = KEY_STATE::UP;
+			}
+			if (mouseInfomation[i].state == KEY_STATE::UP)
+			{
+				mouseInfomation[i].state = KEY_STATE::NONE;
 			}
 		}
 		return;
@@ -84,6 +130,32 @@ void KeyManager::Update()
 			}
 
 			keyInfomation[i].prevPush = false;
+		}
+	}
+
+	for (size_t i = 0; i < (size_t)MOUSE::END; i++)
+	{
+		if (this->mouseClick[i])
+		{
+			if (this->mouseInfomation[i].prevPush)
+			{
+				this->mouseInfomation[i].state == KEY_STATE::HOLD;
+			}
+			else
+			{
+				this->mouseInfomation[i].state == KEY_STATE::DOWN;
+			}
+		}
+		else
+		{
+			if (this->mouseInfomation[i].prevPush)
+			{
+				this->mouseInfomation[i].state == KEY_STATE::UP;
+			}
+			else
+			{
+				this->mouseInfomation[i].state == KEY_STATE::NONE;
+			}
 		}
 	}
 }
