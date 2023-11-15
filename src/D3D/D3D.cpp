@@ -27,9 +27,11 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
 	MSG	msg;
 	WNDCLASSEXW wcex;
 
+	DemoProcess* demoProcess = new DemoProcess();
+
 	wcex.cbSize = sizeof(WNDCLASSEX);
 	wcex.style = CS_HREDRAW | CS_VREDRAW;
-	wcex.lpfnWndProc = WndProc;
+	wcex.lpfnWndProc = demoProcess->WndProc;
 	wcex.cbClsExtra = 0;
 	wcex.cbWndExtra = 0;
 	wcex.hInstance = hInstance;
@@ -54,7 +56,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
 
 	// 생성된 윈도를 화면에 표시
 
-	DemoProcess* demoProcess = new DemoProcess();
 	demoProcess->Initialize(hWnd);
 
 	ShowWindow(hWnd, SW_SHOWNORMAL);
@@ -103,28 +104,5 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
 	delete demoProcess;
 
 	return (int)msg.wParam;
-}
-
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message,
-	WPARAM wParam, LPARAM lParam)
-{
-	HDC			hdc;
-	PAINTSTRUCT ps;
-
-	switch (message)
-	{
-		case WM_PAINT:
-			hdc = BeginPaint(hWnd, &ps);
-			EndPaint(hWnd, &ps);
-			break;
-
-		case WM_DESTROY:
-			PostQuitMessage(0);
-			break;
-
-		default:
-			return DefWindowProc(hWnd, message, wParam, lParam);
-	}
-	return 0;
 }
 
