@@ -154,16 +154,19 @@ private:
 		VK_BACK
 	};
 
-	int mousePosX;
-	int mousePosY;
+	int nowMousePosX;
+	int nowMousePosY;
 
-	int mouseClickPosX;
-	int mouseClickPosY;
+	int oldMousePosX;
+	int oldMousePosY;
+
 
 public:
 	KeyManager();
 	~KeyManager();
 
+	int mouseDX;
+	int mouseDY;
 	void OnMouseLeftUp(int _x, int _y);
 	void OnMouseLeftDown(int _x, int _y);
 	void OnMouseRightUp(int _x, int _y);

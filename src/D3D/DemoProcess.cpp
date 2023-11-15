@@ -56,7 +56,10 @@ void DemoProcess::Initialize(HWND _hwnd)
 	this->staticManagers = this->managers;
 	this->managers->Initialize(this->hwnd);
 	this->object = new DemoObject(this->graphicsEngine, this, this->managers);
-	this->camera = new DemoCamera((float)(windowSize.bottom - windowSize.top), (float)(windowSize.right - windowSize.left), this->managers);
+	this->camera = new DemoCamera(
+		static_cast<float>(windowSize.bottom - windowSize.top), 
+		static_cast<float>(windowSize.right - windowSize.left),
+		this->managers);
 }
 
 void DemoProcess::Process()
@@ -126,7 +129,9 @@ LRESULT CALLBACK DemoProcess::WndProc(HWND hWnd, UINT message,
 	case WM_RBUTTONUP:
 		staticManagers->keyManager->OnMouseRightUp(LOWORD(lParam), HIWORD(lParam));
 		break;
-
+	case WM_MOUSEMOVE:
+		staticManagers->keyManager->OnMouseMove(wParam, LOWORD(lParam), HIWORD(lParam));
+		break;
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}

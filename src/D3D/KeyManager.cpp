@@ -3,12 +3,14 @@
 KeyManager::KeyManager()
 	: keyInfomation()
 	, hwnd(nullptr)
-	, mousePosY(0)
-	, mousePosX(0)
-	, mouseClickPosX(0)
-	, mouseClickPosY(0)
+	, nowMousePosX(0)
+	, nowMousePosY(0)
 	, mouseInfomation()
 	, mouseClick()
+	, oldMousePosX(0)
+	, oldMousePosY(0)
+	, mouseDX(0)
+	, mouseDY(0)
 {
 
 }
@@ -40,15 +42,21 @@ void KeyManager::OnMouseRightDown(int _x, int _y)
 
 void KeyManager::OnMouseMove(int _btnState, int _x, int _y)
 {
-	this->mousePosX = _x;
-	this->mousePosY = _y;
+	this->oldMousePosX = this->nowMousePosX;
+	this->oldMousePosY = this->nowMousePosY;
+
+	this->nowMousePosX = _x;
+	this->nowMousePosY = _y;
+
+	this->mouseDX = this->nowMousePosX - this->oldMousePosX;
+	this->mouseDY = this->nowMousePosY - this->oldMousePosY;
 }
 
 void KeyManager::Initalize(HWND _hwnd)
 {
 	hwnd = _hwnd;
 
-	for (UINT i = 0; i < (UINT)KEY::END; i++)
+	for (UINT i = 0; i < static_cast<UINT>(KEY::END); i++)
 	{
 		keyInfomation[i] = tKeyInfo{ KEY_STATE::NONE, false };
 	}
@@ -65,7 +73,7 @@ void KeyManager::Update()
 
 	if (isGetFocusedHwnd == nullptr)
 	{
-		for (size_t i = 0; i < (size_t)KEY::END; i++)
+		for (size_t i = 0; i < static_cast<size_t>(KEY::END); i++)
 		{
 			keyInfomation[i].prevPush = false;
 
@@ -79,7 +87,7 @@ void KeyManager::Update()
 			}
 		}
 
-		for (size_t i = 0; i < (size_t)MOUSE::END; i++)
+		for (size_t i = 0; i < static_cast<size_t>(MOUSE::END); i++)
 		{
 			mouseInfomation[i].prevPush = false;
 
@@ -96,7 +104,7 @@ void KeyManager::Update()
 	}
 
 	// 게임 포커스 [O] 때 키 상태 업데이트
-	for (size_t i = 0; i < (size_t)KEY::END; ++i)
+	for (size_t i = 0; i < static_cast<size_t>(KEY::END); ++i)
 	{
 		// 키가 눌려있다
 		if (GetAsyncKeyState(virtualKeyArray[i]) & 0x8000)
@@ -131,30 +139,31 @@ void KeyManager::Update()
 
 			keyInfomation[i].prevPush = false;
 		}
-	}
-
-	for (size_t i = 0; i < (size_t)MOUSE::END; i++)
-	{
-		if (this->mouseClick[i])
+		for (size_t i = 0; i < static_cast<size_t>(MOUSE::END); i++)
 		{
-			if (this->mouseInfomation[i].prevPush)
+			if (this->mouseClick[i])
 			{
-				this->mouseInfomation[i].state = KEY_STATE::HOLD;
+				if (this->mouseInfomation[i].prevPush)
+				{
+					this->mouseInfomation[i].state = KEY_STATE::HOLD;
+				}
+				else
+				{
+					this->mouseInfomation[i].state = KEY_STATE::DOWN;
+				}
+				this->mouseInfomation[i].prevPush = true;
 			}
 			else
 			{
-				this->mouseInfomation[i].state = KEY_STATE::DOWN;
-			}
-		}
-		else
-		{
-			if (this->mouseInfomation[i].prevPush)
-			{
-				this->mouseInfomation[i].state = KEY_STATE::UP;
-			}
-			else
-			{
-				this->mouseInfomation[i].state = KEY_STATE::NONE;
+				if (this->mouseInfomation[i].prevPush)
+				{
+					this->mouseInfomation[i].state = KEY_STATE::UP;
+				}
+				else
+				{
+					this->mouseInfomation[i].state = KEY_STATE::NONE;
+				}
+				this->mouseInfomation[i].prevPush = false;
 			}
 		}
 	}
@@ -165,7 +174,7 @@ void KeyManager::Update()
 /// </summary>
 void KeyManager::Reset()
 {
-	for (size_t i = 0; i < (size_t)KEY::END; i++)
+	for (size_t i = 0; i < static_cast<size_t>(KEY::END); i++)
 	{
 		keyInfomation[i].state = KEY_STATE::NONE;
 		keyInfomation[i].prevPush = false;
