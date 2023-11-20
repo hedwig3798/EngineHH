@@ -19,6 +19,7 @@ private:
 	GraphicsEngine* graphicsEngine;
 
 	ManagerSet* managers;
+	static ManagerSet* staticManagers;
 
 	DemoCamera* camera;
 	DemoObject* object;
@@ -40,6 +41,9 @@ public:
 	void Process();
 
 	DemoCamera* getCamera();
+
+	static LRESULT CALLBACK WndProc(HWND hWnd, UINT message,
+		WPARAM wParam, LPARAM lParam);
 
 private:
 	// 실제 수행되는 함수

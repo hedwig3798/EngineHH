@@ -1,6 +1,6 @@
 #pragma once
 #include "pch.h"
-
+#include <windows.h>
 /// <summary>
 /// 키 입력 처리를 위한 매니저 클래스
 /// 최초 작성일 : 2023/07/21
@@ -95,6 +95,7 @@ private:
 	HWND hwnd;
 
 	tKeyInfo keyInfomation[(int)KEY::END];
+	bool mouseClick[(int)MOUSE::END];
 	tKeyInfo mouseInfomation[(int)MOUSE::END];
 
 	int virtualKeyArray[(int)KEY::END] =
@@ -153,16 +154,32 @@ private:
 		VK_BACK
 	};
 
-	DirectX::XMFLOAT2 mousePosition;
+	int nowMousePosX;
+	int nowMousePosY;
+
+	int oldMousePosX;
+	int oldMousePosY;
+
 
 public:
 	KeyManager();
 	~KeyManager();
+
+	int mouseDX;
+	int mouseDY;
+	void OnMouseLeftUp(int _x, int _y);
+	void OnMouseLeftDown(int _x, int _y);
+	void OnMouseRightUp(int _x, int _y);
+	void OnMouseRightDown(int _x, int _y);
+	void OnMouseMove(int _btnState, int _x, int _y);
 
 	void Initalize(HWND _hwnd);
 
 	void Update();
 	void Reset();
 
+	void ResetMouse(int _x = 0, int _y = 0);
+
 	KEY_STATE GetKeyState(KEY _eKey) { return keyInfomation[(int)_eKey].state; }
+	KEY_STATE GetMouseState(MOUSE _eKey) { return mouseInfomation[(int)_eKey].state; }
 };

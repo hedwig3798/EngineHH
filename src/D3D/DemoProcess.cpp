@@ -6,6 +6,8 @@
 #include "LineObject.h"
 #include "Axes.h"
 
+ManagerSet* DemoProcess::staticManagers = nullptr;
+
 DemoProcess::DemoProcess()
 	: graphicsEngine(nullptr)
 	, hwnd(nullptr)
@@ -22,7 +24,7 @@ DemoProcess::DemoProcess()
 	this->explain += L"숫자 0, 1, 2, 3 : 조명 갯수 설정\n";
 	this->explain += L"숫자 4: 모든 노드를 로컬 위치로\n";
 	this->explain += L"숫자 5: 모든 노드를 월드 위치로\n";
-	
+	staticManagers = this->managers;
 }
 
 DemoProcess::~DemoProcess()
@@ -31,7 +33,7 @@ DemoProcess::~DemoProcess()
 	delete this->object;
 
 	delete this->line;
-	
+
 	delete this->camera;
 	delete this->managers;
 }
@@ -51,9 +53,13 @@ void DemoProcess::Initialize(HWND _hwnd)
 	this->axes = new Axes(this->graphicsEngine, this);
 
 	this->managers = new ManagerSet();
+	this->staticManagers = this->managers;
 	this->managers->Initialize(this->hwnd);
 	this->object = new DemoObject(this->graphicsEngine, this, this->managers);
-	this->camera = new DemoCamera((float)(windowSize.bottom - windowSize.top), (float)(windowSize.right - windowSize.left), this->managers);
+	this->camera = new DemoCamera(
+		static_cast<float>(windowSize.bottom - windowSize.top), 
+		static_cast<float>(windowSize.right - windowSize.left),
+		this->managers);
 }
 
 void DemoProcess::Process()
@@ -72,6 +78,8 @@ void DemoProcess::Update()
 	this->managers->Update();
 	camera->Update();
 	this->object->Update(this->managers->timeManager->GetfDT());
+	this->managers->keyManager->mouseDX = 0;
+	this->managers->keyManager->mouseDY = 0;
 }
 
 void DemoProcess::Render()
@@ -92,4 +100,42 @@ void DemoProcess::Render()
 	this->graphicsEngine->WriteText(200, 12, COLORS::White, const_cast<TCHAR*>(dt.c_str()));
 	this->graphicsEngine->endDraw();
 	int test = 0;
+}
+
+LRESULT CALLBACK DemoProcess::WndProc(HWND hWnd, UINT message,
+	WPARAM wParam, LPARAM lParam)
+{
+	HDC			hdc;
+	PAINTSTRUCT ps;
+
+	switch (message)
+	{
+	case WM_PAINT:
+		hdc = BeginPaint(hWnd, &ps);
+		EndPaint(hWnd, &ps);
+		break;
+
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		break;
+
+	case WM_LBUTTONDOWN:
+		staticManagers->keyManager->OnMouseLeftDown(LOWORD(lParam), HIWORD(lParam));
+		break;
+	case WM_RBUTTONDOWN:
+		staticManagers->keyManager->OnMouseRightDown(LOWORD(lParam), HIWORD(lParam));
+		break;
+	case WM_LBUTTONUP:
+		staticManagers->keyManager->OnMouseLeftUp(LOWORD(lParam), HIWORD(lParam));
+		break;
+	case WM_RBUTTONUP:
+		staticManagers->keyManager->OnMouseRightUp(LOWORD(lParam), HIWORD(lParam));
+		break;
+	case WM_MOUSEMOVE:
+		staticManagers->keyManager->OnMouseMove(wParam, LOWORD(lParam), HIWORD(lParam));
+		break;
+	default:
+		return DefWindowProc(hWnd, message, wParam, lParam);
+	}
+	return 0;
 }
