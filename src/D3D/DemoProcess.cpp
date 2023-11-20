@@ -78,6 +78,8 @@ void DemoProcess::Update()
 	this->managers->Update();
 	camera->Update();
 	this->object->Update(this->managers->timeManager->GetfDT());
+	this->managers->keyManager->mouseDX = 0;
+	this->managers->keyManager->mouseDY = 0;
 }
 
 void DemoProcess::Render()

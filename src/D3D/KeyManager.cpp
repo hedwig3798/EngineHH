@@ -22,21 +22,25 @@ KeyManager::~KeyManager()
 
 void KeyManager::OnMouseLeftUp(int _x, int _y)
 {
+	ResetMouse(_x, _y);
 	this->mouseClick[(int)MOUSE::LEFT] = false;
 }
 
 void KeyManager::OnMouseLeftDown(int _x, int _y)
 {
+	ResetMouse(_x, _y);
 	this->mouseClick[(int)MOUSE::LEFT] = true;
 }
 
 void KeyManager::OnMouseRightUp(int _x, int _y)
 {
+	ResetMouse(_x, _y);
 	this->mouseClick[(int)MOUSE::RIGHT] = false;
 }
 
 void KeyManager::OnMouseRightDown(int _x, int _y)
 {
+	ResetMouse(_x, _y);
 	this->mouseClick[(int)MOUSE::RIGHT] = true;
 }
 
@@ -180,3 +184,16 @@ void KeyManager::Reset()
 		keyInfomation[i].prevPush = false;
 	}
 }
+
+void KeyManager::ResetMouse(int _x /*= 0*/, int _y /*= 0*/)
+{
+	this->nowMousePosX = _x;
+	this->oldMousePosX = _x;
+
+	this->nowMousePosY = _y;
+	this->oldMousePosY = _y;
+
+	this->mouseDX = 0;
+	this->mouseDY = 0;
+}
+

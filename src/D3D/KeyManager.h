@@ -178,6 +178,8 @@ public:
 	void Update();
 	void Reset();
 
+	void ResetMouse(int _x = 0, int _y = 0);
+
 	KEY_STATE GetKeyState(KEY _eKey) { return keyInfomation[(int)_eKey].state; }
 	KEY_STATE GetMouseState(MOUSE _eKey) { return mouseInfomation[(int)_eKey].state; }
 };

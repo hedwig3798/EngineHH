@@ -193,7 +193,7 @@ void DemoCamera::Update()
 
 	if (this->managers->keyManager->GetMouseState(MOUSE::LEFT) == KEY_STATE::HOLD) 
 	{
-		RotateRight(this->managers->keyManager->mouseDX * 0.00001f);
-		RotateUp(this->managers->keyManager->mouseDY * 0.00001f);
+		RotateRight(this->managers->keyManager->mouseDX * 0.001f);
+		RotateUp(this->managers->keyManager->mouseDY * 0.001f);
 	}
 }
