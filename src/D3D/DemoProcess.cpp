@@ -132,7 +132,7 @@ LRESULT CALLBACK DemoProcess::WndProc(HWND hWnd, UINT message,
 		staticManagers->keyManager->OnMouseRightUp(LOWORD(lParam), HIWORD(lParam));
 		break;
 	case WM_MOUSEMOVE:
-		staticManagers->keyManager->OnMouseMove(wParam, LOWORD(lParam), HIWORD(lParam));
+		staticManagers->keyManager->OnMouseMove(static_cast<int>(wParam), LOWORD(lParam), HIWORD(lParam));
 		break;
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
