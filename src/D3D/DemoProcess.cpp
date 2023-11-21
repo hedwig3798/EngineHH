@@ -22,8 +22,6 @@ DemoProcess::DemoProcess()
 	this->explain += L"Q, E : 카메라 상하 이동\n";
 	this->explain += L"화살표 : 카메라 회전\n";
 	this->explain += L"숫자 0, 1, 2, 3 : 조명 갯수 설정\n";
-	this->explain += L"숫자 4: 모든 노드를 로컬 위치로\n";
-	this->explain += L"숫자 5: 모든 노드를 월드 위치로\n";
 	this->explain += L"마우스 좌클릭 드래그: 카메라 회전\n";
 	staticManagers = this->managers;
 }
