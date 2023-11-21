@@ -106,7 +106,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)D3DGraphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)D3DGraphics;$(SolutionDir)Imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -133,12 +133,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Imgui\imconfig.h" />
+    <ClInclude Include="..\Imgui\imgui.h" />
+    <ClInclude Include="..\Imgui\imgui_impl_dx11.h" />
+    <ClInclude Include="..\Imgui\imgui_impl_win32.h" />
+    <ClInclude Include="..\Imgui\imgui_internal.h" />
+    <ClInclude Include="..\Imgui\imstb_rectpack.h" />
+    <ClInclude Include="..\Imgui\imstb_textedit.h" />
+    <ClInclude Include="..\Imgui\imstb_truetype.h" />
     <ClInclude Include="Axes.h" />
     <ClInclude Include="D3D.h" />
     <ClInclude Include="DemoCamera.h" />
     <ClInclude Include="DemoObject.h" />
     <ClInclude Include="DemoProcess.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="IManager.h" />
     <ClInclude Include="KeyManager.h" />
     <ClInclude Include="LineObject.h" />
     <ClInclude Include="ManagerSet.h" />
@@ -148,11 +157,19 @@
     <ClInclude Include="TimeManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Imgui\imgui.cpp" />
+    <ClCompile Include="..\Imgui\imgui_demo.cpp" />
+    <ClCompile Include="..\Imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\Imgui\imgui_impl_dx11.cpp" />
+    <ClCompile Include="..\Imgui\imgui_impl_win32.cpp" />
+    <ClCompile Include="..\Imgui\imgui_tables.cpp" />
+    <ClCompile Include="..\Imgui\imgui_widgets.cpp" />
     <ClCompile Include="Axes.cpp" />
     <ClCompile Include="D3D.cpp" />
     <ClCompile Include="DemoCamera.cpp" />
     <ClCompile Include="DemoObject.cpp" />
     <ClCompile Include="DemoProcess.cpp" />
+    <ClCompile Include="IManager.cpp" />
     <ClCompile Include="KeyManager.cpp" />
     <ClCompile Include="LineObject.cpp" />
     <ClCompile Include="ManagerSet.cpp" />
