@@ -13,21 +13,39 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Loader">
+      <UniqueIdentifier>{884792af-285a-4036-a725-b188284028cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VertexF">
+      <UniqueIdentifier>{cc7cd8f6-681d-4b7b-9a45-ad445d1a1cfb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FbxData">
+      <UniqueIdentifier>{0040f685-eb54-4515-bd6c-50a5e623f5e6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="FbxLoader.h">
+      <Filter>Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="fbxVertex.h">
+      <Filter>VertexF</Filter>
+    </ClInclude>
+    <ClInclude Include="FbxData.h">
+      <Filter>FbxData</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="FBXLoader.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="FbxLoader.cpp">
+      <Filter>Loader</Filter>
+    </ClCompile>
+    <ClCompile Include="FbxData.cpp">
+      <Filter>FbxData</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
