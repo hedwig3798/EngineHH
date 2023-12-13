@@ -44,9 +44,11 @@ FbxData* FbxLoader::Load(std::string _path)
 
 	this->geometryConverter->Triangulate(this->fbxScene, true);
 
-	FbxData* root = new FbxData();
+	FbxData* data = new FbxData();
 
-	LoadNode(node, root);
+	LoadNode(node, data);
+
+	return data;
 }
 
 void FbxLoader::LoadNode(FbxNode* _parent, FbxData* _data)
@@ -58,12 +60,32 @@ void FbxLoader::LoadNode(FbxNode* _parent, FbxData* _data)
 	{
 		// FbxMesh로 캐스팅된 노드 속성의 포인터를 가져온다.
 		FbxMesh* mesh = _parent->GetMesh();
+
+		int vertexCount = mesh->GetControlPointsCount();
+		_data->ResizeVertex(vertexCount);
+		for (int i = 0; i < vertexCount; i++)
+		{
+			_data->vertexData[i].position.x = (static_cast<float>(mesh->GetControlPointAt(i).mData[0]));
+			_data->vertexData[i].position.x = (static_cast<float>(mesh->GetControlPointAt(i).mData[1]));
+			_data->vertexData[i].position.x = (static_cast<float>(mesh->GetControlPointAt(i).mData[2]));
+		}
+
+		int indexCount = mesh->GetPolygonCount();
+		_data->ResizeIndex(indexCount);
+		for (int i = 0; i < indexCount; i++)
+		{
+			for (int j = 0; j < 3; j++)
+			{
+				_data->indexData[i] = mesh->GetPolygonVertex(i, j);
+			}
+		}
 	}
 
 	for (int i = 0; i < _parent->GetChildCount(); ++i)
 	{
 		FbxData* child = new FbxData();
 		_data->children.push_back(child);
+		child->parent = _data;
 		LoadNode(_parent->GetChild(i), child);
 	}
 }

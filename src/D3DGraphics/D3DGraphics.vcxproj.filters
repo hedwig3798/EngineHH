@@ -22,6 +22,9 @@
     <Filter Include="Parser">
       <UniqueIdentifier>{0e2b2bea-c49a-46da-adcb-b048648df311}</UniqueIdentifier>
     </Filter>
+    <Filter Include="FbxMesh">
+      <UniqueIdentifier>{7ea5e306-8e79-482b-9ffa-8dd050a1d2eb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GraphicsEngine.cpp">
@@ -42,6 +45,7 @@
     <ClCompile Include="RenderObject.cpp">
       <Filter>Mesh</Filter>
     </ClCompile>
+    <ClCompile Include="FMesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GraphicsEngine.h">
@@ -68,6 +72,7 @@
     <ClInclude Include="RenderObject.h">
       <Filter>Mesh</Filter>
     </ClInclude>
+    <ClInclude Include="FMesh.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Shader\PixelShader.hlsl">
