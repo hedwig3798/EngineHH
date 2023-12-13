@@ -5,8 +5,14 @@ EngineH 과 다르게 3D 게임 제작을 위한 게임 엔진 및 그래픽 엔
 https://savory-text-86d.notion.site/D3D-11-feb27209e87148d883f1ace7b864283a?pvs=4
 
 ---
-### 기술 스텍 및 외부 라이브러리
-DirectX 11
+### 기술 스텍 및 외부 라이브러리    
+
+
+#### DirectX 11
+#### DXTK
+#### FBX SDK
+
+
 ---
 ### 데모
 데모 최종 작성일 2023/11/15    
