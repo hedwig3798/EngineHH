@@ -1,6 +1,9 @@
 #pragma once
 #include "pch.h"
 #include "fbxVertex.h"
+
+class GraphicsEngine;
+
 class FbxData
 {
 public:

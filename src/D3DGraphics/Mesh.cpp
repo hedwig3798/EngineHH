@@ -20,9 +20,9 @@ Mesh::~Mesh()
 	delete[] this->indexes;
 }
 
-void Mesh::Render(GraphicsEngine* gp, const DirectX::XMMATRIX& _worldTM, const DirectX::XMMATRIX& _viewTM, const DirectX::XMMATRIX& _projTM)
+void Mesh::Render(GraphicsEngine* _gp, const DirectX::XMMATRIX& _worldTM, const DirectX::XMMATRIX& _viewTM, const DirectX::XMMATRIX& _projTM)
 {
-	gp->BindMatrixParameter(
+	_gp->BindMatrixParameter(
 		_worldTM,
 		_viewTM,
 		_projTM,
@@ -31,12 +31,12 @@ void Mesh::Render(GraphicsEngine* gp, const DirectX::XMMATRIX& _worldTM, const D
 
 	if (!this->bones.empty())
 	{
-		gp->BindBonesData(bones, _worldTM);
+		_gp->BindBonesData(bones, _worldTM);
 	}
 
-	gp->BindPipeline(this->pipeline);
-	gp->SetTexture(0, 1, &this->pipeline.textureView);
-	gp->RenderByIndex(this->pipeline, (int)this->indexList.size());
+	_gp->BindPipeline(this->pipeline);
+	_gp->SetTexture(0, 1, &this->pipeline.textureView);
+	_gp->RenderByIndex(this->pipeline, (int)this->indexList.size());
 }
 
 void Mesh::CreatePipeline(GraphicsEngine* graphicsEngine, std::wstring _sPath[], std::wstring _texturePath)
@@ -58,7 +58,7 @@ void Mesh::SetVertexesData()
 	this->vertexList.resize(this->normal.size());
 	for (int i = 0; i < (int)this->normal.size(); i++)
 	{
-		VertexT::Data data;
+		VertexT::Data data = {};
 		data.position = this->position[this->normalIndex[i]];
 		data.normal = this->normal[i];
 
