@@ -483,7 +483,7 @@ void GraphicsEngine::BindBonesData(std::vector<RenderObject*>& _bones, DirectX::
 	hr = this->d3d11DeviceContext->Map(this->boneBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	assert(SUCCEEDED(hr));
 
-	BonesBufferType* dataptr = (BonesBufferType*)mappedResource.pData;
+	BonesBufferType* dataptr = static_cast<BonesBufferType*>(mappedResource.pData);
 	for (int i = 0; i < (int)_bones.size(); i++)
 	{
 		DirectX::XMMATRIX boneWorldTM = _bones[i]->nodeTM;
@@ -525,7 +525,7 @@ void GraphicsEngine::BindLightingParameter(DirectionalLight _directionLight[], U
 	hr = this->d3d11DeviceContext->Map(this->lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	assert(SUCCEEDED(hr));
 
-	LightingBufferType* dataptr = (LightingBufferType*)mappedResource.pData;
+	LightingBufferType* dataptr = static_cast<LightingBufferType*>(mappedResource.pData);
 
 	dataptr->dirLights[0] = _directionLight[0];
 	dataptr->dirLights[1] = _directionLight[1];

@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.7.34024.191
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "D3DGraphics", "D3DGraphics\D3DGraphics.vcxproj", "{21EB4B35-53D2-4B97-BAC8-E442702C0355}"
+	ProjectSection(ProjectDependencies) = postProject
+		{60A600AF-0C44-43B9-90C6-746683D19DA0} = {60A600AF-0C44-43B9-90C6-746683D19DA0}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "D3DDemo", "D3D\D3D.vcxproj", "{005C7857-F304-4A09-8A3E-8CB5AF3C9CC9}"
 	ProjectSection(ProjectDependencies) = postProject
