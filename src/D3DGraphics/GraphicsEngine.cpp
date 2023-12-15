@@ -612,27 +612,6 @@ void GraphicsEngine::CreateIndexBuffer(UINT* _indices, UINT _size, ID3D11Buffer*
 	assert(SUCCEEDED(hr) && "cannot create Index Buffer");
 }
 
-void GraphicsEngine::CreateIndexBuffer(std::vector<UINT> _indeices, ID3D11Buffer** _indexbuffer)
-{
-	HRESULT hr = S_OK;
-	D3D11_BUFFER_DESC ibd = {};
-	ibd.Usage = D3D11_USAGE_IMMUTABLE;
-	ibd.ByteWidth = _indeices.size() * sizeof(UINT);
-	ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	ibd.CPUAccessFlags = 0;
-	ibd.MiscFlags = 0;
-	ibd.StructureByteStride = 0;
-
-	D3D11_SUBRESOURCE_DATA iinitData = {};
-
-	UINT* data;
-	memcpy(data, &_indeices[0], (sizeof(UINT) * _indeices.size()));
-	iinitData.pSysMem = data;
-
-	hr = this->d3d11Device->CreateBuffer(&ibd, &iinitData, _indexbuffer);
-	assert(SUCCEEDED(hr) && "cannot create Index Buffer");
-}
-
 /// <summary>
 /// 그리기 작업을 종료하고 출력
 /// </summary>

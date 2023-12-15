@@ -100,7 +100,6 @@ public:
 	void CreateVertexBuffer(V* _verteies, UINT _size, ID3D11Buffer** _vertexbuffer);
 
 	void CreateIndexBuffer(UINT* _indices, UINT _size, ID3D11Buffer** _indexbuffer);
-	void CreateIndexBuffer(std::vector<UINT> _indeices, ID3D11Buffer** _indexbuffer);
 	void CreateRasterizerState(ID3D11RasterizerState** _rasterizerState);
 
 	void CreateMatrixBuffer();
@@ -118,9 +117,6 @@ public:
 
 	void CreateTextureData(std::wstring _path, ID3D11ShaderResourceView** _resourceView);
 	void SetTexture(UINT _start, UINT _viewNumbers, ID3D11ShaderResourceView** _resourceView);
-
-	template<typename T>
-	void CreateVertexBuffer(T _verteies, ID3D11Buffer** _vertexbuffer);
 
 private:
 	void CreateD3D11DeviceContext();
@@ -142,31 +138,6 @@ void GraphicsEngine::CreateVertexBuffer(V* _verteies, UINT _size, ID3D11Buffer**
 
 	vb.Usage = D3D11_USAGE_IMMUTABLE;
 	vb.ByteWidth = _size;
-	vb.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vb.CPUAccessFlags = 0;
-	vb.MiscFlags = 0;
-	vb.StructureByteStride = 0;
-
-	D3D11_SUBRESOURCE_DATA initData = {};
-	initData.pSysMem = _verteies;
-
-	hr = this->d3d11Device->CreateBuffer(
-		&vb,
-		&initData,
-		_vertexbuffer
-	);
-	assert(SUCCEEDED(hr) && "cannot create vertex buffer");
-}
-
-template<typename T>
-void GraphicsEngine::CreateVertexBuffer(T _verteies, ID3D11Buffer** _vertexbuffer)
-{
-	HRESULT hr = S_OK;
-
-	D3D11_BUFFER_DESC vb = {};
-
-	vb.Usage = D3D11_USAGE_IMMUTABLE;
-	vb.ByteWidth = T.size() * sizeof(T);
 	vb.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vb.CPUAccessFlags = 0;
 	vb.MiscFlags = 0;

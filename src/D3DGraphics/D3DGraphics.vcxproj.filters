@@ -45,7 +45,9 @@
     <ClCompile Include="RenderObject.cpp">
       <Filter>Mesh</Filter>
     </ClCompile>
-    <ClCompile Include="FMesh.cpp" />
+    <ClCompile Include="FMesh.cpp">
+      <Filter>FbxMesh</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GraphicsEngine.h">
@@ -72,7 +74,9 @@
     <ClInclude Include="RenderObject.h">
       <Filter>Mesh</Filter>
     </ClInclude>
-    <ClInclude Include="FMesh.h" />
+    <ClInclude Include="FMesh.h">
+      <Filter>FbxMesh</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Shader\PixelShader.hlsl">

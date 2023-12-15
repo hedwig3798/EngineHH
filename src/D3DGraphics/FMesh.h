@@ -2,6 +2,7 @@
 #include "pch.h"
 #include "pipeline.h"
 #include "LightHelper.h"
+#include "fbxVertex.h"
 
 class FbxData;
 class GraphicsEngine;
@@ -10,6 +11,8 @@ class FMesh
 {
 public:
 	FbxData* fData;
+	VertexF::Data* vertexData;
+	UINT* indexData;
 
 	PipeLine pipeline;
 
