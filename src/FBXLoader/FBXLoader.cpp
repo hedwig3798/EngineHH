@@ -65,7 +65,7 @@ void FbxLoader::LoadNode(FbxNode* _parent, FbxData* _data)
 		if (nodeAttribute->GetAttributeType() == FbxNodeAttribute::eMesh)
 		{
 			// FbxMesh로 캐스팅된 노드 속성의 포인터를 가져온다.
-			FbxMesh* mesh = _parent->GetMesh();
+			fbxsdk::FbxMesh* mesh = _parent->GetMesh();
 
 			int vertexCount = mesh->GetControlPointsCount();
 			_data->ResizeVertex(vertexCount);
