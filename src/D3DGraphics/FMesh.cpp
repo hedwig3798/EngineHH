@@ -2,11 +2,14 @@
 #include "FbxData.h"
 #include "FbxLoader.h"
 #include "GraphicsEngine.h"
-
+#include "fbxVertex.h"
 FMesh::FMesh()
 	: fData(nullptr)
+	, demoMat{}
 {
-
+	this->demoMat.Ambient = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	this->demoMat.Diffuse = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
+	this->demoMat.Specular = XMFLOAT4(0.8f, 0.8f, 0.8f, 16.0f);
 }
 
 FMesh::~FMesh()
@@ -23,24 +26,41 @@ void FMesh::Render(GraphicsEngine* _gp, DirectX::XMMATRIX _viewTM, DirectX::XMMA
 		this->demoMat
 	);
 
-	_gp->BindPipeline(this->pipeline);
-	_gp->SetTexture(0, 1, &this->pipeline.textureView);
-	_gp->RenderByIndex(this->pipeline, static_cast<int>(this->fData->indexData.size()));
+	FbxData* _nowData = this->fData;
+	for(auto& c : _nowData->children) 
+	{
+		if (c->vertexData.size() != 0) 
+		{
+	 	_gp->BindPipeline(*c->pipeline);
+	 	// _gp->SetTexture(0, 1, &c->pipeline->textureView);
+	 	_gp->RenderByIndex(*c->pipeline, static_cast<int>(c->indexData.size()));
+		}
+	}
+
 }
 
-void FMesh::CreatePipeline(GraphicsEngine* _gp, std::wstring _sPath[], std::wstring _texturePath)
+void FMesh::CreatePipeline(GraphicsEngine* _gp, std::wstring _sPath[], std::wstring _texturePath, FbxData* _nowData)
 {
-	this->vertexData = new VertexF::Data[this->fData->vertexData.size()];
-	memcpy(this->vertexData, &this->fData->vertexData[0], (sizeof(VertexF::Data) * this->fData->vertexData.size()));
+	if (!_nowData->vertexData.size() == 0)
+	{
+		_nowData->pipeline = new PipeLine();
+		_gp->CreateInputLayer(*_nowData->pipeline, VertexF::defaultInputLayerDECS, _sPath, 5);
+		_gp->CreateRasterizerState(&_nowData->pipeline->rasterizerState);
+		_nowData->pipeline->primitiveTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+		_nowData->pipeline->vertexStructSize = VertexF::Size();
 
-	this->indexData = new UINT[this->fData->indexData.size()];
-	memcpy(this->indexData, &this->fData->indexData[0], (sizeof(UINT) * this->fData->indexData.size()));
+		_nowData->vertexBufferData = new VertexF::Data[_nowData->vertexData.size()];
+		memcpy(_nowData->vertexBufferData, &_nowData->vertexData[0], (sizeof(VertexF::Data) * _nowData->vertexData.size()));
+		_gp->CreateVertexBuffer(_nowData->vertexBufferData, static_cast<UINT>(_nowData->vertexData.size()) * VertexF::Size(), &_nowData->pipeline->vertexBuffer);
 
-	_gp->CreateInputLayer(this->pipeline, VertexF::defaultInputLayerDECS, _sPath, 5);
-	_gp->CreateVertexBuffer(this->vertexData, static_cast<UINT>(this->fData->vertexData.size()) * VertexF::Size(), &this->pipeline.vertexBuffer);
-	_gp->CreateIndexBuffer(this->indexData, static_cast<UINT>(this->fData->indexData.size()), &this->pipeline.IndexBuffer);
-	_gp->CreateRasterizerState(&this->pipeline.rasterizerState);
-	pipeline.primitiveTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	pipeline.vertexStructSize = VertexF::Size();
+		_nowData->indexBufferData = new UINT[_nowData->indexData.size()];
+		memcpy(_nowData->indexBufferData, &_nowData->indexData[0], (sizeof(UINT) * _nowData->indexData.size()));
+
+		_gp->CreateIndexBuffer(_nowData->indexBufferData, static_cast<UINT>(_nowData->indexData.size()), &_nowData->pipeline->IndexBuffer);
+	}
+
+	for(auto& c : _nowData->children) 
+	{
+		CreatePipeline(_gp, _sPath, _texturePath, c);
+	}
 }
-

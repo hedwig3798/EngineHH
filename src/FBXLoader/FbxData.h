@@ -3,6 +3,8 @@
 #include "fbxVertex.h"
 
 class GraphicsEngine;
+class FbxLoader;
+struct PipeLine;
 
 class FbxData
 {
@@ -11,6 +13,11 @@ public:
 
 	std::vector<VertexF::Data> vertexData;
 	std::vector<UINT> indexData;
+
+	VertexF::Data* vertexBufferData;
+	UINT* indexBufferData;
+
+	PipeLine* pipeline;
 
 	FbxData* parent;
 	std::vector<FbxData*> children;

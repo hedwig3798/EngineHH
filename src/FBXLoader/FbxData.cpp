@@ -5,6 +5,9 @@ FbxData::FbxData(int _size /*= 0*/)
 	, indexData(std::vector<UINT>(_size))
 	, parent(nullptr)
 	, children(std::vector<FbxData*>())
+	, vertexBufferData(nullptr)
+	, indexBufferData(nullptr)
+	, pipeline(nullptr)
 {
 
 }

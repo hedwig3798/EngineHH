@@ -12,13 +12,13 @@ FbxLoader::FbxLoader()
 void FbxLoader::Initalize()
 {
 	this->fbxManager = FbxManager::Create();
-	assert(this->fbxManager == nullptr && "cannot create fbx manager\n");
+	assert(this->fbxManager && "cannot create fbx manager\n");
 
 	this->fbxImpoter = FbxImporter::Create(fbxManager, "");
-	assert(this->fbxManager == nullptr && "cannot create fbx manager\n");
+	assert(this->fbxManager && "cannot create fbx manager\n");
 
 	this->fbxScene = FbxScene::Create(fbxManager, "");
-	assert(this->fbxScene == nullptr && "cannot create fbx manager\n");
+	assert(this->fbxScene && "cannot create fbx manager\n");
 
 	this->geometryConverter = new FbxGeometryConverter(this->fbxManager);
 }
@@ -55,31 +55,39 @@ void FbxLoader::LoadNode(FbxNode* _parent, FbxData* _data)
 {
 	FbxNodeAttribute* nodeAttribute = _parent->GetNodeAttribute();
 
-	// 이 노드의 속성은 메쉬.
-	if (nodeAttribute->GetAttributeType() == FbxNodeAttribute::eMesh)
+	if (nodeAttribute == nullptr)
 	{
-		// FbxMesh로 캐스팅된 노드 속성의 포인터를 가져온다.
-		FbxMesh* mesh = _parent->GetMesh();
 
-		int vertexCount = mesh->GetControlPointsCount();
-		_data->ResizeVertex(vertexCount);
-		for (int i = 0; i < vertexCount; i++)
+	}
+	else
+	{
+		// 이 노드의 속성은 메쉬.
+		if (nodeAttribute->GetAttributeType() == FbxNodeAttribute::eMesh)
 		{
-			_data->vertexData[i].position.x = (static_cast<float>(mesh->GetControlPointAt(i).mData[0]));
-			_data->vertexData[i].position.x = (static_cast<float>(mesh->GetControlPointAt(i).mData[1]));
-			_data->vertexData[i].position.x = (static_cast<float>(mesh->GetControlPointAt(i).mData[2]));
-		}
+			// FbxMesh로 캐스팅된 노드 속성의 포인터를 가져온다.
+			FbxMesh* mesh = _parent->GetMesh();
 
-		int indexCount = mesh->GetPolygonCount();
-		_data->ResizeIndex(indexCount);
-		for (int i = 0; i < indexCount; i++)
-		{
-			for (int j = 0; j < 3; j++)
+			int vertexCount = mesh->GetControlPointsCount();
+			_data->ResizeVertex(vertexCount);
+			for (int i = 0; i < vertexCount; i++)
 			{
-				_data->indexData[i] = mesh->GetPolygonVertex(i, j);
+				_data->vertexData[i].position.x = (static_cast<float>(mesh->GetControlPointAt(i).mData[0]));
+				_data->vertexData[i].position.y = (static_cast<float>(mesh->GetControlPointAt(i).mData[1]));
+				_data->vertexData[i].position.z = (static_cast<float>(mesh->GetControlPointAt(i).mData[2]));
+			}
+
+			int indexCount = mesh->GetPolygonCount();
+			_data->ResizeIndex(indexCount * 3);
+			for (int i = 0; i < indexCount; i++)
+			{
+				for (int j = 0; j < 3; j++)
+				{
+					_data->indexData[(i * 3) + j] = mesh->GetPolygonVertex(i, j);
+				}
 			}
 		}
 	}
+
 
 	for (int i = 0; i < _parent->GetChildCount(); ++i)
 	{

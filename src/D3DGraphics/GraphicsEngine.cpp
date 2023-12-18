@@ -5,6 +5,8 @@
 #include "DDSTextureLoader.h"
 #include "LightHelper.h"
 #include "RenderObject.h"
+#include "FbxLoader.h"
+#include "FMesh.h"
 
 GraphicsEngine::GraphicsEngine()
 	: featureLevel{}
@@ -22,6 +24,8 @@ GraphicsEngine::GraphicsEngine()
 	, writerRS(nullptr)
 	, writer(nullptr)
 	, lightBuffer(nullptr)
+	, fbxLoader(nullptr)
+	, boneBuffer(nullptr)
 {
 }
 
@@ -58,6 +62,9 @@ void GraphicsEngine::Initialize(HWND _hwnd)
 	CreateMatrixBuffer();
 	CreateLightingBffer();
 	CreateBoneBuffer();
+
+	this->fbxLoader = new FbxLoader();
+	this->fbxLoader->Initalize();
 }
 
 /// <summary>
@@ -586,6 +593,13 @@ void GraphicsEngine::CreateTextureData(std::wstring _path, ID3D11ShaderResourceV
 void GraphicsEngine::SetTexture(UINT _start, UINT _viewNumbers, ID3D11ShaderResourceView** _resourceView)
 {
 	this->d3d11DeviceContext->PSSetShaderResources(_start, _viewNumbers, _resourceView);
+}
+
+FMesh* GraphicsEngine::LoadFbxData(std::string _path)
+{
+	FMesh* res = new FMesh();
+	res->fData = this->fbxLoader->Load(_path);
+	return res;
 }
 
 /// <summary>
