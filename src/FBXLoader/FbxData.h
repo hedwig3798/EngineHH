@@ -17,6 +17,9 @@ public:
 	VertexF::Data* vertexBufferData;
 	UINT* indexBufferData;
 
+	DirectX::XMMATRIX localTM;
+	DirectX::XMMATRIX globalTM;
+
 	PipeLine* pipeline;
 
 	FbxData* parent;

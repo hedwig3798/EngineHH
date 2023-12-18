@@ -19,21 +19,21 @@ FMesh::~FMesh()
 
 void FMesh::Render(GraphicsEngine* _gp, DirectX::XMMATRIX _viewTM, DirectX::XMMATRIX _projTM)
 {
-	_gp->BindMatrixParameter(
-		DirectX::XMMatrixIdentity(),
-		_viewTM,
-		_projTM,
-		this->demoMat
-	);
 
 	FbxData* _nowData = this->fData;
-	for(auto& c : _nowData->children) 
+	for (auto& c : _nowData->children)
 	{
-		if (c->vertexData.size() != 0) 
+		_gp->BindMatrixParameter(
+			c->globalTM,
+			_viewTM,
+			_projTM,
+			this->demoMat
+		);
+		if (c->vertexData.size() != 0)
 		{
-	 	_gp->BindPipeline(*c->pipeline);
-	 	// _gp->SetTexture(0, 1, &c->pipeline->textureView);
-	 	_gp->RenderByIndex(*c->pipeline, static_cast<int>(c->indexData.size()));
+			_gp->BindPipeline(*c->pipeline);
+			// _gp->SetTexture(0, 1, &c->pipeline->textureView);
+			_gp->RenderByIndex(*c->pipeline, static_cast<int>(c->indexData.size()));
 		}
 	}
 
@@ -59,7 +59,7 @@ void FMesh::CreatePipeline(GraphicsEngine* _gp, std::wstring _sPath[], std::wstr
 		_gp->CreateIndexBuffer(_nowData->indexBufferData, static_cast<UINT>(_nowData->indexData.size()), &_nowData->pipeline->IndexBuffer);
 	}
 
-	for(auto& c : _nowData->children) 
+	for (auto& c : _nowData->children)
 	{
 		CreatePipeline(_gp, _sPath, _texturePath, c);
 	}

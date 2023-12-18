@@ -51,21 +51,24 @@ FbxData* FbxLoader::Load(std::string _path)
 	return data;
 }
 
-void FbxLoader::LoadNode(FbxNode* _parent, FbxData* _data)
+void FbxLoader::LoadNode(FbxNode* _node, FbxData* _data)
 {
-	FbxNodeAttribute* nodeAttribute = _parent->GetNodeAttribute();
+	FbxNodeAttribute* nodeAttribute = _node->GetNodeAttribute();
 
-	if (nodeAttribute == nullptr)
-	{
+	FbxAMatrix& globalTransform = _node->EvaluateGlobalTransform();
+	_data->globalTM = FbxAMatrixToXMMatrix(globalTransform);
 
-	}
-	else
+	FbxAMatrix& localTransform = _node->EvaluateLocalTransform();
+	_data->localTM = FbxAMatrixToXMMatrix(localTransform);
+
+	if (nodeAttribute != nullptr)
 	{
 		// 이 노드의 속성은 메쉬.
 		if (nodeAttribute->GetAttributeType() == FbxNodeAttribute::eMesh)
 		{
 			// FbxMesh로 캐스팅된 노드 속성의 포인터를 가져온다.
-			fbxsdk::FbxMesh* mesh = _parent->GetMesh();
+			fbxsdk::FbxMesh* mesh = _node->GetMesh();
+
 
 			int vertexCount = mesh->GetControlPointsCount();
 			_data->ResizeVertex(vertexCount);
@@ -78,22 +81,22 @@ void FbxLoader::LoadNode(FbxNode* _parent, FbxData* _data)
 
 			int indexCount = mesh->GetPolygonCount();
 			_data->ResizeIndex(indexCount * 3);
-			for (int i = 0; i < indexCount; i++)
+			for (int64_t i = 0; i < indexCount; i++)
 			{
-				for (int j = 0; j < 3; j++)
+				for (int64_t j = 0; j < 3; j++)
 				{
-					_data->indexData[(i * 3) + j] = mesh->GetPolygonVertex(i, j);
+					_data->indexData[(i * 3) + j] = mesh->GetPolygonVertex((int)i, (int)j);
 				}
 			}
 		}
 	}
 
 
-	for (int i = 0; i < _parent->GetChildCount(); ++i)
+	for (int i = 0; i < _node->GetChildCount(); ++i)
 	{
 		FbxData* child = new FbxData();
 		_data->children.push_back(child);
 		child->parent = _data;
-		LoadNode(_parent->GetChild(i), child);
+		LoadNode(_node->GetChild(i), child);
 	}
 }

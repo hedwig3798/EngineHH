@@ -8,6 +8,8 @@ FbxData::FbxData(int _size /*= 0*/)
 	, vertexBufferData(nullptr)
 	, indexBufferData(nullptr)
 	, pipeline(nullptr)
+	, localTM {}
+	, globalTM {}
 {
 
 }
