@@ -10,10 +10,5 @@ FbxData::FbxData(int _size /*= 0*/)
 	, pipeline(nullptr)
 	, localTM{}
 	, globalTM{}
-	, position(std::vector<DirectX::XMFLOAT3>())
-	, noraml(std::vector<DirectX::XMFLOAT3>())
-	, UV(std::vector<DirectX::XMFLOAT2>())
-	, binormal(std::vector<DirectX::XMFLOAT3>())
-	, tangent(std::vector<DirectX::XMFLOAT3>())
 {
 }

@@ -12,6 +12,7 @@
 #include <string>
 #include <d3d11.h>
 #include <vector>
+#include <unordered_map>
 
 #include "..\DXTK\Inc\SimpleMath.h"
 

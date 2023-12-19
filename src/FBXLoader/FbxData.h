@@ -24,11 +24,5 @@ public:
 
 	FbxData* parent;
 	std::vector<FbxData*> children;
-
-	std::vector<DirectX::XMFLOAT3> position;
-	std::vector<DirectX::XMFLOAT3> noraml;
-	std::vector<DirectX::XMFLOAT2> UV;
-	std::vector<DirectX::XMFLOAT3> binormal;
-	std::vector<DirectX::XMFLOAT3> tangent;
 };
 

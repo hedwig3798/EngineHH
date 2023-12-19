@@ -72,6 +72,11 @@ void FbxLoader::LoadNode(FbxNode* _node, FbxData* _data)
 	FbxAMatrix& localTransform = _node->EvaluateLocalTransform();
 	_data->localTM = FbxAMatrixToXMMatrix(localTransform);
 
+	// 정점 위치 정보를 담을 벡터
+	std::vector<DirectX::XMFLOAT3> position;
+	// 최적화를 위한 맵
+	std::unordered_map<VertexF::Data, UINT> indexMapping;
+
 	// 노드 속성이 있다면
 	if (nodeAttribute != nullptr)
 	{
@@ -79,18 +84,18 @@ void FbxLoader::LoadNode(FbxNode* _node, FbxData* _data)
 		if (nodeAttribute->GetAttributeType() == FbxNodeAttribute::eMesh)
 		{
 			// FbxMesh로 캐스팅된 노드 속성의 포인터를 가져온다.
-			fbxsdk::FbxMesh* mesh = _node->GetMesh();
+			FbxMesh* mesh = _node->GetMesh();
 
 			// 위치 정보가 있는 정점 정보를 가지고 온다.
 			int vertexCount = mesh->GetControlPointsCount();
-			_data->position.resize(vertexCount);
+			position.resize(vertexCount);
 
 			// 데이터의 위치 정보에 입력
 			for (int i = 0; i < vertexCount; i++)
 			{
-				_data->position[i].x = (static_cast<float>(mesh->GetControlPointAt(i).mData[0]));
-				_data->position[i].y = (static_cast<float>(mesh->GetControlPointAt(i).mData[1]));
-				_data->position[i].z = (static_cast<float>(mesh->GetControlPointAt(i).mData[2]));
+				position[i].x = (static_cast<float>(mesh->GetControlPointAt(i).mData[0]));
+				position[i].y = (static_cast<float>(mesh->GetControlPointAt(i).mData[1]));
+				position[i].z = (static_cast<float>(mesh->GetControlPointAt(i).mData[2]));
 			}
 
 			// 해당 매쉬가 몇개의 삼각형을 가지고 있는지
@@ -104,10 +109,25 @@ void FbxLoader::LoadNode(FbxNode* _node, FbxData* _data)
 				{
 					int controlPointIndex = mesh->GetPolygonVertex(i, j);
 
-					DirectX::XMFLOAT3& pos = _data->position[controlPointIndex];
+					DirectX::XMFLOAT3& pos = position[controlPointIndex];
 					DirectX::XMFLOAT3 normal = ReadNormal(mesh, controlPointIndex, vertexCount);
 					DirectX::XMFLOAT3 binormal = ReadBinormal(mesh, controlPointIndex, vertexCount);
 					DirectX::XMFLOAT3 tangent = ReadTangent(mesh, controlPointIndex, vertexCount);
+					DirectX::XMFLOAT2 UV = ReadUV(mesh, controlPointIndex, mesh->GetTextureUVIndex(i, j));
+
+					VertexF::Data inputData = VertexF::Data( pos, normal, UV, binormal, tangent );
+
+					if (indexMapping.find(inputData) == indexMapping.end()) 
+					{
+						UINT temp = static_cast<UINT>(_data->vertexData.size());
+						_data->indexData.push_back(temp);
+						indexMapping[inputData] = temp;
+						_data->vertexData.push_back(inputData);
+					}
+					else
+					{
+						_data->indexData.push_back(indexMapping[inputData]);
+					}
 				}
 			}
 		}
@@ -177,6 +197,57 @@ DirectX::XMFLOAT3 FbxLoader::ReadTangent(const FbxMesh* _mesh, int _controlPoint
 	else
 	{
 		result = { 0.0f, 0.0f, 0.0f };
+	}
+	return result;
+}
+
+DirectX::XMFLOAT2 FbxLoader::ReadUV(const FbxMesh* _mesh, int _controlPointIndex, int _vertexCounter)
+{
+	DirectX::XMFLOAT2 result = {};
+
+	if (!(_mesh->GetElementUVCount() < 1))
+	{
+		const FbxGeometryElementUV* vUV = _mesh->GetElementUV(0);
+		int counter;
+		switch (vUV->GetMappingMode())
+		{
+		case FbxGeometryElement::eByControlPoint:
+		{
+			counter = _controlPointIndex;
+			break;
+		}
+		case FbxGeometryElement::eByPolygonVertex:
+		{
+			counter = _vertexCounter;
+			break;
+		}
+		default:
+			assert(false && "cannot access FbxGeometryElementNormal");
+			break;
+		}
+
+		switch (vUV->GetReferenceMode())
+		{
+		case FbxGeometryElement::eDirect:
+		{
+			result.x = static_cast<float>(vUV->GetDirectArray().GetAt(counter).mData[0]);
+			result.y = static_cast<float>(vUV->GetDirectArray().GetAt(counter).mData[1]);
+			break;
+		}
+		case FbxGeometryElement::eIndexToDirect:
+		{
+			int index = vUV->GetIndexArray().GetAt(counter); // 인덱스를 얻어온다.
+			result.x = static_cast<float>(vUV->GetDirectArray().GetAt(index).mData[0]);
+			result.y = static_cast<float>(vUV->GetDirectArray().GetAt(index).mData[1]);
+			break;
+		}
+		default:
+			break;
+		}
+	}
+	else
+	{
+		result = { 0.0f, 0.0f};
 	}
 	return result;
 }
