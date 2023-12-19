@@ -8,24 +8,12 @@ FbxData::FbxData(int _size /*= 0*/)
 	, vertexBufferData(nullptr)
 	, indexBufferData(nullptr)
 	, pipeline(nullptr)
-	, localTM {}
-	, globalTM {}
+	, localTM{}
+	, globalTM{}
+	, position(std::vector<DirectX::XMFLOAT3>())
+	, noraml(std::vector<DirectX::XMFLOAT3>())
+	, UV(std::vector<DirectX::XMFLOAT2>())
+	, binormal(std::vector<DirectX::XMFLOAT3>())
+	, tangent(std::vector<DirectX::XMFLOAT3>())
 {
-
-}
-
-void FbxData::ResizeVertex(int _size)
-{
-	this->vertexData.resize(_size);
-}
-
-void FbxData::ResizeIndex(int _size)
-{
-	this->indexData.resize(_size);
-}
-
-void FbxData::ResetData()
-{
-	this->vertexData = std::vector<VertexF::Data>();
-	this->indexData = std::vector<UINT>();
 }

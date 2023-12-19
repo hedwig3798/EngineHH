@@ -14,3 +14,5 @@
 #include <vector>
 
 #include "..\DXTK\Inc\SimpleMath.h"
+
+using namespace fbxsdk;
