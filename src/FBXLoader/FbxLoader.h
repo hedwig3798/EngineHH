@@ -76,29 +76,3 @@ DirectX::XMFLOAT3 FbxLoader::ReadThing(const T* _thigs, int _controlPointIndex, 
 
 	return result;
 }
-
-// struct hash_fn
-// {
-// 	std::size_t operator() (const VertexF::Data& _data) const
-// 	{
-// 		std::size_t h1 = std::hash<float>()(_data.position.x);
-// 		h1 ^= std::hash<float>()(_data.position.y);
-// 		h1 ^= std::hash<float>()(_data.position.z);
-// 
-// 		h1 ^= std::hash<float>()(_data.normal.x);
-// 		h1 ^= std::hash<float>()(_data.normal.y);
-// 		h1 ^= std::hash<float>()(_data.normal.z);
-// 
-// 		h1 ^= std::hash<float>()(_data.binormal.x);
-// 		h1 ^= std::hash<float>()(_data.binormal.y);
-// 		h1 ^= std::hash<float>()(_data.binormal.z);
-// 
-// 		h1 ^= std::hash<float>()(_data.tangent.x);
-// 		h1 ^= std::hash<float>()(_data.tangent.y);
-// 		h1 ^= std::hash<float>()(_data.tangent.z);
-// 
-// 		h1 ^= std::hash<float>()(_data.UV.x);
-// 		h1 ^= std::hash<float>()(_data.UV.y);
-// 		return h1;
-// 	}
-// };

@@ -22,6 +22,8 @@ public:
 
 	PipeLine* pipeline;
 
+	int textureIndex;
+
 	FbxData* parent;
 	std::vector<FbxData*> children;
 };

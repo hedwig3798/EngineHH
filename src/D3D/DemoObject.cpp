@@ -17,14 +17,14 @@ DemoObject::DemoObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene, Man
 {
 	std::vector<VertexT::Data> vertexInfo;
 	std::vector<UINT> indexInfo;
-	this->gemoObject = AseParser(L"../Model/babypig_walk_6x.ASE");
+	// this->gemoObject = AseParser(L"../Model/babypig_walk_6x.ASE");
 
-	for (auto& g : this->gemoObject)
-	{
-		g->Initalize(graphicsEngine, this->texturePath);
-	}
+// 	for (auto& g : this->gemoObject)
+// 	{
+// 		g->Initalize(graphicsEngine, this->texturePath);
+// 	}
 
-	testFMesh = this->graphicsEngine->LoadFbxData("../Model/testHouse.fbx");
+	testFMesh = this->graphicsEngine->LoadFbxData("../Model/testMen.fbx");
 	this->testFMesh->CreatePipeline(this->graphicsEngine, path, texturePath, this->testFMesh->fData);
 
 	dirLights[0].Ambient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);

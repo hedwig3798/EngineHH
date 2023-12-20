@@ -32,7 +32,7 @@ void FMesh::Render(GraphicsEngine* _gp, DirectX::XMMATRIX _viewTM, DirectX::XMMA
 		if (c->vertexData.size() != 0)
 		{
 			_gp->BindPipeline(*c->pipeline);
-			// _gp->SetTexture(0, 1, &c->pipeline->textureView);
+			_gp->SetTexture(0, 1, &c->pipeline->textureView);
 			_gp->RenderByIndex(*c->pipeline, static_cast<int>(c->indexData.size()));
 		}
 	}
@@ -48,6 +48,12 @@ void FMesh::CreatePipeline(GraphicsEngine* _gp, std::wstring _sPath[], std::wstr
 		_gp->CreateRasterizerState(&_nowData->pipeline->rasterizerState);
 		_nowData->pipeline->primitiveTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 		_nowData->pipeline->vertexStructSize = VertexF::Size();
+
+
+		if (_texturePath != L" ")
+		{
+			_gp->CreateTextureDataFromTGA(_texturePath, &_nowData->pipeline->textureView);
+		}
 
 		_nowData->vertexBufferData = new VertexF::Data[_nowData->vertexData.size()];
 		memcpy(_nowData->vertexBufferData, &_nowData->vertexData[0], (sizeof(VertexF::Data) * _nowData->vertexData.size()));

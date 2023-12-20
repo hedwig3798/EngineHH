@@ -19,10 +19,10 @@ private:
 	std::wstring path[2]
 	{
 		L"../Shader/VertexShader3.hlsl",
-		L"../Shader/PixelShader.hlsl",
+		L"../Shader/PixelShader3.hlsl",
 	};
 
-	std::wstring texturePath = L"../Model/RainbowTree_Texture01.dds";
+	std::wstring texturePath = L"../Model/free_male_1_body_diffuse.tga";
 
 	Material demoMat;
 	DirectionalLight dirLights[3];

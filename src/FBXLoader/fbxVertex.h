@@ -28,6 +28,7 @@ namespace VertexF
 		DirectX::XMFLOAT3 binormal;
 		DirectX::XMFLOAT3 tangent;
 
+		// unordered_map에서 사용될 때 해쉬 충돌을 처리해 줄 연산자 오버로딩
 		bool operator==(const Data& _other) const
 		{
 			if (!(position.x == _other.position.x &&
@@ -61,7 +62,7 @@ namespace VertexF
 			}
 			return true;
 		}
-
+		// unordered_map에서 사용할 해쉬 함수 ( 모든 값을 해쉬화 하고 XOR 연산함 )
 		std::size_t operator() (const Data& _data) const
 		{
 			std::size_t h1 = std::hash<float>()(_data.position.x);

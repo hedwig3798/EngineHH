@@ -76,7 +76,7 @@ void FbxLoader::LoadNode(FbxNode* _node, FbxData* _data)
 	std::vector<DirectX::XMFLOAT3> position;
 	// 최적화를 위한 맵
 	std::unordered_map<VertexF::Data, UINT, VertexF::Data> indexMapping;
-
+	
 	// 노드 속성이 있다면
 	if (nodeAttribute != nullptr)
 	{
@@ -85,7 +85,7 @@ void FbxLoader::LoadNode(FbxNode* _node, FbxData* _data)
 		{
 			// FbxMesh로 캐스팅된 노드 속성의 포인터를 가져온다.
 			FbxMesh* mesh = _node->GetMesh();
-
+			
 			// 위치 정보가 있는 정점 정보를 가지고 온다.
 			int vertexCount = mesh->GetControlPointsCount();
 			position.resize(vertexCount);
@@ -100,8 +100,8 @@ void FbxLoader::LoadNode(FbxNode* _node, FbxData* _data)
 
 			// 해당 매쉬가 몇개의 삼각형을 가지고 있는지
 			int indexCount = mesh->GetPolygonCount();
-			_data->indexData.resize(static_cast<size_t>(indexCount * 3));
-
+			// _data->indexData.resize(static_cast<size_t>(indexCount * 3));
+			int vCount = 0;
 			// 삼각형의 갯수 만큼 vertex 생성
 			for (int i = 0; i < indexCount; i++)
 			{
@@ -110,10 +110,10 @@ void FbxLoader::LoadNode(FbxNode* _node, FbxData* _data)
 					int controlPointIndex = mesh->GetPolygonVertex(i, j);
 
 					DirectX::XMFLOAT3& pos = position[controlPointIndex];
-					DirectX::XMFLOAT3 normal = ReadNormal(mesh, controlPointIndex, vertexCount);
-					DirectX::XMFLOAT3 binormal = ReadBinormal(mesh, controlPointIndex, vertexCount);
-					DirectX::XMFLOAT3 tangent = ReadTangent(mesh, controlPointIndex, vertexCount);
-					DirectX::XMFLOAT2 UV = ReadUV(mesh, controlPointIndex, mesh->GetTextureUVIndex(i, j));
+					DirectX::XMFLOAT3 normal = ReadNormal(mesh, controlPointIndex, vCount);
+					DirectX::XMFLOAT3 binormal = ReadBinormal(mesh, controlPointIndex, vCount);
+					DirectX::XMFLOAT3 tangent = ReadTangent(mesh, controlPointIndex, vCount);
+					DirectX::XMFLOAT2 UV = ReadUV(mesh, controlPointIndex, vCount);
 
 					VertexF::Data inputData = VertexF::Data( pos, normal, UV, binormal, tangent );
 
@@ -128,6 +128,7 @@ void FbxLoader::LoadNode(FbxNode* _node, FbxData* _data)
 					{
 						_data->indexData.push_back(indexMapping[inputData]);
 					}
+					vCount++;
 				}
 			}
 		}
@@ -238,7 +239,7 @@ DirectX::XMFLOAT2 FbxLoader::ReadUV(const FbxMesh* _mesh, int _controlPointIndex
 		{
 			int index = vUV->GetIndexArray().GetAt(counter); // 인덱스를 얻어온다.
 			result.x = static_cast<float>(vUV->GetDirectArray().GetAt(index).mData[0]);
-			result.y = static_cast<float>(vUV->GetDirectArray().GetAt(index).mData[1]);
+			result.y = 1 - static_cast<float>(vUV->GetDirectArray().GetAt(index).mData[1]);
 			break;
 		}
 		default:

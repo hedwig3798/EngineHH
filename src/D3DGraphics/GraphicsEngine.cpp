@@ -575,12 +575,30 @@ void GraphicsEngine::WriteText(int x, int y, DirectX::XMFLOAT4 color, TCHAR* tex
 /// </summary>
 /// <param name="_path">데이터 경로</param>
 /// <param name="_resourceView">텍스쳐 데이터를 저장할 렌더 리소스 뷰</param>
-void GraphicsEngine::CreateTextureData(std::wstring _path, ID3D11ShaderResourceView** _resourceView)
+void GraphicsEngine::CreateTextureDataFromDDS(std::wstring _path, ID3D11ShaderResourceView** _resourceView)
 {
 	HRESULT hr = S_OK;
 	ID3D11Resource* texResource = nullptr;
 	hr = DirectX::CreateDDSTextureFromFile(this->d3d11Device, _path.c_str(), &texResource, _resourceView);
 	assert(SUCCEEDED(hr) && "cannot create resource view");
+	texResource->Release();
+}
+
+void GraphicsEngine::CreateTextureDataFromTGA(std::wstring _path, ID3D11ShaderResourceView** _resourceView)
+{
+	HRESULT hr = S_OK;
+	ID3D11Resource* texResource = nullptr;
+
+	DirectX::ScratchImage image;
+	hr = DirectX::LoadFromTGAFile(_path.c_str(), nullptr, image);
+	assert(SUCCEEDED(hr) && "cannot create image when load TGA data");
+
+	hr = DirectX::CreateTexture(this->d3d11Device, image.GetImages(), image.GetImageCount(), image.GetMetadata(), &texResource);
+	assert(SUCCEEDED(hr) && "cannot create image when load TGA data");
+
+	hr = this->d3d11Device->CreateShaderResourceView(texResource, nullptr, _resourceView);
+	assert(SUCCEEDED(hr) && "cannot create image when load TGA data");
+
 	texResource->Release();
 }
 

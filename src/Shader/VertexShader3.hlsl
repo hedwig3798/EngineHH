@@ -25,19 +25,30 @@ struct VertexIn
     float3 BoneIndices : TANGENT;
 };
 
-struct VOUT
+struct VertexOut
 {
-    float4 pos : SV_POSITION;
-    float4 color : COLOR;
+	float4 PosH    : SV_POSITION;
+    float3 PosW    : POSITION;
+	float2 Tex     : TEXCOORD;
+    float3 NormalW : NORMAL;
+	Material material : MATERIAL;
 };
 
-VOUT VS(VertexIn _vin)
+VertexOut VS(VertexIn vin)
 {
 	// 출력
-	VOUT vout;
+	VertexOut vout;
 
-	vout.pos = float4(_vin.PosL, 1.0f);
-    vout.pos = mul(vout.pos, g_wvp);
-    vout.color = float4(1.0f, 1.0f, 1.0f, 1.0f);
+	// 정점의 월드공간 좌표
+	vout.PosW = mul(float4(vin.PosL, 1.0f), g_world).xyz;
+	// 정점의 뷰포트 좌표
+	vout.PosH = mul(float4(vin.PosL, 1.0f), g_wvp);
+
+	// 텍스쳐의 좌표 (texcoord를 그대로 픽셀쉐이더로 넘겨 준다)
+	vout.Tex = vin.Tex;
+
+	//정점의 월드 공간에서 법선 벡터
+	vout.NormalW = mul(vin.NormalL, (float3x3)g_worldInvTranspose);
+	vout.material = g_material;
 	return vout;
 }
