@@ -62,7 +62,7 @@ namespace VertexF
 			return true;
 		}
 
-		std::size_t operator() (const VertexF::Data& _data) const
+		std::size_t operator() (const Data& _data) const
 		{
 			std::size_t h1 = std::hash<float>()(_data.position.x);
 			h1 ^= std::hash<float>()(_data.position.y);

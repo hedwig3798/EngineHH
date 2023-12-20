@@ -75,7 +75,7 @@ void FbxLoader::LoadNode(FbxNode* _node, FbxData* _data)
 	// 정점 위치 정보를 담을 벡터
 	std::vector<DirectX::XMFLOAT3> position;
 	// 최적화를 위한 맵
-	std::unordered_map<VertexF::Data, UINT> indexMapping;
+	std::unordered_map<VertexF::Data, UINT, VertexF::Data> indexMapping;
 
 	// 노드 속성이 있다면
 	if (nodeAttribute != nullptr)
