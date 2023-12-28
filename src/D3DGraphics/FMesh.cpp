@@ -50,9 +50,11 @@ void FMesh::CreatePipeline(GraphicsEngine* _gp, std::wstring _sPath[], std::wstr
 		_nowData->pipeline->vertexStructSize = VertexF::Size();
 
 
-		if (_texturePath != L" ")
+		std::wstring path;
+		path.assign(_nowData->textureFileName[1].begin(), _nowData->textureFileName[1].end());
+		if (path != L"")
 		{
-			_gp->CreateTextureDataFromTGA(_texturePath, &_nowData->pipeline->textureView);
+			_gp->CreateTextureDataFromTGA(_texturePath + path, &_nowData->pipeline->textureView);
 		}
 
 		_nowData->vertexBufferData = new VertexF::Data[_nowData->vertexData.size()];

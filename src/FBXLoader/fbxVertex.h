@@ -64,7 +64,7 @@ namespace VertexF
 		}
 		// unordered_map에서 사용할 해쉬 함수 ( 모든 값을 해쉬화 하고 XOR 연산함 )
 		std::size_t operator() (const Data& _data) const
-		{
+		{			
 			std::size_t h1 = std::hash<float>()(_data.position.x);
 			h1 ^= std::hash<float>()(_data.position.y);
 			h1 ^= std::hash<float>()(_data.position.z);

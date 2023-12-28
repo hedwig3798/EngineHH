@@ -10,5 +10,8 @@ FbxData::FbxData(int _size /*= 0*/)
 	, pipeline(nullptr)
 	, localTM{}
 	, globalTM{}
+	, meterial(nullptr)
+	, name("")
+	, textureFileName{std::vector<std::string>()}
 {
 }

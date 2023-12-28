@@ -148,12 +148,14 @@
   <ItemGroup>
     <ClInclude Include="FbxData.h" />
     <ClInclude Include="FbxLoader.h" />
+    <ClInclude Include="FbxMetrialData.h" />
     <ClInclude Include="fbxVertex.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FbxData.cpp" />
     <ClCompile Include="FbxLoader.cpp" />
+    <ClCompile Include="FbxMetrialData.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

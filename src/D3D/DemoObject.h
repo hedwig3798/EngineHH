@@ -22,7 +22,7 @@ private:
 		L"../Shader/PixelShader3.hlsl",
 	};
 
-	std::wstring texturePath = L"../Model/free_male_1_body_diffuse.tga";
+	std::wstring texturePath = L"../Model/";
 
 	Material demoMat;
 	DirectionalLight dirLights[3];

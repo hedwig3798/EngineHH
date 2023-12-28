@@ -12,13 +12,17 @@ public:
 	FbxScene* fbxScene;
 	FbxGeometryConverter* geometryConverter;
 
+	std::vector<FbxMetrialData*> metrialList;
+
 	void Initalize();
 	void Release();
 
 	FbxData* Load(std::string _path);
 
 private:
-	void LoadNode(FbxNode* _parent, FbxData* _data);
+	void LoadMesh(FbxNode* _parent, FbxData* _data);
+	void LoadMaterial();
+
 	DirectX::XMMATRIX FbxAMatrixToXMMatrix(const FbxAMatrix& _pSrc);
 
 	DirectX::XMFLOAT3 ReadNormal(const FbxMesh* _mesh, int _controlPointIndex, int _vertexCounter);

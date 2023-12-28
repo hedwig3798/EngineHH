@@ -4,11 +4,14 @@
 
 class GraphicsEngine;
 class FbxLoader;
+class FbxMetrialData;
 struct PipeLine;
 
 class FbxData
 {
 public:
+	std::string name;
+
 	FbxData(int _size = 0);
 
 	std::vector<VertexF::Data> vertexData;
@@ -22,9 +25,11 @@ public:
 
 	PipeLine* pipeline;
 
-	int textureIndex;
+	std::vector<std::string> textureFileName;
 
 	FbxData* parent;
 	std::vector<FbxData*> children;
+
+	FbxMetrialData* meterial;
 };
 

@@ -1,4 +1,5 @@
 #include "FbxLoader.h"
+#include "FbxMetrialData.h"
 
 FbxLoader::FbxLoader()
 	: fbxManager(nullptr)
@@ -53,17 +54,19 @@ FbxData* FbxLoader::Load(std::string _path)
 
 	// 리턴할 데이터 클래스
 	FbxData* data = new FbxData();
+
+	LoadMaterial();
+
 	// 데이터 클래스에 데이터 로드
-	LoadNode(node, data);
+	LoadMesh(node, data);
 
 	return data;
 }
 
-void FbxLoader::LoadNode(FbxNode* _node, FbxData* _data)
+void FbxLoader::LoadMesh(FbxNode* _node, FbxData* _data)
 {
 	// 노드의 속성
 	FbxNodeAttribute* nodeAttribute = _node->GetNodeAttribute();
-
 	// 노드의 월드 변환 행렬
 	FbxAMatrix& globalTransform = _node->EvaluateGlobalTransform();
 	_data->globalTM = FbxAMatrixToXMMatrix(globalTransform);
@@ -76,7 +79,45 @@ void FbxLoader::LoadNode(FbxNode* _node, FbxData* _data)
 	std::vector<DirectX::XMFLOAT3> position;
 	// 최적화를 위한 맵
 	std::unordered_map<VertexF::Data, UINT, VertexF::Data> indexMapping;
-	
+
+	int matCount = _node->GetSrcObjectCount<FbxSurfaceMaterial>();
+
+	for (int i = 0; i < matCount; i++)
+	{
+		FbxSurfaceMaterial* mat = _node->GetSrcObject<FbxSurfaceMaterial>(i);
+		if (mat)
+		{
+			FbxProperty prop = mat->FindProperty(FbxSurfaceMaterial::sDiffuse);
+			int layerMatCount = prop.GetSrcObjectCount<FbxLayeredTexture>();
+			if (layerMatCount > 0)
+			{
+				for (int j = 0; j < layerMatCount; j++)
+				{
+					FbxLayeredTexture* layered_texture = prop.GetSrcObject<FbxLayeredTexture>(j);
+					int lcount = layered_texture->GetSrcObjectCount<FbxFileTexture>();
+					for (int k = 0; k < lcount; k++)
+					{
+						FbxFileTexture* texture = FbxCast<FbxFileTexture>(layered_texture->GetSrcObject<FbxFileTexture>(k));
+						std::string texture_name = texture->GetRelativeFileName();
+						_data->textureFileName.push_back(texture_name);
+					}
+				}
+			}
+			else
+			{
+				int texCount = prop.GetSrcObjectCount<FbxFileTexture>();
+				for (int j = 0; j < texCount; j++)
+				{
+					const FbxFileTexture* texture = FbxCast<FbxFileTexture>(prop.GetSrcObject<FbxFileTexture>(j));
+					// Then, you can get all the properties of the texture, include its name
+					std::string texture_name = texture->GetRelativeFileName();
+					_data->textureFileName.push_back(texture_name);
+				}
+			}
+		}
+	}
+	_data->name = _node->GetName();
+
 	// 노드 속성이 있다면
 	if (nodeAttribute != nullptr)
 	{
@@ -85,7 +126,12 @@ void FbxLoader::LoadNode(FbxNode* _node, FbxData* _data)
 		{
 			// FbxMesh로 캐스팅된 노드 속성의 포인터를 가져온다.
 			FbxMesh* mesh = _node->GetMesh();
-			
+			int layerCount = mesh->GetLayerCount();
+			bool isSame = true;
+			std::vector<int> matrialIds;
+
+			// FbxGeometryElement* s = mesh->GetElementMaterial();
+
 			// 위치 정보가 있는 정점 정보를 가지고 온다.
 			int vertexCount = mesh->GetControlPointsCount();
 			position.resize(vertexCount);
@@ -109,15 +155,19 @@ void FbxLoader::LoadNode(FbxNode* _node, FbxData* _data)
 				{
 					int controlPointIndex = mesh->GetPolygonVertex(i, j);
 
+					int matCount = mesh->GetElementMaterialCount();
 					DirectX::XMFLOAT3& pos = position[controlPointIndex];
 					DirectX::XMFLOAT3 normal = ReadNormal(mesh, controlPointIndex, vCount);
 					DirectX::XMFLOAT3 binormal = ReadBinormal(mesh, controlPointIndex, vCount);
 					DirectX::XMFLOAT3 tangent = ReadTangent(mesh, controlPointIndex, vCount);
+
 					DirectX::XMFLOAT2 UV = ReadUV(mesh, controlPointIndex, vCount);
+					VertexF::Data inputData = VertexF::Data(pos, normal, UV, binormal, tangent);
 
-					VertexF::Data inputData = VertexF::Data( pos, normal, UV, binormal, tangent );
+					FbxLayerElementMaterial* layerMaterial = mesh->GetLayer(0)->GetMaterials();
+					int matrialId = layerMaterial->GetIndexArray().GetAt(i);
 
-					if (indexMapping.find(inputData) == indexMapping.end()) 
+					if (indexMapping.find(inputData) == indexMapping.end())
 					{
 						UINT temp = static_cast<UINT>(_data->vertexData.size());
 						_data->indexData.push_back(temp);
@@ -128,6 +178,9 @@ void FbxLoader::LoadNode(FbxNode* _node, FbxData* _data)
 					{
 						_data->indexData.push_back(indexMapping[inputData]);
 					}
+
+
+
 					vCount++;
 				}
 			}
@@ -140,7 +193,17 @@ void FbxLoader::LoadNode(FbxNode* _node, FbxData* _data)
 		FbxData* child = new FbxData();
 		_data->children.push_back(child);
 		child->parent = _data;
-		LoadNode(_node->GetChild(i), child);
+		LoadMesh(_node->GetChild(i), child);
+	}
+}
+
+void FbxLoader::LoadMaterial()
+{
+	for (int i = 0; i < this->fbxScene->GetMaterialCount(); i++)
+	{
+		FbxSurfaceMaterial* rawMat = this->fbxScene->GetMaterial(i);
+		FbxMetrialData* matData = new FbxMetrialData(i, rawMat);
+		metrialList.push_back(matData);
 	}
 }
 
@@ -209,6 +272,7 @@ DirectX::XMFLOAT2 FbxLoader::ReadUV(const FbxMesh* _mesh, int _controlPointIndex
 	if (!(_mesh->GetElementUVCount() < 1))
 	{
 		const FbxGeometryElementUV* vUV = _mesh->GetElementUV(0);
+
 		int counter;
 		switch (vUV->GetMappingMode())
 		{
@@ -226,6 +290,7 @@ DirectX::XMFLOAT2 FbxLoader::ReadUV(const FbxMesh* _mesh, int _controlPointIndex
 			assert(false && "cannot access FbxGeometryElementNormal");
 			break;
 		}
+
 
 		switch (vUV->GetReferenceMode())
 		{
@@ -248,7 +313,7 @@ DirectX::XMFLOAT2 FbxLoader::ReadUV(const FbxMesh* _mesh, int _controlPointIndex
 	}
 	else
 	{
-		result = { 0.0f, 0.0f};
+		result = { 0.0f, 0.0f };
 	}
 	return result;
 }
