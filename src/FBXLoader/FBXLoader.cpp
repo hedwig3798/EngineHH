@@ -162,10 +162,10 @@ void FbxLoader::LoadMesh(FbxNode* _node, FbxData* _data)
 					DirectX::XMFLOAT3 tangent = ReadTangent(mesh, controlPointIndex, vCount);
 
 					DirectX::XMFLOAT2 UV = ReadUV(mesh, controlPointIndex, vCount);
-					VertexF::Data inputData = VertexF::Data(pos, normal, UV, binormal, tangent);
 
 					FbxLayerElementMaterial* layerMaterial = mesh->GetLayer(0)->GetMaterials();
 					int matrialId = layerMaterial->GetIndexArray().GetAt(i);
+					VertexF::Data inputData = VertexF::Data(pos, normal, UV, binormal, tangent, matrialId);
 
 					if (indexMapping.find(inputData) == indexMapping.end())
 					{

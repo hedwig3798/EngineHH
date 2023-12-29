@@ -602,6 +602,28 @@ void GraphicsEngine::CreateTextureDataFromTGA(std::wstring _path, ID3D11ShaderRe
 	texResource->Release();
 }
 
+void GraphicsEngine::CreateTextureDataFromTGA(std::vector<std::wstring> _path, ID3D11ShaderResourceView** _resourceView)
+{
+	HRESULT hr = S_OK;
+
+	for (int i = 0; i < _path.size(); i++)
+	{
+		ID3D11Resource* texResource = nullptr;
+
+		DirectX::ScratchImage image;
+		hr = DirectX::LoadFromTGAFile(_path[i].c_str(), nullptr, image);
+		assert(SUCCEEDED(hr) && "cannot create image when load TGA data");
+
+		hr = DirectX::CreateTexture(this->d3d11Device, image.GetImages(), image.GetImageCount(), image.GetMetadata(), &texResource);
+		assert(SUCCEEDED(hr) && "cannot create image when load TGA data");
+
+		hr = this->d3d11Device->CreateShaderResourceView(texResource, nullptr, _resourceView + i);
+		assert(SUCCEEDED(hr) && "cannot create image when load TGA data");
+
+		texResource->Release();
+	}
+}
+
 /// <summary>
 /// 텍스쳐 리소스를 픽셀 셰이더에 적용
 /// </summary>

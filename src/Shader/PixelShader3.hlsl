@@ -1,6 +1,9 @@
 #include "../Shader/VertexShader3.hlsl"
 
-Texture2D diffuseMap : register(t0);
+cbuffer diffuseMaps : register(b0)
+{
+    Texture2DArray maps;
+};
 
 SamplerState samAnisotropic
 {
@@ -44,8 +47,8 @@ float4 PS(VertexOut pin) : SV_Target
 	// litColor = ceil(((diffuse + spec) * 10)/2 ) * litColor;
 	litColor.a = pin.material.Diffuse.a;
 	
-
-	float4 textureColor = diffuseMap.Sample(samAnisotropic, pin.Tex);
+	float4 textureColor = maps.Sample( samAnisotropic, float3( pin.Tex, pin.texindex ) );
+	float4 _SampleTexture2DArray_RGBA = SAMPLE_TEXTURE2D_ARRAY(maps, samAnisotropic, pin.Tex, pin.texindex);
 	textureColor.a = 1.0f;
 
 	float4 result = litColor * textureColor;

@@ -11,14 +11,16 @@ namespace VertexF
 			, UV()
 			, binormal()
 			, tangent() 
+			, texIndex(0)
 		{}
 
-		Data(DirectX::XMFLOAT3 _pos, DirectX::XMFLOAT3 _normal, DirectX::XMFLOAT2 _UV, DirectX::XMFLOAT3 _binormal, DirectX::XMFLOAT3 _tangent)
+		Data(DirectX::XMFLOAT3 _pos, DirectX::XMFLOAT3 _normal, DirectX::XMFLOAT2 _UV, DirectX::XMFLOAT3 _binormal, DirectX::XMFLOAT3 _tangent, UINT _texIndex)
 			: position(_pos)
 			, normal(_normal)
 			, UV(_UV)
 			, binormal(_binormal)
 			, tangent(_tangent)
+			, texIndex(_texIndex)
 		{
 		}
 
@@ -27,40 +29,12 @@ namespace VertexF
 		DirectX::XMFLOAT2 UV;
 		DirectX::XMFLOAT3 binormal;
 		DirectX::XMFLOAT3 tangent;
+		UINT texIndex;
 
 		// unordered_map에서 사용될 때 해쉬 충돌을 처리해 줄 연산자 오버로딩
 		bool operator==(const Data& _other) const
 		{
-			if (!(position.x == _other.position.x &&
-				position.y == _other.position.y &&
-				position.z == _other.position.z))
-			{
-				return false;
-			}
-			if (!(normal.x == _other.normal.x &&
-				normal.y == _other.normal.y &&
-				normal.z == _other.normal.z))
-			{
-				return false;
-			}
-			if (!(binormal.x == _other.binormal.x &&
-				binormal.y == _other.binormal.y &&
-				binormal.z == _other.binormal.z))
-			{
-				return false;
-			}
-			if (!(tangent.x == _other.tangent.x &&
-				tangent.y == _other.tangent.y &&
-				tangent.z == _other.tangent.z))
-			{
-				return false;
-			}
-			if (!(UV.x == _other.UV.x &&
-				UV.y == _other.UV.y))
-			{
-				return false;
-			}
-			return true;
+			return !(memcmp(this, &_other, sizeof(Data)));
 		}
 		// unordered_map에서 사용할 해쉬 함수 ( 모든 값을 해쉬화 하고 XOR 연산함 )
 		std::size_t operator() (const Data& _data) const
@@ -92,12 +66,13 @@ namespace VertexF
 		return static_cast<UINT>(sizeof(Data));
 	}
 
-	static D3D11_INPUT_ELEMENT_DESC defaultInputLayerDECS[5] =
+	static D3D11_INPUT_ELEMENT_DESC defaultInputLayerDECS[6] =
 	{
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"BINORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 32, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 44, D3D11_INPUT_PER_VERTEX_DATA, 0}
+		{"TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 44, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"TEXINDEX", 0, DXGI_FORMAT_R32_UINT, 0, 56, D3D11_INPUT_PER_VERTEX_DATA, 0}
 	};
 }

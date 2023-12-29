@@ -121,6 +121,7 @@ public:
 
 	void CreateTextureDataFromDDS(std::wstring _path, ID3D11ShaderResourceView** _resourceView);
 	void CreateTextureDataFromTGA(std::wstring _path, ID3D11ShaderResourceView** _resourceView);
+	void CreateTextureDataFromTGA(std::vector<std::wstring> _path, ID3D11ShaderResourceView** _resourceView);
 	void SetTexture(UINT _start, UINT _viewNumbers, ID3D11ShaderResourceView** _resourceView);
 
 	FMesh* LoadFbxData(std::string _path);

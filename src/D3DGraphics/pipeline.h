@@ -9,7 +9,7 @@ struct PipeLine
 	ID3D11Buffer* vertexBuffer;
 	ID3D11Buffer* IndexBuffer;
 	ID3D11RasterizerState* rasterizerState;
-	ID3D11ShaderResourceView* textureView;
+	ID3D11ShaderResourceView** textureView;
 
 	UINT vertexStructSize;
 	D3D_PRIMITIVE_TOPOLOGY primitiveTopology;

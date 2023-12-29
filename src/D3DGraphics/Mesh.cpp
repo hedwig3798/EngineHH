@@ -35,7 +35,7 @@ void Mesh::Render(GraphicsEngine* _gp, const DirectX::XMMATRIX& _worldTM, const 
 	}
 
 	_gp->BindPipeline(this->pipeline);
-	_gp->SetTexture(0, 1, &this->pipeline.textureView);
+	//_gp->SetTexture(0, 1, &this->pipeline.textureView);
 	_gp->RenderByIndex(this->pipeline, (int)this->indexList.size());
 }
 
@@ -43,7 +43,7 @@ void Mesh::CreatePipeline(GraphicsEngine* graphicsEngine, std::wstring _sPath[],
 {
 	if (_texturePath != L" ")
 	{
-		graphicsEngine->CreateTextureDataFromDDS(_texturePath, &this->pipeline.textureView);
+		//graphicsEngine->CreateTextureDataFromDDS(_texturePath, this->pipeline.textureView);
 	}
 	graphicsEngine->CreateInputLayer(this->pipeline, VertexT::defaultInputLayerDECS, _sPath, 5);
 	graphicsEngine->CreateVertexBuffer(this->vertexes, static_cast<UINT>(this->vertexList.size()) * VertexT::Size(), &this->pipeline.vertexBuffer);

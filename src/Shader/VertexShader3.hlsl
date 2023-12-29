@@ -23,6 +23,7 @@ struct VertexIn
 	float2 Tex     : TEXCOORD;
     float3 Weight : BINORMAL;
     float3 BoneIndices : TANGENT;
+	unsigned int texindex : TEXINDEX;
 };
 
 struct VertexOut
@@ -32,6 +33,7 @@ struct VertexOut
 	float2 Tex     : TEXCOORD;
     float3 NormalW : NORMAL;
 	Material material : MATERIAL;
+	unsigned int texindex : TEXINDEX;
 };
 
 VertexOut VS(VertexIn vin)
@@ -50,5 +52,6 @@ VertexOut VS(VertexIn vin)
 	//정점의 월드 공간에서 법선 벡터
 	vout.NormalW = mul(vin.NormalL, (float3x3)g_worldInvTranspose);
 	vout.material = g_material;
+	vout.texindex = vin.texindex;
 	return vout;
 }

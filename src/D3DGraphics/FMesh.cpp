@@ -32,7 +32,7 @@ void FMesh::Render(GraphicsEngine* _gp, DirectX::XMMATRIX _viewTM, DirectX::XMMA
 		if (c->vertexData.size() != 0)
 		{
 			_gp->BindPipeline(*c->pipeline);
-			_gp->SetTexture(0, 1, &c->pipeline->textureView);
+			_gp->SetTexture(0, 2, c->pipeline->textureView);
 			_gp->RenderByIndex(*c->pipeline, static_cast<int>(c->indexData.size()));
 		}
 	}
@@ -44,17 +44,23 @@ void FMesh::CreatePipeline(GraphicsEngine* _gp, std::wstring _sPath[], std::wstr
 	if (!_nowData->vertexData.size() == 0)
 	{
 		_nowData->pipeline = new PipeLine();
-		_gp->CreateInputLayer(*_nowData->pipeline, VertexF::defaultInputLayerDECS, _sPath, 5);
+		_gp->CreateInputLayer(*_nowData->pipeline, VertexF::defaultInputLayerDECS, _sPath, 6);
 		_gp->CreateRasterizerState(&_nowData->pipeline->rasterizerState);
 		_nowData->pipeline->primitiveTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 		_nowData->pipeline->vertexStructSize = VertexF::Size();
 
 
-		std::wstring path;
-		path.assign(_nowData->textureFileName[1].begin(), _nowData->textureFileName[1].end());
-		if (path != L"")
+		std::vector<std::wstring> path(_nowData->textureFileName.size());
+		for (int i = 0; i < _nowData->textureFileName.size(); i++)
 		{
-			_gp->CreateTextureDataFromTGA(_texturePath + path, &_nowData->pipeline->textureView);
+			path[i].assign(_nowData->textureFileName[i].begin(), _nowData->textureFileName[i].end());
+			path[i] = _texturePath + path[i];
+		}
+
+		if (!path.empty())
+		{
+			_nowData->pipeline->textureView = new ID3D11ShaderResourceView * [path.size()];
+			_gp->CreateTextureDataFromTGA(path, _nowData->pipeline->textureView);
 		}
 
 		_nowData->vertexBufferData = new VertexF::Data[_nowData->vertexData.size()];
