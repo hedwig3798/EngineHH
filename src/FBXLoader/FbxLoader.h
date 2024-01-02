@@ -21,6 +21,7 @@ public:
 
 private:
 	void LoadMesh(FbxNode* _parent, FbxData* _data);
+	void LoadSkeleton();
 	void LoadMaterial();
 
 	DirectX::XMMATRIX FbxAMatrixToXMMatrix(const FbxAMatrix& _pSrc);
