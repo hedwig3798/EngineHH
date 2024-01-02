@@ -22,6 +22,9 @@
     <Filter Include="Parser">
       <UniqueIdentifier>{0e2b2bea-c49a-46da-adcb-b048648df311}</UniqueIdentifier>
     </Filter>
+    <Filter Include="FbxMesh">
+      <UniqueIdentifier>{7ea5e306-8e79-482b-9ffa-8dd050a1d2eb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GraphicsEngine.cpp">
@@ -41,6 +44,9 @@
     </ClCompile>
     <ClCompile Include="RenderObject.cpp">
       <Filter>Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="FMesh.cpp">
+      <Filter>FbxMesh</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -68,6 +74,9 @@
     <ClInclude Include="RenderObject.h">
       <Filter>Mesh</Filter>
     </ClInclude>
+    <ClInclude Include="FMesh.h">
+      <Filter>FbxMesh</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Shader\PixelShader.hlsl">
@@ -83,6 +92,12 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\Shader\LightHelper.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Shader\VertexShader3.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Shader\PixelShader3.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

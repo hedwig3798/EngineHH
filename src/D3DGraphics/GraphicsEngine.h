@@ -15,6 +15,8 @@
 
 class DXTKFont;
 class RenderObject;
+class FMesh;
+class FbxLoader;
 
 class GraphicsEngine
 {
@@ -80,6 +82,8 @@ private:
 	ID3D11DepthStencilState* writerDSS;
 	ID3D11RasterizerState* writerRS;
 
+	FbxLoader* fbxLoader;
+
 public:
 	GraphicsEngine();
 	~GraphicsEngine();
@@ -115,8 +119,12 @@ public:
 
 	void WriteText(int x, int y, DirectX::XMFLOAT4 color, TCHAR* text);
 
-	void CreateTextureData(std::wstring _path, ID3D11ShaderResourceView** _resourceView);
+	void CreateTextureDataFromDDS(std::wstring _path, ID3D11ShaderResourceView** _resourceView);
+	void CreateTextureDataFromTGA(std::wstring _path, ID3D11ShaderResourceView** _resourceView);
+	void CreateTextureDataFromTGA(std::vector<std::wstring> _path, ID3D11ShaderResourceView** _resourceView);
 	void SetTexture(UINT _start, UINT _viewNumbers, ID3D11ShaderResourceView** _resourceView);
+
+	FMesh* LoadFbxData(std::string _path);
 
 private:
 	void CreateD3D11DeviceContext();

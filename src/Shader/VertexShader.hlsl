@@ -25,7 +25,7 @@ VOUT VS(VIN _vin)
     VOUT vout;
     vout.pos = float4(_vin.pos, 1.0f);
     vout.pos = mul(vout.pos, g_wvp);
-    vout.color = _vin.color;
+    vout.color = float4(1.0f, 1.0f, 1.0f, 1.0f);
     
     return vout;
 }

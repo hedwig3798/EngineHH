@@ -5,6 +5,8 @@
 #include "DDSTextureLoader.h"
 #include "LightHelper.h"
 #include "RenderObject.h"
+#include "FbxLoader.h"
+#include "FMesh.h"
 
 GraphicsEngine::GraphicsEngine()
 	: featureLevel{}
@@ -22,6 +24,8 @@ GraphicsEngine::GraphicsEngine()
 	, writerRS(nullptr)
 	, writer(nullptr)
 	, lightBuffer(nullptr)
+	, fbxLoader(nullptr)
+	, boneBuffer(nullptr)
 {
 }
 
@@ -58,6 +62,9 @@ void GraphicsEngine::Initialize(HWND _hwnd)
 	CreateMatrixBuffer();
 	CreateLightingBffer();
 	CreateBoneBuffer();
+
+	this->fbxLoader = new FbxLoader();
+	this->fbxLoader->Initalize();
 }
 
 /// <summary>
@@ -483,7 +490,7 @@ void GraphicsEngine::BindBonesData(std::vector<RenderObject*>& _bones, DirectX::
 	hr = this->d3d11DeviceContext->Map(this->boneBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	assert(SUCCEEDED(hr));
 
-	BonesBufferType* dataptr = (BonesBufferType*)mappedResource.pData;
+	BonesBufferType* dataptr = static_cast<BonesBufferType*>(mappedResource.pData);
 	for (int i = 0; i < (int)_bones.size(); i++)
 	{
 		DirectX::XMMATRIX boneWorldTM = _bones[i]->nodeTM;
@@ -525,7 +532,7 @@ void GraphicsEngine::BindLightingParameter(DirectionalLight _directionLight[], U
 	hr = this->d3d11DeviceContext->Map(this->lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	assert(SUCCEEDED(hr));
 
-	LightingBufferType* dataptr = (LightingBufferType*)mappedResource.pData;
+	LightingBufferType* dataptr = static_cast<LightingBufferType*>(mappedResource.pData);
 
 	dataptr->dirLights[0] = _directionLight[0];
 	dataptr->dirLights[1] = _directionLight[1];
@@ -568,13 +575,53 @@ void GraphicsEngine::WriteText(int x, int y, DirectX::XMFLOAT4 color, TCHAR* tex
 /// </summary>
 /// <param name="_path">데이터 경로</param>
 /// <param name="_resourceView">텍스쳐 데이터를 저장할 렌더 리소스 뷰</param>
-void GraphicsEngine::CreateTextureData(std::wstring _path, ID3D11ShaderResourceView** _resourceView)
+void GraphicsEngine::CreateTextureDataFromDDS(std::wstring _path, ID3D11ShaderResourceView** _resourceView)
 {
 	HRESULT hr = S_OK;
 	ID3D11Resource* texResource = nullptr;
 	hr = DirectX::CreateDDSTextureFromFile(this->d3d11Device, _path.c_str(), &texResource, _resourceView);
 	assert(SUCCEEDED(hr) && "cannot create resource view");
 	texResource->Release();
+}
+
+void GraphicsEngine::CreateTextureDataFromTGA(std::wstring _path, ID3D11ShaderResourceView** _resourceView)
+{
+	HRESULT hr = S_OK;
+	ID3D11Resource* texResource = nullptr;
+
+	DirectX::ScratchImage image;
+	hr = DirectX::LoadFromTGAFile(_path.c_str(), nullptr, image);
+	assert(SUCCEEDED(hr) && "cannot create image when load TGA data");
+
+	hr = DirectX::CreateTexture(this->d3d11Device, image.GetImages(), image.GetImageCount(), image.GetMetadata(), &texResource);
+	assert(SUCCEEDED(hr) && "cannot create image when load TGA data");
+
+	hr = this->d3d11Device->CreateShaderResourceView(texResource, nullptr, _resourceView);
+	assert(SUCCEEDED(hr) && "cannot create image when load TGA data");
+
+	texResource->Release();
+}
+
+void GraphicsEngine::CreateTextureDataFromTGA(std::vector<std::wstring> _path, ID3D11ShaderResourceView** _resourceView)
+{
+	HRESULT hr = S_OK;
+
+	for (int i = 0; i < _path.size(); i++)
+	{
+		ID3D11Resource* texResource = nullptr;
+
+		DirectX::ScratchImage image;
+		hr = DirectX::LoadFromTGAFile(_path[i].c_str(), nullptr, image);
+		assert(SUCCEEDED(hr) && "cannot create image when load TGA data");
+
+		hr = DirectX::CreateTexture(this->d3d11Device, image.GetImages(), image.GetImageCount(), image.GetMetadata(), &texResource);
+		assert(SUCCEEDED(hr) && "cannot create image when load TGA data");
+
+		hr = this->d3d11Device->CreateShaderResourceView(texResource, nullptr, _resourceView + i);
+		assert(SUCCEEDED(hr) && "cannot create image when load TGA data");
+
+		texResource->Release();
+	}
 }
 
 /// <summary>
@@ -586,6 +633,13 @@ void GraphicsEngine::CreateTextureData(std::wstring _path, ID3D11ShaderResourceV
 void GraphicsEngine::SetTexture(UINT _start, UINT _viewNumbers, ID3D11ShaderResourceView** _resourceView)
 {
 	this->d3d11DeviceContext->PSSetShaderResources(_start, _viewNumbers, _resourceView);
+}
+
+FMesh* GraphicsEngine::LoadFbxData(std::string _path)
+{
+	FMesh* res = new FMesh();
+	res->fData = this->fbxLoader->Load(_path);
+	return res;
 }
 
 /// <summary>

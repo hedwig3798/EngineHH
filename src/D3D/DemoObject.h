@@ -6,6 +6,7 @@ class DemoProcess;
 class ManagerSet;
 class Mesh;
 class RenderObject;
+class FMesh;
 
 class DemoObject
 {
@@ -17,11 +18,11 @@ private:
 
 	std::wstring path[2]
 	{
-		L"../Shader/VertexShader2.hlsl",
-		L"../Shader/PixelShader2.hlsl",
+		L"../Shader/VertexShader3.hlsl",
+		L"../Shader/PixelShader3.hlsl",
 	};
 
-	std::wstring texturePath = L"../Model/RainbowTree_Texture01.dds";
+	std::wstring texturePath = L"../Model/";
 
 	Material demoMat;
 	DirectionalLight dirLights[3];
@@ -29,6 +30,8 @@ private:
 	ManagerSet* managers;
 
 	bool isLocal;
+
+	FMesh* testFMesh;
 
 public:
 	DemoObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene, ManagerSet* _manager);

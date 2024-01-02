@@ -4,6 +4,7 @@
 #include "ModelParser.h"
 #include "ManagerSet.h"
 #include "Mesh.h"
+#include "FMesh.h"
 
 DemoObject::DemoObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene, ManagerSet* _manager)
 	: graphicsEngine(_graphicsEngine)
@@ -12,15 +13,19 @@ DemoObject::DemoObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene, Man
 	, managers(_manager)
 	, gemoObject{}
 	, isLocal(false)
+	, testFMesh(nullptr)
 {
 	std::vector<VertexT::Data> vertexInfo;
 	std::vector<UINT> indexInfo;
-	this->gemoObject = AseParser(L"../Model/babypig_walk_6x.ASE");
+	// this->gemoObject = AseParser(L"../Model/babypig_walk_6x.ASE");
 
-	for (auto& g : this->gemoObject)
-	{
-		g->Initalize(graphicsEngine, this->texturePath);
-	}
+// 	for (auto& g : this->gemoObject)
+// 	{
+// 		g->Initalize(graphicsEngine, this->texturePath);
+// 	}
+
+	testFMesh = this->graphicsEngine->LoadFbxData("../Model/testMen.fbx");
+	this->testFMesh->CreatePipeline(this->graphicsEngine, path, texturePath, this->testFMesh->fData);
 
 	dirLights[0].Ambient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
 	dirLights[0].Diffuse = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
@@ -82,9 +87,11 @@ void DemoObject::Update(float _dt)
 
 void DemoObject::Render(GraphicsEngine* ge)
 {
-	this->graphicsEngine->BindLightingParameter(this->dirLights, lightCount, this->scene->getCamera()->GetPosition());
-	for(auto& g : this->gemoObject) 
-	{
-		g->Render(graphicsEngine, this->scene->getCamera()->GetViewTM(), this->scene->getCamera()->GetProjectionTM());
-	}
+ 	this->graphicsEngine->BindLightingParameter(this->dirLights, lightCount, this->scene->getCamera()->GetPosition());
+// 	for(auto& g : this->gemoObject) 
+// 	{
+// 		g->Render(graphicsEngine, this->scene->getCamera()->GetViewTM(), this->scene->getCamera()->GetProjectionTM());
+// 	}
+
+	this->testFMesh->Render(graphicsEngine, this->scene->getCamera()->GetViewTM(), this->scene->getCamera()->GetProjectionTM());
 }
