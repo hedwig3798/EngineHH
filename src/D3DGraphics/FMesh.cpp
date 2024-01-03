@@ -32,7 +32,7 @@ void FMesh::Render(GraphicsEngine* _gp, DirectX::XMMATRIX _viewTM, DirectX::XMMA
 		if (c->vertexData.size() != 0)
 		{
 			_gp->BindPipeline(*c->pipeline);
-			_gp->SetTexture(0, 2, c->pipeline->textureView);
+			_gp->SetTexture(0, 1, c->pipeline->textureView);
 			_gp->RenderByIndex(*c->pipeline, static_cast<int>(c->indexData.size()));
 		}
 	}
