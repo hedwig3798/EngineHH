@@ -674,6 +674,19 @@ void GraphicsEngine::CreateTextureDataFromTGA(std::vector<std::wstring> _path, I
 
 	assert(textureArray);
 	hr = this->d3d11Device->CreateShaderResourceView(textureArray, nullptr, _resourceView);
+
+	textureArray->Release();
+	for (UINT i = 0; i < arraySize; i++)
+	{
+		texResource[i]->Release();
+		stagingTextureArray[i]->Release();
+		resourceTexture[i]->Release();
+	}
+
+	delete[] texture;
+	delete[] texResource;
+	delete[] resourceTexture;
+	delete[] stagingTextureArray;
 }
 
 /// <summary>
