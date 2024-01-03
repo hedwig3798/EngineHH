@@ -1,8 +1,8 @@
 #include "../Shader/VertexShader3.hlsl"
 
 
-// Texture2DArray maps : register(t0);
-Texture2D maps[2] : register(t0);
+Texture2DArray maps : register(t0);
+// Texture2D maps[2] : register(t0);
 SamplerState samAnisotropic
 {
 	Filter = ANISOTROPIC;
@@ -45,18 +45,18 @@ float4 PS(VertexOut pin) : SV_Target
 	// litColor = ceil(((diffuse + spec) * 10)/2 ) * litColor;
 	litColor.a = pin.material.Diffuse.a;
 	
-	//float4 textureColor = maps.Sample( samAnisotropic, float3( pin.Tex, pin.texindex ) );
+	float4 textureColor = maps.Sample( samAnisotropic, float3( pin.Tex, pin.texindex ) );
 
-	float4 textureColor = {1.0f, 1.0f, 1.0f, 1.0f};
-	if (pin.texindex == 0) 
-	{
-		textureColor = maps[0].Sample(samAnisotropic, pin.Tex);
-	}
-	else if (pin.texindex == 1) 
-	{
-		textureColor = maps[1].Sample(samAnisotropic, pin.Tex);
-	}
-	textureColor.a = 1.0f;
+// 	float4 textureColor = {1.0f, 1.0f, 1.0f, 1.0f};
+// 	if (pin.texindex == 0) 
+// 	{
+// 		textureColor = maps[0].Sample(samAnisotropic, pin.Tex);
+// 	}
+// 	else if (pin.texindex == 1) 
+// 	{
+// 		textureColor = maps[1].Sample(samAnisotropic, pin.Tex);
+// 	}
+ 	textureColor.a = 1.0f;
 
 	float4 result = litColor * textureColor;
     return textureColor;

@@ -606,22 +606,81 @@ void GraphicsEngine::CreateTextureDataFromTGA(std::vector<std::wstring> _path, I
 {
 	HRESULT hr = S_OK;
 
-	for (int i = 0; i < _path.size(); i++)
+	//Creating Texture2D description
+	D3D11_TEXTURE2D_DESC desc;
+	ZeroMemory(&desc, sizeof(D3D11_TEXTURE2D_DESC));
+	desc.Width = 1024;
+	desc.Height = 1024;
+	desc.MipLevels = 1;
+	desc.ArraySize = 2;
+	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	desc.SampleDesc.Count = 1;
+	desc.SampleDesc.Quality = 0;
+	desc.Usage = D3D11_USAGE_IMMUTABLE;
+	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	desc.CPUAccessFlags = 0;
+	desc.MiscFlags = 0;
+
+	ID3D11Texture2D* pTexture;
+	D3D11_SUBRESOURCE_DATA texture[2];
+
+	ID3D11Resource** texResource = new ID3D11Resource * [2];
+	DirectX::ScratchImage* image = new DirectX::ScratchImage[2];
+	for (int i = 0; i < 2; i++)
 	{
-		ID3D11Resource* texResource = nullptr;
-
-		DirectX::ScratchImage image;
-		hr = DirectX::LoadFromTGAFile(_path[i].c_str(), nullptr, image);
+		hr = DirectX::LoadFromTGAFile(_path[i].c_str(), DirectX::TGA_FLAGS_NONE, nullptr, image[i]);
 		assert(SUCCEEDED(hr) && "cannot create image when load TGA data");
 
-		hr = DirectX::CreateTexture(this->d3d11Device, image.GetImages(), image.GetImageCount(), image.GetMetadata(), &texResource);
-		assert(SUCCEEDED(hr) && "cannot create image when load TGA data");
-
-		hr = this->d3d11Device->CreateShaderResourceView(texResource, nullptr, _resourceView + i);
-		assert(SUCCEEDED(hr) && "cannot create image when load TGA data");
-
-		texResource->Release();
+		hr = DirectX::CreateTexture(
+			this->d3d11Device,
+			image[i].GetImages(),
+			image[i].GetImageCount(),
+			image[i].GetMetadata(),
+			&texResource[i]
+		);
+		assert(SUCCEEDED(hr) && "cannot create texture when load TGA data");
 	}
+
+	D3D11_TEXTURE2D_DESC stagingDecs;
+	stagingDecs.Width = 1024;
+	stagingDecs.Height = 1024;
+	stagingDecs.MipLevels = 1;
+	stagingDecs.ArraySize = 1;
+	stagingDecs.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	stagingDecs.SampleDesc.Count = 1;
+	stagingDecs.SampleDesc.Quality = 0;
+	stagingDecs.BindFlags = 0;
+	stagingDecs.MiscFlags = 0;
+	stagingDecs.Usage = D3D11_USAGE_STAGING;
+	stagingDecs.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+
+	ID3D11Texture2D** rawTexture = new ID3D11Texture2D * [2];
+	ID3D11Texture2D** Staging = new ID3D11Texture2D * [2];
+
+	for (int i = 0; i < 2; i++)
+	{
+		texResource[i]->QueryInterface(__uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&rawTexture[i]));
+		D3D11_TEXTURE2D_DESC tempdecs;
+		rawTexture[i]->GetDesc(&tempdecs);
+
+		this->d3d11Device->CreateTexture2D(&stagingDecs, nullptr, &Staging[i]);
+		assert(Staging[i]);
+		assert(rawTexture[i]);
+		
+		this->d3d11DeviceContext->CopyResource(Staging[i], rawTexture[i]);
+
+		D3D11_MAPPED_SUBRESOURCE mappedResource;
+		hr = this->d3d11DeviceContext->Map(Staging[i], 0, D3D11_MAP_READ, 0, &mappedResource);
+
+		texture[i].pSysMem = mappedResource.pData;
+		texture[i].SysMemPitch = mappedResource.RowPitch;
+		texture[i].SysMemSlicePitch = mappedResource.DepthPitch;
+	}
+
+	hr = this->d3d11Device->CreateTexture2D(&desc, texture, &pTexture);
+
+	assert(pTexture);
+	hr = this->d3d11Device->CreateShaderResourceView(pTexture, nullptr, _resourceView);
 }
 
 /// <summary>
