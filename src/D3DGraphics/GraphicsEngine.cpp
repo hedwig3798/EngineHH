@@ -342,11 +342,11 @@ std::vector<byte> GraphicsEngine::Read(std::string File)
 void GraphicsEngine::CreateInputLayer(PipeLine& _pipline, D3D11_INPUT_ELEMENT_DESC* _defaultInputLayerDECS, std::wstring _path[], UINT _numberOfElement)
 {
 	HRESULT hr = S_OK;
-	std::string vs;
-	vs.assign<std::wstring::iterator>(_path[0].begin(), _path[0].end());
+	std::string vs = "";
+	vs.assign(_path[0].begin(), _path[0].end());
 	auto vsByteCode = Read(vs);
 
-	std::string ps;
+	std::string ps = "";
 	ps.assign(_path[1].begin(), _path[1].end());
 	auto psByteCode = Read(ps);
 
