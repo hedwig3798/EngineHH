@@ -9,10 +9,6 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="리소스 파일">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="Loader">
       <UniqueIdentifier>{884792af-285a-4036-a725-b188284028cf}</UniqueIdentifier>
     </Filter>
@@ -21,6 +17,15 @@
     </Filter>
     <Filter Include="FbxData">
       <UniqueIdentifier>{0040f685-eb54-4515-bd6c-50a5e623f5e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Bone">
+      <UniqueIdentifier>{2a58b344-be75-43a7-875a-6fb6d8ed7b12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="material">
+      <UniqueIdentifier>{46d9107c-525d-4163-bd27-80dc45b41f63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mesh">
+      <UniqueIdentifier>{4704aff5-769f-4f98-a57f-e5fbe383229e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -36,8 +41,14 @@
     <ClInclude Include="FbxData.h">
       <Filter>FbxData</Filter>
     </ClInclude>
+    <ClInclude Include="FbxBone.h">
+      <Filter>Bone</Filter>
+    </ClInclude>
     <ClInclude Include="FbxMetrialData.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>material</Filter>
+    </ClInclude>
+    <ClInclude Include="FbxMeshData.h">
+      <Filter>Mesh</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -50,8 +61,14 @@
     <ClCompile Include="FbxData.cpp">
       <Filter>FbxData</Filter>
     </ClCompile>
+    <ClCompile Include="FbxBone.cpp">
+      <Filter>Bone</Filter>
+    </ClCompile>
     <ClCompile Include="FbxMetrialData.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>material</Filter>
+    </ClCompile>
+    <ClCompile Include="FbxMeshData.cpp">
+      <Filter>Mesh</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

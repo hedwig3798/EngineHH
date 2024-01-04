@@ -139,7 +139,7 @@
     <ClInclude Include="ASEFile.h" />
     <ClInclude Include="color.h" />
     <ClInclude Include="DXTKFont.h" />
-    <ClInclude Include="FMesh.h" />
+    <ClInclude Include="FObject.h" />
     <ClInclude Include="RenderObject.h" />
     <ClInclude Include="GraphicsEngine.h" />
     <ClInclude Include="Mesh.h" />
@@ -150,7 +150,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DXTKFont.cpp" />
-    <ClCompile Include="FMesh.cpp" />
+    <ClCompile Include="FObject.cpp" />
     <ClCompile Include="RenderObject.cpp" />
     <ClCompile Include="GraphicsEngine.cpp" />
     <ClCompile Include="Mesh.cpp" />

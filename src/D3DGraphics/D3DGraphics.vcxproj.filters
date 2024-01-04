@@ -45,7 +45,7 @@
     <ClCompile Include="RenderObject.cpp">
       <Filter>Mesh</Filter>
     </ClCompile>
-    <ClCompile Include="FMesh.cpp">
+    <ClCompile Include="FObject.cpp">
       <Filter>FbxMesh</Filter>
     </ClCompile>
   </ItemGroup>
@@ -74,7 +74,7 @@
     <ClInclude Include="RenderObject.h">
       <Filter>Mesh</Filter>
     </ClInclude>
-    <ClInclude Include="FMesh.h">
+    <ClInclude Include="FObject.h">
       <Filter>FbxMesh</Filter>
     </ClInclude>
   </ItemGroup>
