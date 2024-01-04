@@ -6,7 +6,7 @@ class DemoProcess;
 class ManagerSet;
 class Mesh;
 class RenderObject;
-class FMesh;
+class FObject;
 
 class DemoObject
 {
@@ -31,7 +31,7 @@ private:
 
 	bool isLocal;
 
-	FMesh* testFMesh;
+	FObject* testFMesh;
 
 public:
 	DemoObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene, ManagerSet* _manager);

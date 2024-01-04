@@ -1,5 +1,6 @@
 #include "FbxLoader.h"
 #include "FbxMetrialData.h"
+#include "FbxMeshData.h"
 
 FbxLoader::FbxLoader()
 	: fbxManager(nullptr)
@@ -57,14 +58,17 @@ FbxData* FbxLoader::Load(std::string _path)
 
 	LoadMaterial();
 
+	FbxMeshData* meshData = new FbxMeshData();
 	// 데이터 클래스에 데이터 로드
-	LoadMesh(node, data);
+	LoadMesh(node, meshData);
+	data->mesh = meshData;
 
 	return data;
 }
 
-void FbxLoader::LoadMesh(FbxNode* _node, FbxData* _data)
+void FbxLoader::LoadMesh(FbxNode* _node, FbxMeshData* _data)
 {
+
 	// 노드의 속성
 	FbxNodeAttribute* nodeAttribute = _node->GetNodeAttribute();
 	// 노드의 월드 변환 행렬
@@ -130,7 +134,7 @@ void FbxLoader::LoadMesh(FbxNode* _node, FbxData* _data)
 			bool isSame = true;
 			std::vector<int> matrialIds;
 
-			// FbxGeometryElement* s = mesh->GetElementMaterial();
+
 
 			// 위치 정보가 있는 정점 정보를 가지고 온다.
 			int vertexCount = mesh->GetControlPointsCount();
@@ -179,8 +183,6 @@ void FbxLoader::LoadMesh(FbxNode* _node, FbxData* _data)
 						_data->indexData.push_back(indexMapping[inputData]);
 					}
 
-
-
 					vCount++;
 				}
 			}
@@ -190,11 +192,16 @@ void FbxLoader::LoadMesh(FbxNode* _node, FbxData* _data)
 	// 노드의 자식들 또한 로드
 	for (int i = 0; i < _node->GetChildCount(); ++i)
 	{
-		FbxData* child = new FbxData();
+		FbxMeshData* child = new FbxMeshData();
 		_data->children.push_back(child);
 		child->parent = _data;
 		LoadMesh(_node->GetChild(i), child);
 	}
+}
+
+void FbxLoader::LoadSkeleton(FbxNode* _parent, FbxData* _data)
+{
+
 }
 
 void FbxLoader::LoadMaterial()

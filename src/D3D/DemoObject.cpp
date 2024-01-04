@@ -4,7 +4,7 @@
 #include "ModelParser.h"
 #include "ManagerSet.h"
 #include "Mesh.h"
-#include "FMesh.h"
+#include "FObject.h"
 
 DemoObject::DemoObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene, ManagerSet* _manager)
 	: graphicsEngine(_graphicsEngine)
@@ -25,7 +25,7 @@ DemoObject::DemoObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene, Man
 // 	}
 
 	testFMesh = this->graphicsEngine->LoadFbxData("../Model/testMen.fbx");
-	this->testFMesh->CreatePipeline(this->graphicsEngine, path, texturePath, this->testFMesh->fData);
+	this->testFMesh->Initalize(this->graphicsEngine, path, texturePath, this->testFMesh->fData);
 
 	dirLights[0].Ambient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
 	dirLights[0].Diffuse = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);

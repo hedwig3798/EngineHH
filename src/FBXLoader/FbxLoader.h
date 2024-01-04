@@ -2,6 +2,8 @@
 #include "pch.h"
 #include "FbxData.h"
 
+class FbxMeshData;
+
 class FbxLoader
 {
 public:
@@ -20,8 +22,8 @@ public:
 	FbxData* Load(std::string _path);
 
 private:
-	void LoadMesh(FbxNode* _parent, FbxData* _data);
-	void LoadSkeleton();
+	void LoadMesh(FbxNode* _node, FbxMeshData* _data);
+	void LoadSkeleton(FbxNode* _parent, FbxData* _data);
 	void LoadMaterial();
 
 	DirectX::XMMATRIX FbxAMatrixToXMMatrix(const FbxAMatrix& _pSrc);

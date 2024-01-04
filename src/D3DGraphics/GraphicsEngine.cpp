@@ -6,7 +6,7 @@
 #include "LightHelper.h"
 #include "RenderObject.h"
 #include "FbxLoader.h"
-#include "FMesh.h"
+#include "FObject.h"
 
 GraphicsEngine::GraphicsEngine()
 	: featureLevel{}
@@ -700,9 +700,9 @@ void GraphicsEngine::SetTexture(UINT _start, UINT _viewNumbers, ID3D11ShaderReso
 	this->d3d11DeviceContext->PSSetShaderResources(_start, _viewNumbers, _resourceView);
 }
 
-FMesh* GraphicsEngine::LoadFbxData(std::string _path)
+FObject* GraphicsEngine::LoadFbxData(std::string _path)
 {
-	FMesh* res = new FMesh();
+	FObject* res = new FObject();
 	res->fData = this->fbxLoader->Load(_path);
 	return res;
 }

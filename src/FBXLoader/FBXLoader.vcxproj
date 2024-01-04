@@ -146,15 +146,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="FbxBone.h" />
     <ClInclude Include="FbxData.h" />
     <ClInclude Include="FbxLoader.h" />
+    <ClInclude Include="FbxMeshData.h" />
     <ClInclude Include="FbxMetrialData.h" />
     <ClInclude Include="fbxVertex.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="FbxBone.cpp" />
     <ClCompile Include="FbxData.cpp" />
     <ClCompile Include="FbxLoader.cpp" />
+    <ClCompile Include="FbxMeshData.cpp" />
     <ClCompile Include="FbxMetrialData.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
