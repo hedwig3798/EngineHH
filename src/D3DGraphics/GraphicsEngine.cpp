@@ -321,59 +321,47 @@ void GraphicsEngine::CreateWriter()
 	this->writer->Create(this->d3d11Device, this->writerRS, this->writerDSS);
 }
 
+std::vector<byte> GraphicsEngine::Read(std::string File)
+{
+	std::vector<byte> Text;
+	std::fstream file(File, std::ios::in | std::ios::ate | std::ios::binary);
+
+	if (file.is_open()) {
+		Text.resize(file.tellg());
+		file.seekg(0, std::ios::beg);
+		file.read(reinterpret_cast<char*>(&Text[0]), Text.size());
+		file.close();
+	}
+
+	return Text;
+}
+
 /// <summary>
 /// Input Layer를 생성한다
 /// </summary>
 void GraphicsEngine::CreateInputLayer(PipeLine& _pipline, D3D11_INPUT_ELEMENT_DESC* _defaultInputLayerDECS, std::wstring _path[], UINT _numberOfElement)
 {
 	HRESULT hr = S_OK;
+	std::string vs;
+	vs.assign<std::wstring::iterator>(_path[0].begin(), _path[0].end());
+	auto vsByteCode = Read(vs);
 
-	ID3DBlob* vsByteCode;
-	ID3DBlob* psByteCode;
-	ID3DBlob* compileError;
+	std::string ps;
+	ps.assign(_path[1].begin(), _path[1].end());
+	auto psByteCode = Read(ps);
 
-	// TODO : 상대경로로 바꾸기
-	hr = D3DCompileFromFile(
-		_path[0].c_str(),
-		nullptr,
-		D3D_COMPILE_STANDARD_FILE_INCLUDE,
-		"VS",
-		"vs_5_0",
-		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
-		0,
-		&vsByteCode,
-		&compileError
-	);
-	assert(SUCCEEDED(hr) && "cannot Compile Vertex Shader");
 
-	// TODO : 상대경로로 바꾸기
-	hr = D3DCompileFromFile(
-		_path[1].c_str(),
-		nullptr,
-		D3D_COMPILE_STANDARD_FILE_INCLUDE,
-		"PS",
-		"ps_5_0",
-		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
-		0,
-		&psByteCode,
-		&compileError
-	);
-	assert(SUCCEEDED(hr) && "cannot Compile Pixel Shader");
-
-	this->d3d11Device->CreateVertexShader(vsByteCode->GetBufferPointer(), vsByteCode->GetBufferSize(), nullptr, &_pipline.vertexShader);
-	this->d3d11Device->CreatePixelShader(psByteCode->GetBufferPointer(), psByteCode->GetBufferSize(), nullptr, &_pipline.pixelShader);
+	hr = this->d3d11Device->CreateVertexShader(vsByteCode.data(), vsByteCode.size(), nullptr, &_pipline.vertexShader);
+	hr = this->d3d11Device->CreatePixelShader(psByteCode.data(), psByteCode.size(), nullptr, &_pipline.pixelShader);
 
 	hr = this->d3d11Device->CreateInputLayout(
 		_defaultInputLayerDECS,
 		_numberOfElement,
-		vsByteCode->GetBufferPointer(),
-		vsByteCode->GetBufferSize(),
+		vsByteCode.data(),
+		vsByteCode.size(),
 		&_pipline.inputLayout
 	);
 	assert(SUCCEEDED(hr) && "cannot create input layer");
-
-	vsByteCode->Release();
-	psByteCode->Release();
 }
 
 /// <summary>

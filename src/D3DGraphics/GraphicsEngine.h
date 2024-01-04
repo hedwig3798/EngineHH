@@ -4,6 +4,7 @@
 #include "color.h"
 #include "pipeline.h"
 #include "LightHelper.h"
+
 /// <summary>
 /// D3D 그래픽 엔진
 /// 작성자 : 김형환
@@ -135,6 +136,8 @@ private:
 	void BindView();
 
 	void CreateWriter();
+
+	std::vector<byte> Read(std::string File);
 };
 
 template<typename V>
