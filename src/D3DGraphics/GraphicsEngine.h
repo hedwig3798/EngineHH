@@ -61,6 +61,9 @@ private:
 	// 윈도우 핸들러
 	HWND hwnd;
 
+	int windowWidth;
+	int windowHeight;
+
 	// 스왑 체인
 	IDXGISwapChain* swapChain;
 
@@ -85,6 +88,8 @@ private:
 
 	FbxLoader* fbxLoader;
 
+	std::vector<ID3D11Texture2D*> dTexture;
+	std::vector<ID3D11ShaderResourceView*> dSRV;
 	std::vector<ID3D11RenderTargetView*> dRenderTargets;
 
 public:
@@ -100,7 +105,10 @@ public:
 
 	void BeginDeferredRender();
 	void EndDeferredRender();
-	void DeferredRender();
+	void DeferredRender(PipeLine& _pipline, int _indexSize);
+	void DeferredRenderClearView();
+	void BindDeferredView();
+
 
 	void ClearRenderTargetView();
 	void ClearDepthStencilView();
@@ -133,6 +141,7 @@ public:
 	void SetTexture(UINT _start, UINT _viewNumbers, ID3D11ShaderResourceView** _resourceView);
 
 	FObject* LoadFbxData(std::string _path);
+	void BindView();
 
 private:
 	void CreateD3D11DeviceContext();
@@ -140,7 +149,6 @@ private:
 	void CreateRenderTargetView();
 	void CreateDepthStencilBufferAndView();
 	void CreateViewport();
-	void BindView();
 
 	void CreateWriter();
 

@@ -84,6 +84,7 @@ void DemoProcess::Update()
 void DemoProcess::Render()
 {
 	this->graphicsEngine->begineDraw();
+	this->graphicsEngine->BindDeferredView();
 
 	this->object->Render(graphicsEngine);
 	this->line->Render(graphicsEngine);

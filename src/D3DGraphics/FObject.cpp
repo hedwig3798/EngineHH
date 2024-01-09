@@ -22,6 +22,8 @@ FObject::~FObject()
 void FObject::Render(GraphicsEngine* _gp, DirectX::XMMATRIX _viewTM, DirectX::XMMATRIX _projTM)
 {
 	FbxMeshData* _nowData = this->fData->mesh;
+	_gp->BindDeferredView();
+	_gp->DeferredRenderClearView();
 	for (auto& c : _nowData->children)
 	{
 		_gp->BindMatrixParameter(
@@ -37,7 +39,6 @@ void FObject::Render(GraphicsEngine* _gp, DirectX::XMMATRIX _viewTM, DirectX::XM
 			_gp->RenderByIndex(*c->pipeline, static_cast<int>(c->indexData.size()));
 		}
 	}
-
 }
 
 void FObject::Initalize(GraphicsEngine* _gp, std::wstring _sPath[], std::wstring _texturePath, FbxData* _nowData)

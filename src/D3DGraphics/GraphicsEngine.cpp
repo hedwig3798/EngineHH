@@ -50,6 +50,7 @@ GraphicsEngine::~GraphicsEngine()
 /// <param name="_hwnd">윈도우 핸들</param>
 void GraphicsEngine::Initialize(HWND _hwnd)
 {
+	HRESULT hr = S_OK;
 	this->hwnd = _hwnd;
 
 	CreateD3D11DeviceContext();
@@ -62,6 +63,56 @@ void GraphicsEngine::Initialize(HWND _hwnd)
 	CreateMatrixBuffer();
 	CreateLightingBffer();
 	CreateBoneBuffer();
+
+	dTexture.resize(2);
+	dRenderTargets.resize(2);
+	dSRV.resize(2);
+
+	RECT windowSize;
+	assert(GetWindowRect(hwnd, &windowSize) && "cannot get window rectangle");
+
+	this->windowWidth = windowSize.right - windowSize.left;
+	this->windowHeight = windowSize.bottom - windowSize.top;
+
+	D3D11_TEXTURE2D_DESC renderTargetTextureDesc{};
+	renderTargetTextureDesc.Width = static_cast<UINT>(windowWidth);
+	renderTargetTextureDesc.Height = static_cast<UINT>(windowHeight);
+	renderTargetTextureDesc.MipLevels = 1;
+	renderTargetTextureDesc.ArraySize = 1;
+	renderTargetTextureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;  // 스펙큘러, 디퓨즈는 8비트로 괜찮을 것 같은데 포지션 노말은?
+	renderTargetTextureDesc.SampleDesc.Count = 1;
+	renderTargetTextureDesc.Usage = D3D11_USAGE_DEFAULT;
+	renderTargetTextureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+
+	for (auto& dt : dTexture)
+	{
+		hr = this->d3d11Device->CreateTexture2D(&renderTargetTextureDesc, nullptr, &dt);
+		assert(SUCCEEDED(hr));
+	}
+
+	// 1-2. RenderTargetView
+	D3D11_RENDER_TARGET_VIEW_DESC rendertargetViewDesc;
+	ZeroMemory(&rendertargetViewDesc, sizeof(rendertargetViewDesc));
+	rendertargetViewDesc.Format = renderTargetTextureDesc.Format;
+	rendertargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+	for (int i = 0; i < 2; ++i)
+	{
+		hr = this->d3d11Device->CreateRenderTargetView(this->dTexture[i], &rendertargetViewDesc, &this->dRenderTargets[i]);
+		assert(SUCCEEDED(hr));
+	}
+
+	// 2. ShaderResourceView
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc{};
+	ZeroMemory(&shaderResourceViewDesc, sizeof(shaderResourceViewDesc));
+	shaderResourceViewDesc.Format = renderTargetTextureDesc.Format;
+	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	shaderResourceViewDesc.Texture2D.MipLevels = 1;
+
+	for (int i = 0; i < 2; i++)
+	{
+		hr = this->d3d11Device->CreateShaderResourceView(this->dTexture[i], &shaderResourceViewDesc, &this->dSRV[i]);
+		assert(SUCCEEDED(hr));
+	}
 
 	this->fbxLoader = new FbxLoader();
 	this->fbxLoader->Initalize();
@@ -120,11 +171,7 @@ void GraphicsEngine::CreateChainValue()
 	RECT windowSize;
 	assert(GetWindowRect(hwnd, &windowSize) && "cannot get window rectangle");
 
-	// 하드웨어가 4X MSAA 품질 수준을 지원하는지, 지원하지 않다면 종료
-	HRESULT hr;
-	hr = d3d11Device->CheckMultisampleQualityLevels(
-		DXGI_FORMAT_R8G8B8A8_UNORM, 4, &this->m4xMsaaQuality);
-	assert(m4xMsaaQuality > 0);
+	HRESULT hr = S_OK;
 
 	// 스왑  체인 구조체
 	DXGI_SWAP_CHAIN_DESC chainDesc = {};
@@ -136,16 +183,10 @@ void GraphicsEngine::CreateChainValue()
 	chainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	chainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	chainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
-	if (this->useMSAA)
-	{
-		chainDesc.SampleDesc.Count = 4;
-		chainDesc.SampleDesc.Quality = this->m4xMsaaQuality - 1;
-	}
-	else
-	{
-		chainDesc.SampleDesc.Count = 1;
-		chainDesc.SampleDesc.Quality = 0;
-	}
+
+	chainDesc.SampleDesc.Count = 1;
+	chainDesc.SampleDesc.Quality = 0;
+	
 
 
 	chainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
@@ -232,16 +273,10 @@ void GraphicsEngine::CreateDepthStencilBufferAndView()
 	depthStancilDesc.MipLevels = 1;
 	depthStancilDesc.ArraySize = 1;
 	depthStancilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	if (this->useMSAA)
-	{
-		depthStancilDesc.SampleDesc.Count = 4;
-		depthStancilDesc.SampleDesc.Quality = this->m4xMsaaQuality - 1;
-	}
-	else
-	{
-		depthStancilDesc.SampleDesc.Count = 1;
-		depthStancilDesc.SampleDesc.Quality = 0;
-	}
+
+	depthStancilDesc.SampleDesc.Count = 1;
+	depthStancilDesc.SampleDesc.Quality = 0;
+	
 
 
 	depthStancilDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -748,20 +783,43 @@ void GraphicsEngine::endDraw()
 /// </summary>
 void GraphicsEngine::begineDraw()
 {
+	BindView();
 	RenderClearView();
 }
 
 void GraphicsEngine::BeginDeferredRender()
 {
-
+	DeferredRenderClearView();
+	ClearDepthStencilView();
+	BindDeferredView();
 }
 
 void GraphicsEngine::EndDeferredRender()
 {
-
+	this->swapChain->Present(0, 0);
 }
 
-void GraphicsEngine::DeferredRender()
+void GraphicsEngine::DeferredRender(PipeLine& _pipline, int _indexSize)
 {
+	this->d3d11DeviceContext->DrawIndexed(_indexSize, 0, 0);
+}
 
+void GraphicsEngine::DeferredRenderClearView()
+{
+	float bgRed[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	for (auto& rt : this->dRenderTargets)
+	{
+		// 임시 색 ( R G B A )
+
+		// 렌더 타겟을 지정한 색으로 초기화
+		this->d3d11DeviceContext->ClearRenderTargetView(
+			rt,
+			bgRed
+		);
+	}
+}
+
+void GraphicsEngine::BindDeferredView()
+{
+	this->d3d11DeviceContext->OMSetRenderTargets(2, this->dRenderTargets.data(), this->depthStancilView);
 }
