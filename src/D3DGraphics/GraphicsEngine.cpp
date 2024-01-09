@@ -750,3 +750,18 @@ void GraphicsEngine::begineDraw()
 {
 	RenderClearView();
 }
+
+void GraphicsEngine::BeginDeferredRender()
+{
+
+}
+
+void GraphicsEngine::EndDeferredRender()
+{
+
+}
+
+void GraphicsEngine::DeferredRender()
+{
+
+}

@@ -22,7 +22,7 @@ DeferredOutput PS(VertexOut pin)
 	DeferredOutput output;
 
 	float4 textureColor = diffuseMaps.Sample( samAnisotropic, float3( pin.Tex, pin.texindex ) );
- 	textureColor.a = 1.0f;
+ 	// textureColor.a = 1.0f;
 
 	output.texDiffuse = textureColor;
 	output.texNormal = float4(pin.NormalW, 1.0f);

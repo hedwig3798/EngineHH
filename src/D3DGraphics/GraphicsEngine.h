@@ -85,6 +85,8 @@ private:
 
 	FbxLoader* fbxLoader;
 
+	std::vector<ID3D11RenderTargetView*> dRenderTargets;
+
 public:
 	GraphicsEngine();
 	~GraphicsEngine();
@@ -95,6 +97,10 @@ public:
 	void RenderByIndex(PipeLine& _pipline, int _indexSize);
 	void endDraw();
 	void begineDraw();
+
+	void BeginDeferredRender();
+	void EndDeferredRender();
+	void DeferredRender();
 
 	void ClearRenderTargetView();
 	void ClearDepthStencilView();

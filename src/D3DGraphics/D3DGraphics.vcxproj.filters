@@ -51,9 +51,6 @@
     <ClCompile Include="FObject.cpp">
       <Filter>FbxMesh</Filter>
     </ClCompile>
-    <ClCompile Include="IPipeline.cpp">
-      <Filter>Pipeline</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -82,9 +79,6 @@
     <ClInclude Include="pipeline.h">
       <Filter>Pipeline</Filter>
     </ClInclude>
-    <ClInclude Include="IPipeline.h">
-      <Filter>Pipeline</Filter>
-    </ClInclude>
     <ClInclude Include="GraphicsEngine.h">
       <Filter>Engine</Filter>
     </ClInclude>
@@ -111,7 +105,7 @@
     <FxCompile Include="..\Shader\PixelShader3.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="..\Shader\DeferredPixelShader.hlsl">
+    <FxCompile Include="..\Shader\DPass1.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

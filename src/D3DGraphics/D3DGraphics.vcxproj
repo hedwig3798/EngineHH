@@ -140,7 +140,6 @@
     <ClInclude Include="color.h" />
     <ClInclude Include="DXTKFont.h" />
     <ClInclude Include="FObject.h" />
-    <ClInclude Include="IPipeline.h" />
     <ClInclude Include="RenderObject.h" />
     <ClInclude Include="GraphicsEngine.h" />
     <ClInclude Include="Mesh.h" />
@@ -152,7 +151,6 @@
   <ItemGroup>
     <ClCompile Include="DXTKFont.cpp" />
     <ClCompile Include="FObject.cpp" />
-    <ClCompile Include="IPipeline.cpp" />
     <ClCompile Include="RenderObject.cpp" />
     <ClCompile Include="GraphicsEngine.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -160,7 +158,7 @@
     <ClCompile Include="Vertex.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\Shader\DeferredPixelShader.hlsl">
+    <FxCompile Include="..\Shader\DPass1.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PS</EntryPointName>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
