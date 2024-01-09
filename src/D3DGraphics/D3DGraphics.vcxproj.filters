@@ -25,6 +25,9 @@
     <Filter Include="FbxMesh">
       <UniqueIdentifier>{7ea5e306-8e79-482b-9ffa-8dd050a1d2eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Pipeline">
+      <UniqueIdentifier>{b16c405c-5559-4051-8c1c-615b202f8404}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GraphicsEngine.cpp">
@@ -48,11 +51,11 @@
     <ClCompile Include="FObject.cpp">
       <Filter>FbxMesh</Filter>
     </ClCompile>
+    <ClCompile Include="IPipeline.cpp">
+      <Filter>Pipeline</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GraphicsEngine.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
     <ClInclude Include="pch.h" />
     <ClInclude Include="Vertex.h">
       <Filter>Vertex</Filter>
@@ -60,7 +63,6 @@
     <ClInclude Include="color.h">
       <Filter>Color</Filter>
     </ClInclude>
-    <ClInclude Include="pipeline.h" />
     <ClInclude Include="DXTKFont.h">
       <Filter>Writer</Filter>
     </ClInclude>
@@ -76,6 +78,15 @@
     </ClInclude>
     <ClInclude Include="FObject.h">
       <Filter>FbxMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="pipeline.h">
+      <Filter>Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="IPipeline.h">
+      <Filter>Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsEngine.h">
+      <Filter>Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

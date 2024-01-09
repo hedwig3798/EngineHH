@@ -99,7 +99,8 @@ public:
 	void ClearRenderTargetView();
 	void ClearDepthStencilView();
 
-	void CreateInputLayer(PipeLine& _pipline, D3D11_INPUT_ELEMENT_DESC* _defaultInputLayerDECS, std::wstring _path[], UINT _numberOfElement);
+	void CreateInputLayer(ID3D11InputLayout** _inputLayout, D3D11_INPUT_ELEMENT_DESC* _defaultInputLayerDECS, UINT _numberOfElement, ID3D11VertexShader** _vs, std::wstring _path);
+	void CreatePixelShader(ID3D11PixelShader** _ps, std::wstring _path);
 
 	template<typename V>
 	void CreateVertexBuffer(V* _verteies, UINT _size, ID3D11Buffer** _vertexbuffer);

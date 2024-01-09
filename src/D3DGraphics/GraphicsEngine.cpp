@@ -337,31 +337,47 @@ std::vector<byte> GraphicsEngine::Read(std::string File)
 }
 
 /// <summary>
-/// Input Layer를 생성한다
+/// input layer와 vertexShader를 생성한다.
 /// </summary>
-void GraphicsEngine::CreateInputLayer(PipeLine& _pipline, D3D11_INPUT_ELEMENT_DESC* _defaultInputLayerDECS, std::wstring _path[], UINT _numberOfElement)
+/// <param name="_inputLayout">IL</param>
+/// <param name="_defaultInputLayerDECS">요소 구조체</param>
+/// <param name="_numberOfElement">요소 갯수</param>
+/// <param name="_vs">VS</param>
+/// <param name="_path">VS의 경로</param>
+void GraphicsEngine::CreateInputLayer(ID3D11InputLayout** _inputLayout, D3D11_INPUT_ELEMENT_DESC* _defaultInputLayerDECS, UINT _numberOfElement, ID3D11VertexShader** _vs, std::wstring _path)
 {
 	HRESULT hr = S_OK;
 	std::string vs = "";
-	vs.assign(_path[0].begin(), _path[0].end());
+	vs.assign(_path.begin(), _path.end());
 	auto vsByteCode = Read(vs);
 
-	std::string ps = "";
-	ps.assign(_path[1].begin(), _path[1].end());
-	auto psByteCode = Read(ps);
-
-
-	hr = this->d3d11Device->CreateVertexShader(vsByteCode.data(), vsByteCode.size(), nullptr, &_pipline.vertexShader);
-	hr = this->d3d11Device->CreatePixelShader(psByteCode.data(), psByteCode.size(), nullptr, &_pipline.pixelShader);
+	hr = this->d3d11Device->CreateVertexShader(vsByteCode.data(), vsByteCode.size(), nullptr, _vs);
+	assert(SUCCEEDED(hr) && "Cannot Read VertexShader");
 
 	hr = this->d3d11Device->CreateInputLayout(
 		_defaultInputLayerDECS,
 		_numberOfElement,
 		vsByteCode.data(),
 		vsByteCode.size(),
-		&_pipline.inputLayout
+		_inputLayout
 	);
 	assert(SUCCEEDED(hr) && "cannot create input layer");
+}
+
+/// <summary>
+/// 픽셸 셰이더 로드
+/// </summary>
+/// <param name="_pipline">픽셀 셰이더가 있는 파이프라인</param>
+/// <param name="_path">경로</param>
+void GraphicsEngine::CreatePixelShader(ID3D11PixelShader** _ps, std::wstring _path)
+{
+	HRESULT hr = S_OK;
+	std::string ps = "";
+	ps.assign(_path.begin(), _path.end());
+	auto psByteCode = Read(ps);
+
+	hr = this->d3d11Device->CreatePixelShader(psByteCode.data(), psByteCode.size(), nullptr, _ps);
+	assert(SUCCEEDED(hr) && "Cannot Read VertexShader");
 }
 
 /// <summary>

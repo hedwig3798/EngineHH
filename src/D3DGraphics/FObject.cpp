@@ -53,7 +53,8 @@ void FObject::CreatePipeline(FbxMeshData* _nowMesh)
 	if (!_nowMesh->vertexData.size() == 0)
 	{
 		_nowMesh->pipeline = new PipeLine();
-		this->gp->CreateInputLayer(*_nowMesh->pipeline, VertexF::defaultInputLayerDECS, this->path, 6);
+		this->gp->CreateInputLayer(&_nowMesh->pipeline->inputLayout, VertexF::defaultInputLayerDECS, 6, &_nowMesh->pipeline->vertexShader, this->path[0]);
+		this->gp->CreatePixelShader(&_nowMesh->pipeline->pixelShader, this->path[1]);
 		this->gp->CreateRasterizerState(&_nowMesh->pipeline->rasterizerState);
 		_nowMesh->pipeline->primitiveTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 		_nowMesh->pipeline->vertexStructSize = VertexF::Size();
