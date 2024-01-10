@@ -92,6 +92,12 @@ private:
 	std::vector<ID3D11ShaderResourceView*> dSRV;
 	std::vector<ID3D11RenderTargetView*> dRenderTargets;
 
+	std::vector<D3D11_VIEWPORT> dViewport;
+
+	PipeLine DPipeline;
+	VertexD::Data DVdata[4];
+	UINT DIdata[6];
+
 public:
 	GraphicsEngine();
 	~GraphicsEngine();
@@ -109,6 +115,7 @@ public:
 	void DeferredRenderClearView();
 	void BindDeferredView();
 
+	void CreateFinalPipeline();
 
 	void ClearRenderTargetView();
 	void ClearDepthStencilView();

@@ -23,7 +23,6 @@ void FObject::Render(GraphicsEngine* _gp, DirectX::XMMATRIX _viewTM, DirectX::XM
 {
 	FbxMeshData* _nowData = this->fData->mesh;
 	_gp->BindDeferredView();
-	_gp->DeferredRenderClearView();
 	for (auto& c : _nowData->children)
 	{
 		_gp->BindMatrixParameter(

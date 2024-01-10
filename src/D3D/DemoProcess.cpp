@@ -84,11 +84,11 @@ void DemoProcess::Update()
 void DemoProcess::Render()
 {
 	this->graphicsEngine->begineDraw();
-	this->graphicsEngine->BindDeferredView();
+	this->graphicsEngine->BeginDeferredRender();
 
-	this->object->Render(graphicsEngine);
 	this->line->Render(graphicsEngine);
 	this->axes->Render(graphicsEngine);
+	this->object->Render(graphicsEngine);
 
 	std::wstring dt = L"DeltaTime : ";
 	dt += std::to_wstring(this->managers->timeManager->GetfDT());
@@ -98,6 +98,8 @@ void DemoProcess::Render()
 
 	this->graphicsEngine->WriteText(10, 12, COLORS::White, const_cast<TCHAR*>(this->explain.c_str()));
 	this->graphicsEngine->WriteText(200, 12, COLORS::White, const_cast<TCHAR*>(dt.c_str()));
+
+	this->graphicsEngine->EndDeferredRender();
 	this->graphicsEngine->endDraw();
 	int test = 0;
 }

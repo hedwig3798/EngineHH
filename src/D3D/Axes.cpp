@@ -27,7 +27,6 @@ void Axes::Update(float _dt)
 
 void Axes::Render(GraphicsEngine* ge)
 {
-	this->graphicsEngine->BindView();
 	this->graphicsEngine->BindPipeline(pipeline);
 	this->graphicsEngine->BindMatrixParameter(
 		DirectX::XMMatrixIdentity(),

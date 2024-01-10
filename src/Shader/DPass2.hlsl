@@ -1,7 +1,8 @@
-#include "../Shader/VertexShader3.hlsl"
+#include "../Shader/DPass2VS.hlsl"
 
 
 Texture2DArray diffuseMaps : register(t0);
+
 SamplerState samAnisotropic
 {
 	Filter = ANISOTROPIC;
@@ -11,21 +12,11 @@ SamplerState samAnisotropic
 	AddressV = WRAP;
 };
 
-struct DeferredOutput
+float4 PS(VOUT pin) : SV_Target
 {
-	float4 texDiffuse : SV_Target0;
-	float4 texNormal : SV_Target1;
-};
+	float4 textureColor = diffuseMaps.Sample( samAnisotropic, float3( pin.Tex, 0.0f ) );
+	float4 normal = diffuseMaps.Sample( samAnisotropic, float3( pin.Tex, 1.0f ) );
 
-DeferredOutput PS(VertexOut pin)
-{
-	DeferredOutput output;
-
-	float4 textureColor = diffuseMaps.Sample( samAnisotropic, float3( pin.Tex, pin.texindex ) );
- 	// textureColor.a = 1.0f;
-
-	output.texDiffuse = textureColor;
-	output.texNormal = float4(pin.NormalW, 1.0f);
-
-    return output;
+    return textureColor;
+    // return normal;
 }

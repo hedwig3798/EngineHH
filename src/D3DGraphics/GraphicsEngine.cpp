@@ -64,15 +64,28 @@ void GraphicsEngine::Initialize(HWND _hwnd)
 	CreateLightingBffer();
 	CreateBoneBuffer();
 
-	dTexture.resize(2);
-	dRenderTargets.resize(2);
-	dSRV.resize(2);
-
 	RECT windowSize;
 	assert(GetWindowRect(hwnd, &windowSize) && "cannot get window rectangle");
 
 	this->windowWidth = windowSize.right - windowSize.left;
 	this->windowHeight = windowSize.bottom - windowSize.top;
+
+	DVdata[0] = { DirectX::XMFLOAT3{-1.0f, 1.0f, 0.0f}, DirectX::XMFLOAT2{0.0f, 0.0f} };
+	DVdata[1] = { DirectX::XMFLOAT3{1.0f, 1.0f, 0.0f}, DirectX::XMFLOAT2{1.0f, 0.0f} };
+	DVdata[2] = { DirectX::XMFLOAT3{1.0f, -1.0f, 0.0f}, DirectX::XMFLOAT2{1.0f, 1.0f} };
+	DVdata[3] = { DirectX::XMFLOAT3{-1.0f, -1.0f, 0.0f}, DirectX::XMFLOAT2{0.0f, 1.0f} };
+
+	DIdata[0] = 0;
+	DIdata[1] = 1;
+	DIdata[2] = 3;
+	DIdata[3] = 1;
+	DIdata[4] = 2;
+	DIdata[5] = 3;
+
+
+	dTexture.resize(2);
+	dRenderTargets.resize(2);
+	dSRV.resize(2);
 
 	D3D11_TEXTURE2D_DESC renderTargetTextureDesc{};
 	renderTargetTextureDesc.Width = static_cast<UINT>(windowWidth);
@@ -113,6 +126,8 @@ void GraphicsEngine::Initialize(HWND _hwnd)
 		hr = this->d3d11Device->CreateShaderResourceView(this->dTexture[i], &shaderResourceViewDesc, &this->dSRV[i]);
 		assert(SUCCEEDED(hr));
 	}
+
+	CreateFinalPipeline();
 
 	this->fbxLoader = new FbxLoader();
 	this->fbxLoader->Initalize();
@@ -325,12 +340,14 @@ void GraphicsEngine::CreateViewport()
 /// </summary>
 void GraphicsEngine::BindView()
 {
+	CreateViewport();
 	// 뷰를 렌더링 파이프라인에 바인드
 	this->d3d11DeviceContext->OMSetRenderTargets(
 		1,
 		&this->renderTargetView,
 		this->depthStancilView
 	);
+
 }
 
 void GraphicsEngine::CreateWriter()
@@ -783,7 +800,7 @@ void GraphicsEngine::endDraw()
 /// </summary>
 void GraphicsEngine::begineDraw()
 {
-	BindView();
+	// BindView();
 	RenderClearView();
 }
 
@@ -796,7 +813,81 @@ void GraphicsEngine::BeginDeferredRender()
 
 void GraphicsEngine::EndDeferredRender()
 {
-	this->swapChain->Present(0, 0);
+	BindView();
+
+	HRESULT hr = S_OK;
+
+	UINT arraySize = 2;
+
+	D3D11_SUBRESOURCE_DATA* texture = new D3D11_SUBRESOURCE_DATA[arraySize];
+	ID3D11Resource** texResource = new ID3D11Resource * [arraySize];
+
+	UINT width = this->windowWidth;
+	UINT height = this->windowHeight;
+
+	D3D11_TEXTURE2D_DESC stagingTextureDecs = {};
+	D3D11_TEXTURE2D_DESC textureArrayDesc = {};
+
+	ID3D11Texture2D** resourceTexture = new ID3D11Texture2D * [arraySize];
+	ID3D11Texture2D** stagingTextureArray = new ID3D11Texture2D * [arraySize];
+
+	for (UINT i = 0; i < arraySize; i++)
+	{
+		dRenderTargets[i]->GetResource(&texResource[i]);
+		texResource[i]->QueryInterface(__uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&resourceTexture[i]));
+
+		resourceTexture[i]->GetDesc(&stagingTextureDecs);
+
+		stagingTextureDecs.BindFlags = 0;
+		stagingTextureDecs.Usage = D3D11_USAGE_STAGING;
+		stagingTextureDecs.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+
+		hr = this->d3d11Device->CreateTexture2D(&stagingTextureDecs, nullptr, &stagingTextureArray[i]);
+		assert(stagingTextureArray[i]);
+		assert(resourceTexture[i]);
+
+		this->d3d11DeviceContext->CopyResource(stagingTextureArray[i], resourceTexture[i]);
+
+		D3D11_MAPPED_SUBRESOURCE mappedResource;
+		hr = this->d3d11DeviceContext->Map(stagingTextureArray[i], 0, D3D11_MAP_READ, 0, &mappedResource);
+
+		texture[i].pSysMem = mappedResource.pData;
+		texture[i].SysMemPitch = mappedResource.RowPitch;
+		texture[i].SysMemSlicePitch = mappedResource.DepthPitch;
+	}
+
+	textureArrayDesc = stagingTextureDecs;
+
+	textureArrayDesc.ArraySize = arraySize;
+	textureArrayDesc.Usage = D3D11_USAGE_IMMUTABLE;
+	textureArrayDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	textureArrayDesc.CPUAccessFlags = 0;
+	textureArrayDesc.MiscFlags = 0;
+
+	ID3D11Texture2D* textureArray;
+
+	hr = this->d3d11Device->CreateTexture2D(&textureArrayDesc, texture, &textureArray);
+
+	assert(textureArray);
+	hr = this->d3d11Device->CreateShaderResourceView(textureArray, nullptr, this->DPipeline.textureView);
+
+	textureArray->Release();
+	for (UINT i = 0; i < arraySize; i++)
+	{
+		texResource[i]->Release();
+		stagingTextureArray[i]->Release();
+		resourceTexture[i]->Release();
+	}
+
+	delete[] texture;
+	delete[] texResource;
+	delete[] resourceTexture;
+	delete[] stagingTextureArray;
+
+	BindPipeline(this->DPipeline);
+
+	this->d3d11DeviceContext->PSSetShaderResources(0, 1, this->DPipeline.textureView);
+	this->d3d11DeviceContext->DrawIndexed(6, 0, 0);
 }
 
 void GraphicsEngine::DeferredRender(PipeLine& _pipline, int _indexSize)
@@ -822,4 +913,18 @@ void GraphicsEngine::DeferredRenderClearView()
 void GraphicsEngine::BindDeferredView()
 {
 	this->d3d11DeviceContext->OMSetRenderTargets(2, this->dRenderTargets.data(), this->depthStancilView);
+}
+
+void GraphicsEngine::CreateFinalPipeline()
+{
+	std::wstring vsPath = L"../Shader/compiled/DPass2VS.cso";
+	std::wstring psPath = L"../Shader/compiled/DPass2.cso";
+	CreateInputLayer(&this->DPipeline.inputLayout, VertexD::defaultInputLayerDECS, 2, &this->DPipeline.vertexShader, vsPath);
+	CreatePixelShader(&this->DPipeline.pixelShader, psPath);
+	CreateVertexBuffer<VertexD::Data>(this->DVdata, (UINT)(4 * VertexD::Size()), &this->DPipeline.vertexBuffer);
+	CreateIndexBuffer(this->DIdata, 6, &this->DPipeline.IndexBuffer);
+	this->DPipeline.primitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	this->DPipeline.vertexStructSize = VertexD::Size();
+	CreateRasterizerState(&this->DPipeline.rasterizerState);
+	this->DPipeline.textureView = new ID3D11ShaderResourceView * [2];
 }
