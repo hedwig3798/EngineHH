@@ -86,9 +86,9 @@ void DemoProcess::Render()
 	this->graphicsEngine->begineDraw();
 	this->graphicsEngine->BeginDeferredRender();
 
+	this->object->Render(graphicsEngine);
 	this->line->Render(graphicsEngine);
 	this->axes->Render(graphicsEngine);
-	this->object->Render(graphicsEngine);
 
 	std::wstring dt = L"DeltaTime : ";
 	dt += std::to_wstring(this->managers->timeManager->GetfDT());

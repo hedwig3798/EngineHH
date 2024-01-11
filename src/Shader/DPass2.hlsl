@@ -8,8 +8,8 @@ SamplerState samAnisotropic
 	Filter = ANISOTROPIC;
 	MaxAnisotropy = 4;
 
-	AddressU = WRAP;
-	AddressV = WRAP;
+	AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
 };
 
 float4 PS(VOUT pin) : SV_Target
