@@ -22,7 +22,6 @@ FObject::~FObject()
 void FObject::Render(GraphicsEngine* _gp, DirectX::XMMATRIX _viewTM, DirectX::XMMATRIX _projTM)
 {
 	FbxMeshData* _nowData = this->fData->mesh;
-	_gp->BindDeferredView();
 	for (auto& c : _nowData->children)
 	{
 		_gp->BindMatrixParameter(

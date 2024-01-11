@@ -58,7 +58,6 @@ void GraphicsEngine::Initialize(HWND _hwnd)
 	CreateRenderTargetView();
 	CreateDepthStencilBufferAndView();
 	CreateViewport();
-	BindView();
 	CreateWriter();
 	CreateMatrixBuffer();
 	CreateLightingBffer();
@@ -126,6 +125,7 @@ void GraphicsEngine::Initialize(HWND _hwnd)
 		hr = this->d3d11Device->CreateShaderResourceView(this->dTexture[i], &shaderResourceViewDesc, &this->dSRV[i]);
 		assert(SUCCEEDED(hr));
 	}
+	BindDeferredView();
 
 	CreateFinalPipeline();
 
@@ -201,7 +201,7 @@ void GraphicsEngine::CreateChainValue()
 
 	chainDesc.SampleDesc.Count = 1;
 	chainDesc.SampleDesc.Quality = 0;
-	
+
 
 
 	chainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
@@ -291,7 +291,7 @@ void GraphicsEngine::CreateDepthStencilBufferAndView()
 
 	depthStancilDesc.SampleDesc.Count = 1;
 	depthStancilDesc.SampleDesc.Quality = 0;
-	
+
 
 
 	depthStancilDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -806,87 +806,21 @@ void GraphicsEngine::begineDraw()
 
 void GraphicsEngine::BeginDeferredRender()
 {
+	ID3D11ShaderResourceView* pSRV[2] = {nullptr, nullptr};
+	this->d3d11DeviceContext->PSSetShaderResources(0, 2, pSRV);
+	BindDeferredView();
 	DeferredRenderClearView();
 	ClearDepthStencilView();
-	BindDeferredView();
 }
 
 void GraphicsEngine::EndDeferredRender()
 {
+	ID3D11ShaderResourceView* pSRV = NULL;
+	this->d3d11DeviceContext->PSSetShaderResources(0, 1, &pSRV);
 	BindView();
-
-	HRESULT hr = S_OK;
-
-	UINT arraySize = 2;
-
-	D3D11_SUBRESOURCE_DATA* texture = new D3D11_SUBRESOURCE_DATA[arraySize];
-	ID3D11Resource** texResource = new ID3D11Resource * [arraySize];
-
-	UINT width = this->windowWidth;
-	UINT height = this->windowHeight;
-
-	D3D11_TEXTURE2D_DESC stagingTextureDecs = {};
-	D3D11_TEXTURE2D_DESC textureArrayDesc = {};
-
-	ID3D11Texture2D** resourceTexture = new ID3D11Texture2D * [arraySize];
-	ID3D11Texture2D** stagingTextureArray = new ID3D11Texture2D * [arraySize];
-
-	for (UINT i = 0; i < arraySize; i++)
-	{
-		dRenderTargets[i]->GetResource(&texResource[i]);
-		texResource[i]->QueryInterface(__uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&resourceTexture[i]));
-
-		resourceTexture[i]->GetDesc(&stagingTextureDecs);
-
-		stagingTextureDecs.BindFlags = 0;
-		stagingTextureDecs.Usage = D3D11_USAGE_STAGING;
-		stagingTextureDecs.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-
-		hr = this->d3d11Device->CreateTexture2D(&stagingTextureDecs, nullptr, &stagingTextureArray[i]);
-		assert(stagingTextureArray[i]);
-		assert(resourceTexture[i]);
-
-		this->d3d11DeviceContext->CopyResource(stagingTextureArray[i], resourceTexture[i]);
-
-		D3D11_MAPPED_SUBRESOURCE mappedResource;
-		hr = this->d3d11DeviceContext->Map(stagingTextureArray[i], 0, D3D11_MAP_READ, 0, &mappedResource);
-
-		texture[i].pSysMem = mappedResource.pData;
-		texture[i].SysMemPitch = mappedResource.RowPitch;
-		texture[i].SysMemSlicePitch = mappedResource.DepthPitch;
-	}
-
-	textureArrayDesc = stagingTextureDecs;
-
-	textureArrayDesc.ArraySize = arraySize;
-	textureArrayDesc.Usage = D3D11_USAGE_IMMUTABLE;
-	textureArrayDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	textureArrayDesc.CPUAccessFlags = 0;
-	textureArrayDesc.MiscFlags = 0;
-
-	ID3D11Texture2D* textureArray;
-
-	hr = this->d3d11Device->CreateTexture2D(&textureArrayDesc, texture, &textureArray);
-
-	assert(textureArray);
-	hr = this->d3d11Device->CreateShaderResourceView(textureArray, nullptr, this->DPipeline.textureView);
-
-	textureArray->Release();
-	for (UINT i = 0; i < arraySize; i++)
-	{
-		texResource[i]->Release();
-		stagingTextureArray[i]->Release();
-		resourceTexture[i]->Release();
-	}
-
-	delete[] texture;
-	delete[] texResource;
-	delete[] resourceTexture;
-	delete[] stagingTextureArray;
-
 	BindPipeline(this->DPipeline);
 
-	this->d3d11DeviceContext->PSSetShaderResources(0, 1, this->DPipeline.textureView);
+	this->d3d11DeviceContext->PSSetShaderResources(0, 2, dSRV.data());
 	this->d3d11DeviceContext->DrawIndexed(6, 0, 0);
 }
 
