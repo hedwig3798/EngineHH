@@ -28,6 +28,24 @@
     <Filter Include="Pipeline">
       <UniqueIdentifier>{b16c405c-5559-4051-8c1c-615b202f8404}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Renderer">
+      <UniqueIdentifier>{7c6bcaf1-c797-4bb8-a38d-565d68fbfeae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renderer\Interface">
+      <UniqueIdentifier>{97d6b46e-c173-4602-84f6-8773c0b51236}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renderer\Forward">
+      <UniqueIdentifier>{8d299110-70ea-469e-b56c-579a473590a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renderer\Deferred">
+      <UniqueIdentifier>{acd71da0-530a-4705-8119-07d2b3155ba5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renderer\UI">
+      <UniqueIdentifier>{7dc11287-70b7-454b-acfc-fc483900c09f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interface">
+      <UniqueIdentifier>{bf2ca9cd-f01b-4cba-84f0-7dc710672a9e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GraphicsEngine.cpp">
@@ -51,6 +69,13 @@
     <ClCompile Include="FObject.cpp">
       <Filter>FbxMesh</Filter>
     </ClCompile>
+    <ClCompile Include="IRenderer.cpp">
+      <Filter>Renderer\Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="FowardRenderer.cpp">
+      <Filter>Renderer\Forward</Filter>
+    </ClCompile>
+    <ClCompile Include="IGraphicsEngine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -82,6 +107,13 @@
     <ClInclude Include="GraphicsEngine.h">
       <Filter>Engine</Filter>
     </ClInclude>
+    <ClInclude Include="IRenderer.h">
+      <Filter>Renderer\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="FowardRenderer.h">
+      <Filter>Renderer\Forward</Filter>
+    </ClInclude>
+    <ClInclude Include="IGraphicsEngine.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Shader\PixelShader.hlsl">

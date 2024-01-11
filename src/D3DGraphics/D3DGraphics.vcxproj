@@ -140,6 +140,9 @@
     <ClInclude Include="color.h" />
     <ClInclude Include="DXTKFont.h" />
     <ClInclude Include="FObject.h" />
+    <ClInclude Include="FowardRenderer.h" />
+    <ClInclude Include="IGraphicsEngine.h" />
+    <ClInclude Include="IRenderer.h" />
     <ClInclude Include="RenderObject.h" />
     <ClInclude Include="GraphicsEngine.h" />
     <ClInclude Include="Mesh.h" />
@@ -151,6 +154,9 @@
   <ItemGroup>
     <ClCompile Include="DXTKFont.cpp" />
     <ClCompile Include="FObject.cpp" />
+    <ClCompile Include="FowardRenderer.cpp" />
+    <ClCompile Include="IGraphicsEngine.cpp" />
+    <ClCompile Include="IRenderer.cpp" />
     <ClCompile Include="RenderObject.cpp" />
     <ClCompile Include="GraphicsEngine.cpp" />
     <ClCompile Include="Mesh.cpp" />
