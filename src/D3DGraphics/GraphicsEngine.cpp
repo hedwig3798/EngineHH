@@ -74,15 +74,7 @@ void GraphicsEngine::Initialize(HWND _hwnd)
 	DVdata[2] = { DirectX::XMFLOAT3{1.0f, -1.0f, 0.0f}, DirectX::XMFLOAT2{1.0f, 1.0f} };
 	DVdata[3] = { DirectX::XMFLOAT3{-1.0f, -1.0f, 0.0f}, DirectX::XMFLOAT2{0.0f, 1.0f} };
 
-	DSubVdata[0][0] = {DirectX::XMFLOAT3{0.5f, 1.0f, 0.0f}, DirectX::XMFLOAT2{0.0f, 0.0f}};
-	DSubVdata[0][1] = { DirectX::XMFLOAT3{1.0f, 1.0f, 0.0f}, DirectX::XMFLOAT2{1.0f, 0.0f} };
-	DSubVdata[0][2] = { DirectX::XMFLOAT3{1.0f, 0.5f, 0.0f}, DirectX::XMFLOAT2{1.0f, 1.0f} };
-	DSubVdata[0][3] = { DirectX::XMFLOAT3{0.5f, 0.5f, 0.0f}, DirectX::XMFLOAT2{0.0f, 1.0f} };
-
-	DSubVdata[1][0] = { DirectX::XMFLOAT3{0.5f, 0.5f, 0.0f}, DirectX::XMFLOAT2{0.0f, 0.0f} };
-	DSubVdata[1][1] = { DirectX::XMFLOAT3{1.0f, 0.5f, 0.0f}, DirectX::XMFLOAT2{1.0f, 0.0f} };
-	DSubVdata[1][2] = { DirectX::XMFLOAT3{1.0f, 0.0f, 0.0f}, DirectX::XMFLOAT2{1.0f, 1.0f} };
-	DSubVdata[1][3] = { DirectX::XMFLOAT3{0.5f, 0.0f, 0.0f}, DirectX::XMFLOAT2{0.0f, 1.0f} };
+	CreateSubView();
 
 	DIdata[0] = 0;
 	DIdata[1] = 1;
@@ -818,7 +810,7 @@ void GraphicsEngine::begineDraw()
 
 void GraphicsEngine::BeginDeferredRender()
 {
-	ID3D11ShaderResourceView* pSRV[2] = {nullptr, nullptr};
+	ID3D11ShaderResourceView* pSRV[2] = { nullptr, nullptr };
 	this->d3d11DeviceContext->PSSetShaderResources(0, 2, pSRV);
 	BindDeferredView();
 	DeferredRenderClearView();
@@ -832,9 +824,9 @@ void GraphicsEngine::EndDeferredRender()
 	BindView();
 	BindPipeline(this->DPipeline);
 
-	this->d3d11DeviceContext->PSSetShaderResources(0, 2, dSRV.data());
+	this->d3d11DeviceContext->PSSetShaderResources(0, 3, dSRV.data());
 	this->d3d11DeviceContext->DrawIndexed(6, 0, 0);
-	for(auto& pipe : this->DSubPipeline) 
+	for (auto& pipe : this->DSubPipeline)
 	{
 		BindPipeline(pipe);
 		this->d3d11DeviceContext->DrawIndexed(6, 0, 0);
@@ -863,7 +855,23 @@ void GraphicsEngine::DeferredRenderClearView()
 
 void GraphicsEngine::BindDeferredView()
 {
-	this->d3d11DeviceContext->OMSetRenderTargets(2, this->dRenderTargets.data(), this->depthStancilView);
+	this->d3d11DeviceContext->OMSetRenderTargets(gBufferSize, this->dRenderTargets.data(), this->depthStancilView);
+}
+
+void GraphicsEngine::CreateSubView()
+{
+	float lx = (4.0f / static_cast<float>(this->gBufferSize)) - 1;
+	float rx = 1;
+	float dis = rx - lx;
+	for (int i = 0; i < this->gBufferSize; i++)
+	{
+		float uy = 1 - ((1 - lx) * i);
+		float dy = uy - dis;
+		DSubVdata[i][0] = { DirectX::XMFLOAT3{lx, uy, 0.0f}, DirectX::XMFLOAT2{0.0f, 0.0f} };
+		DSubVdata[i][1] = { DirectX::XMFLOAT3{rx, uy, 0.0f}, DirectX::XMFLOAT2{1.0f, 0.0f} };
+		DSubVdata[i][2] = { DirectX::XMFLOAT3{rx, dy, 0.0f}, DirectX::XMFLOAT2{1.0f, 1.0f} };
+		DSubVdata[i][3] = { DirectX::XMFLOAT3{lx, dy, 0.0f}, DirectX::XMFLOAT2{0.0f, 1.0f} };
+	}
 }
 
 void GraphicsEngine::CreateFinalPipeline()
@@ -879,13 +887,14 @@ void GraphicsEngine::CreateFinalPipeline()
 	CreateRasterizerState(&this->DPipeline.rasterizerState);
 	this->DPipeline.textureView = new ID3D11ShaderResourceView * [2];
 
-	std::wstring psSubPath[2] = 
+	std::wstring psSubPath[3] =
 	{
 		L"../Shader/compiled/DPass2Textuer.cso",
-		L"../Shader/compiled/DPass2Normal.cso"
+		L"../Shader/compiled/DPass2Normal.cso",
+		L"../Shader/compiled/DPass2Depth.cso"
 	};
 	int pindx = 0;
-	for(auto& pipe : this->DSubPipeline) 
+	for (auto& pipe : this->DSubPipeline)
 	{
 		CreateInputLayer(&pipe.inputLayout, VertexD::defaultInputLayerDECS, 2, &pipe.vertexShader, vsPath);
 		CreatePixelShader(&pipe.pixelShader, psSubPath[pindx]);

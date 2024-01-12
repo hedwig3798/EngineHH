@@ -1,7 +1,7 @@
 #include "../Shader/DPass2VS.hlsl"
 
 
-Texture2D diffuseMaps[2] : register(t0);
+Texture2D diffuseMaps[3] : register(t0);
 
 SamplerState samAnisotropic
 {

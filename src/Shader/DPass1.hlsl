@@ -15,6 +15,7 @@ struct DeferredOutput
 {
 	float4 texDiffuse : SV_Target0;
 	float4 texNormal : SV_Target1;
+	float4 zDepth : SV_Target2;
 };
 
 DeferredOutput PS(VertexOut pin)
@@ -26,6 +27,7 @@ DeferredOutput PS(VertexOut pin)
 
 	output.texDiffuse = textureColor;
 	output.texNormal = float4(pin.NormalW, 1.0f);
+	output.zDepth = float4(pin.PosH.z, pin.PosH.z, pin.PosH.z, 1.0f);
 
     return output;
 }

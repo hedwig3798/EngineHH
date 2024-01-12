@@ -88,7 +88,7 @@ private:
 
 	FbxLoader* fbxLoader;
 
-	int gBufferSize = 2;
+	const int gBufferSize = 3;
 	std::vector<ID3D11Texture2D*> dTexture;
 	std::vector<ID3D11ShaderResourceView*> dSRV;
 	std::vector<ID3D11RenderTargetView*> dRenderTargets;
@@ -99,8 +99,8 @@ private:
 	VertexD::Data DVdata[4];
 	UINT DIdata[6];
 
-	PipeLine DSubPipeline[2];
-	VertexD::Data DSubVdata[2][4];
+	PipeLine DSubPipeline[3];
+	VertexD::Data DSubVdata[3][4];
 
 public:
 	GraphicsEngine();
@@ -118,6 +118,8 @@ public:
 	void DeferredRender(PipeLine& _pipline, int _indexSize);
 	void DeferredRenderClearView();
 	void BindDeferredView();
+
+	void CreateSubView();
 
 	void CreateFinalPipeline();
 
