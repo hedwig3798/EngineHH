@@ -98,6 +98,9 @@ private:
 	VertexD::Data DVdata[4];
 	UINT DIdata[6];
 
+	PipeLine DSubPipeline[2];
+	VertexD::Data DSubVdata[2][4];
+
 public:
 	GraphicsEngine();
 	~GraphicsEngine();

@@ -74,6 +74,16 @@ void GraphicsEngine::Initialize(HWND _hwnd)
 	DVdata[2] = { DirectX::XMFLOAT3{1.0f, -1.0f, 0.0f}, DirectX::XMFLOAT2{1.0f, 1.0f} };
 	DVdata[3] = { DirectX::XMFLOAT3{-1.0f, -1.0f, 0.0f}, DirectX::XMFLOAT2{0.0f, 1.0f} };
 
+	DSubVdata[0][0] = {DirectX::XMFLOAT3{0.5f, 1.0f, 0.0f}, DirectX::XMFLOAT2{0.0f, 0.0f}};
+	DSubVdata[0][1] = { DirectX::XMFLOAT3{1.0f, 1.0f, 0.0f}, DirectX::XMFLOAT2{1.0f, 0.0f} };
+	DSubVdata[0][2] = { DirectX::XMFLOAT3{1.0f, 0.5f, 0.0f}, DirectX::XMFLOAT2{1.0f, 1.0f} };
+	DSubVdata[0][3] = { DirectX::XMFLOAT3{0.5f, 0.5f, 0.0f}, DirectX::XMFLOAT2{0.0f, 1.0f} };
+
+	DSubVdata[1][0] = { DirectX::XMFLOAT3{0.5f, 0.5f, 0.0f}, DirectX::XMFLOAT2{0.0f, 0.0f} };
+	DSubVdata[1][1] = { DirectX::XMFLOAT3{1.0f, 0.5f, 0.0f}, DirectX::XMFLOAT2{1.0f, 0.0f} };
+	DSubVdata[1][2] = { DirectX::XMFLOAT3{1.0f, 0.0f, 0.0f}, DirectX::XMFLOAT2{1.0f, 1.0f} };
+	DSubVdata[1][3] = { DirectX::XMFLOAT3{0.5f, 0.0f, 0.0f}, DirectX::XMFLOAT2{0.0f, 1.0f} };
+
 	DIdata[0] = 0;
 	DIdata[1] = 1;
 	DIdata[2] = 3;
@@ -113,6 +123,7 @@ void GraphicsEngine::Initialize(HWND _hwnd)
 		assert(SUCCEEDED(hr));
 	}
 
+
 	// 2. ShaderResourceView
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc{};
 	ZeroMemory(&shaderResourceViewDesc, sizeof(shaderResourceViewDesc));
@@ -125,6 +136,7 @@ void GraphicsEngine::Initialize(HWND _hwnd)
 		hr = this->d3d11Device->CreateShaderResourceView(this->dTexture[i], &shaderResourceViewDesc, &this->dSRV[i]);
 		assert(SUCCEEDED(hr));
 	}
+
 	BindDeferredView();
 
 	CreateFinalPipeline();
@@ -822,6 +834,11 @@ void GraphicsEngine::EndDeferredRender()
 
 	this->d3d11DeviceContext->PSSetShaderResources(0, 2, dSRV.data());
 	this->d3d11DeviceContext->DrawIndexed(6, 0, 0);
+	for(auto& pipe : this->DSubPipeline) 
+	{
+		BindPipeline(pipe);
+		this->d3d11DeviceContext->DrawIndexed(6, 0, 0);
+	}
 }
 
 void GraphicsEngine::DeferredRender(PipeLine& _pipline, int _indexSize)
@@ -861,4 +878,23 @@ void GraphicsEngine::CreateFinalPipeline()
 	this->DPipeline.vertexStructSize = VertexD::Size();
 	CreateRasterizerState(&this->DPipeline.rasterizerState);
 	this->DPipeline.textureView = new ID3D11ShaderResourceView * [2];
+
+	std::wstring psSubPath[2] = 
+	{
+		L"../Shader/compiled/DPass2Textuer.cso",
+		L"../Shader/compiled/DPass2Normal.cso"
+	};
+	int pindx = 0;
+	for(auto& pipe : this->DSubPipeline) 
+	{
+		CreateInputLayer(&pipe.inputLayout, VertexD::defaultInputLayerDECS, 2, &pipe.vertexShader, vsPath);
+		CreatePixelShader(&pipe.pixelShader, psSubPath[pindx]);
+		CreateIndexBuffer(this->DIdata, 6, &pipe.IndexBuffer);
+		CreateVertexBuffer<VertexD::Data>(this->DSubVdata[pindx], (UINT)(4 * VertexD::Size()), &pipe.vertexBuffer);
+		pipe.primitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+		pipe.vertexStructSize = VertexD::Size();
+		CreateRasterizerState(&pipe.rasterizerState);
+		pipe.textureView = new ID3D11ShaderResourceView * [2];
+		pindx++;
+	}
 }
