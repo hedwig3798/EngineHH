@@ -18,8 +18,8 @@ private:
 
 	std::wstring path[2]
 	{
-		L"../Shader/VertexShader3.hlsl",
-		L"../Shader/PixelShader3.hlsl",
+		L"../Shader/compiled/VertexShader3.cso",
+		L"../Shader/compiled/DPass1.cso",
 	};
 
 	std::wstring texturePath = L"../Model/";

@@ -4,6 +4,7 @@
 #include "color.h"
 #include "pipeline.h"
 #include "LightHelper.h"
+
 /// <summary>
 /// D3D 그래픽 엔진
 /// 작성자 : 김형환
@@ -60,6 +61,9 @@ private:
 	// 윈도우 핸들러
 	HWND hwnd;
 
+	int windowWidth;
+	int windowHeight;
+
 	// 스왑 체인
 	IDXGISwapChain* swapChain;
 
@@ -84,6 +88,20 @@ private:
 
 	FbxLoader* fbxLoader;
 
+	const int gBufferSize = 3;
+	std::vector<ID3D11Texture2D*> dTexture;
+	std::vector<ID3D11ShaderResourceView*> dSRV;
+	std::vector<ID3D11RenderTargetView*> dRenderTargets;
+
+	std::vector<D3D11_VIEWPORT> dViewport;
+
+	PipeLine DPipeline;
+	VertexD::Data DVdata[4];
+	UINT DIdata[6];
+
+	PipeLine DSubPipeline[3];
+	VertexD::Data DSubVdata[3][4];
+
 public:
 	GraphicsEngine();
 	~GraphicsEngine();
@@ -95,10 +113,21 @@ public:
 	void endDraw();
 	void begineDraw();
 
+	void BeginDeferredRender();
+	void EndDeferredRender();
+	void DeferredRender(PipeLine& _pipline, int _indexSize);
+	void DeferredRenderClearView();
+	void BindDeferredView();
+
+	void CreateSubView();
+
+	void CreateFinalPipeline();
+
 	void ClearRenderTargetView();
 	void ClearDepthStencilView();
 
-	void CreateInputLayer(PipeLine& _pipline, D3D11_INPUT_ELEMENT_DESC* _defaultInputLayerDECS, std::wstring _path[], UINT _numberOfElement);
+	void CreateInputLayer(ID3D11InputLayout** _inputLayout, D3D11_INPUT_ELEMENT_DESC* _defaultInputLayerDECS, UINT _numberOfElement, ID3D11VertexShader** _vs, std::wstring _path);
+	void CreatePixelShader(ID3D11PixelShader** _ps, std::wstring _path);
 
 	template<typename V>
 	void CreateVertexBuffer(V* _verteies, UINT _size, ID3D11Buffer** _vertexbuffer);
@@ -125,6 +154,7 @@ public:
 	void SetTexture(UINT _start, UINT _viewNumbers, ID3D11ShaderResourceView** _resourceView);
 
 	FObject* LoadFbxData(std::string _path);
+	void BindView();
 
 private:
 	void CreateD3D11DeviceContext();
@@ -132,9 +162,10 @@ private:
 	void CreateRenderTargetView();
 	void CreateDepthStencilBufferAndView();
 	void CreateViewport();
-	void BindView();
 
 	void CreateWriter();
+
+	std::vector<byte> Read(std::string File);
 };
 
 template<typename V>

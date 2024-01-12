@@ -23,7 +23,8 @@ LineObject::LineObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene)
 		indexes[20 + (i * 2) + 1] = i * 10 + 9;
 	}
 
-	this->graphicsEngine->CreateInputLayer(this->pipeline, VertexC::defaultInputLayerDECS, this->path, 2);
+	this->graphicsEngine->CreateInputLayer(&this->pipeline.inputLayout, VertexC::defaultInputLayerDECS, 2, &this->pipeline.vertexShader, path[0]);
+	this->graphicsEngine->CreatePixelShader(&this->pipeline.pixelShader, path[1]);
 	this->graphicsEngine->CreateVertexBuffer(this->vertexes, sizeof(this->vertexes), &this->pipeline.vertexBuffer);
 	this->graphicsEngine->CreateIndexBuffer(indexes, sizeof(indexes), &this->pipeline.IndexBuffer);
 	this->graphicsEngine->CreateRasterizerState(&this->pipeline.rasterizerState);

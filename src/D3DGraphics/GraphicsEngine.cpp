@@ -50,6 +50,7 @@ GraphicsEngine::~GraphicsEngine()
 /// <param name="_hwnd">윈도우 핸들</param>
 void GraphicsEngine::Initialize(HWND _hwnd)
 {
+	HRESULT hr = S_OK;
 	this->hwnd = _hwnd;
 
 	CreateD3D11DeviceContext();
@@ -57,11 +58,80 @@ void GraphicsEngine::Initialize(HWND _hwnd)
 	CreateRenderTargetView();
 	CreateDepthStencilBufferAndView();
 	CreateViewport();
-	BindView();
 	CreateWriter();
 	CreateMatrixBuffer();
 	CreateLightingBffer();
 	CreateBoneBuffer();
+
+	RECT windowSize;
+	assert(GetWindowRect(hwnd, &windowSize) && "cannot get window rectangle");
+
+	this->windowWidth = windowSize.right - windowSize.left;
+	this->windowHeight = windowSize.bottom - windowSize.top;
+
+	DVdata[0] = { DirectX::XMFLOAT3{-1.0f, 1.0f, 0.0f}, DirectX::XMFLOAT2{0.0f, 0.0f} };
+	DVdata[1] = { DirectX::XMFLOAT3{1.0f, 1.0f, 0.0f}, DirectX::XMFLOAT2{1.0f, 0.0f} };
+	DVdata[2] = { DirectX::XMFLOAT3{1.0f, -1.0f, 0.0f}, DirectX::XMFLOAT2{1.0f, 1.0f} };
+	DVdata[3] = { DirectX::XMFLOAT3{-1.0f, -1.0f, 0.0f}, DirectX::XMFLOAT2{0.0f, 1.0f} };
+
+	CreateSubView();
+
+	DIdata[0] = 0;
+	DIdata[1] = 1;
+	DIdata[2] = 3;
+	DIdata[3] = 1;
+	DIdata[4] = 2;
+	DIdata[5] = 3;
+
+
+	dTexture.resize(gBufferSize);
+	dRenderTargets.resize(gBufferSize);
+	dSRV.resize(gBufferSize);
+
+	D3D11_TEXTURE2D_DESC renderTargetTextureDesc{};
+	renderTargetTextureDesc.Width = static_cast<UINT>(windowWidth);
+	renderTargetTextureDesc.Height = static_cast<UINT>(windowHeight);
+	renderTargetTextureDesc.MipLevels = 1;
+	renderTargetTextureDesc.ArraySize = 1;
+	renderTargetTextureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;  // 스펙큘러, 디퓨즈는 8비트로 괜찮을 것 같은데 포지션 노말은?
+	renderTargetTextureDesc.SampleDesc.Count = 1;
+	renderTargetTextureDesc.Usage = D3D11_USAGE_DEFAULT;
+	renderTargetTextureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+
+	for (auto& dt : dTexture)
+	{
+		hr = this->d3d11Device->CreateTexture2D(&renderTargetTextureDesc, nullptr, &dt);
+		assert(SUCCEEDED(hr));
+	}
+
+	// 1-2. RenderTargetView
+	D3D11_RENDER_TARGET_VIEW_DESC rendertargetViewDesc;
+	ZeroMemory(&rendertargetViewDesc, sizeof(rendertargetViewDesc));
+	rendertargetViewDesc.Format = renderTargetTextureDesc.Format;
+	rendertargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+	for (int i = 0; i < gBufferSize; ++i)
+	{
+		hr = this->d3d11Device->CreateRenderTargetView(this->dTexture[i], &rendertargetViewDesc, &this->dRenderTargets[i]);
+		assert(SUCCEEDED(hr));
+	}
+
+
+	// 2. ShaderResourceView
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc{};
+	ZeroMemory(&shaderResourceViewDesc, sizeof(shaderResourceViewDesc));
+	shaderResourceViewDesc.Format = renderTargetTextureDesc.Format;
+	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	shaderResourceViewDesc.Texture2D.MipLevels = 1;
+
+	for (int i = 0; i < gBufferSize; i++)
+	{
+		hr = this->d3d11Device->CreateShaderResourceView(this->dTexture[i], &shaderResourceViewDesc, &this->dSRV[i]);
+		assert(SUCCEEDED(hr));
+	}
+
+	BindDeferredView();
+
+	CreateFinalPipeline();
 
 	this->fbxLoader = new FbxLoader();
 	this->fbxLoader->Initalize();
@@ -120,11 +190,7 @@ void GraphicsEngine::CreateChainValue()
 	RECT windowSize;
 	assert(GetWindowRect(hwnd, &windowSize) && "cannot get window rectangle");
 
-	// 하드웨어가 4X MSAA 품질 수준을 지원하는지, 지원하지 않다면 종료
-	HRESULT hr;
-	hr = d3d11Device->CheckMultisampleQualityLevels(
-		DXGI_FORMAT_R8G8B8A8_UNORM, 4, &this->m4xMsaaQuality);
-	assert(m4xMsaaQuality > 0);
+	HRESULT hr = S_OK;
 
 	// 스왑  체인 구조체
 	DXGI_SWAP_CHAIN_DESC chainDesc = {};
@@ -136,16 +202,10 @@ void GraphicsEngine::CreateChainValue()
 	chainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	chainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	chainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
-	if (this->useMSAA)
-	{
-		chainDesc.SampleDesc.Count = 4;
-		chainDesc.SampleDesc.Quality = this->m4xMsaaQuality - 1;
-	}
-	else
-	{
-		chainDesc.SampleDesc.Count = 1;
-		chainDesc.SampleDesc.Quality = 0;
-	}
+
+	chainDesc.SampleDesc.Count = 1;
+	chainDesc.SampleDesc.Quality = 0;
+
 
 
 	chainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
@@ -232,16 +292,10 @@ void GraphicsEngine::CreateDepthStencilBufferAndView()
 	depthStancilDesc.MipLevels = 1;
 	depthStancilDesc.ArraySize = 1;
 	depthStancilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	if (this->useMSAA)
-	{
-		depthStancilDesc.SampleDesc.Count = 4;
-		depthStancilDesc.SampleDesc.Quality = this->m4xMsaaQuality - 1;
-	}
-	else
-	{
-		depthStancilDesc.SampleDesc.Count = 1;
-		depthStancilDesc.SampleDesc.Quality = 0;
-	}
+
+	depthStancilDesc.SampleDesc.Count = 1;
+	depthStancilDesc.SampleDesc.Quality = 0;
+
 
 
 	depthStancilDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -290,12 +344,14 @@ void GraphicsEngine::CreateViewport()
 /// </summary>
 void GraphicsEngine::BindView()
 {
+	CreateViewport();
 	// 뷰를 렌더링 파이프라인에 바인드
 	this->d3d11DeviceContext->OMSetRenderTargets(
 		1,
 		&this->renderTargetView,
 		this->depthStancilView
 	);
+
 }
 
 void GraphicsEngine::CreateWriter()
@@ -305,7 +361,7 @@ void GraphicsEngine::CreateWriter()
 	ZeroMemory(&equalsDesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
 	equalsDesc.DepthEnable = true;
 	equalsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;		// 깊이버퍼에 쓰기는 한다
-	equalsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	equalsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 	this->d3d11Device->CreateDepthStencilState(&equalsDesc, &writerDSS);
 
 	// Render State 중 Rasterizer State
@@ -321,59 +377,63 @@ void GraphicsEngine::CreateWriter()
 	this->writer->Create(this->d3d11Device, this->writerRS, this->writerDSS);
 }
 
+std::vector<byte> GraphicsEngine::Read(std::string File)
+{
+	std::vector<byte> Text;
+	std::fstream file(File, std::ios::in | std::ios::ate | std::ios::binary);
+
+	if (file.is_open()) {
+		Text.resize(file.tellg());
+		file.seekg(0, std::ios::beg);
+		file.read(reinterpret_cast<char*>(&Text[0]), Text.size());
+		file.close();
+	}
+
+	return Text;
+}
+
 /// <summary>
-/// Input Layer를 생성한다
+/// input layer와 vertexShader를 생성한다.
 /// </summary>
-void GraphicsEngine::CreateInputLayer(PipeLine& _pipline, D3D11_INPUT_ELEMENT_DESC* _defaultInputLayerDECS, std::wstring _path[], UINT _numberOfElement)
+/// <param name="_inputLayout">IL</param>
+/// <param name="_defaultInputLayerDECS">요소 구조체</param>
+/// <param name="_numberOfElement">요소 갯수</param>
+/// <param name="_vs">VS</param>
+/// <param name="_path">VS의 경로</param>
+void GraphicsEngine::CreateInputLayer(ID3D11InputLayout** _inputLayout, D3D11_INPUT_ELEMENT_DESC* _defaultInputLayerDECS, UINT _numberOfElement, ID3D11VertexShader** _vs, std::wstring _path)
 {
 	HRESULT hr = S_OK;
+	std::string vs = "";
+	vs.assign(_path.begin(), _path.end());
+	auto vsByteCode = Read(vs);
 
-	ID3DBlob* vsByteCode;
-	ID3DBlob* psByteCode;
-	ID3DBlob* compileError;
-
-	// TODO : 상대경로로 바꾸기
-	hr = D3DCompileFromFile(
-		_path[0].c_str(),
-		nullptr,
-		D3D_COMPILE_STANDARD_FILE_INCLUDE,
-		"VS",
-		"vs_5_0",
-		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
-		0,
-		&vsByteCode,
-		&compileError
-	);
-	assert(SUCCEEDED(hr) && "cannot Compile Vertex Shader");
-
-	// TODO : 상대경로로 바꾸기
-	hr = D3DCompileFromFile(
-		_path[1].c_str(),
-		nullptr,
-		D3D_COMPILE_STANDARD_FILE_INCLUDE,
-		"PS",
-		"ps_5_0",
-		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
-		0,
-		&psByteCode,
-		&compileError
-	);
-	assert(SUCCEEDED(hr) && "cannot Compile Pixel Shader");
-
-	this->d3d11Device->CreateVertexShader(vsByteCode->GetBufferPointer(), vsByteCode->GetBufferSize(), nullptr, &_pipline.vertexShader);
-	this->d3d11Device->CreatePixelShader(psByteCode->GetBufferPointer(), psByteCode->GetBufferSize(), nullptr, &_pipline.pixelShader);
+	hr = this->d3d11Device->CreateVertexShader(vsByteCode.data(), vsByteCode.size(), nullptr, _vs);
+	assert(SUCCEEDED(hr) && "Cannot Read VertexShader");
 
 	hr = this->d3d11Device->CreateInputLayout(
 		_defaultInputLayerDECS,
 		_numberOfElement,
-		vsByteCode->GetBufferPointer(),
-		vsByteCode->GetBufferSize(),
-		&_pipline.inputLayout
+		vsByteCode.data(),
+		vsByteCode.size(),
+		_inputLayout
 	);
 	assert(SUCCEEDED(hr) && "cannot create input layer");
+}
 
-	vsByteCode->Release();
-	psByteCode->Release();
+/// <summary>
+/// 픽셸 셰이더 로드
+/// </summary>
+/// <param name="_pipline">픽셀 셰이더가 있는 파이프라인</param>
+/// <param name="_path">경로</param>
+void GraphicsEngine::CreatePixelShader(ID3D11PixelShader** _ps, std::wstring _path)
+{
+	HRESULT hr = S_OK;
+	std::string ps = "";
+	ps.assign(_path.begin(), _path.end());
+	auto psByteCode = Read(ps);
+
+	hr = this->d3d11Device->CreatePixelShader(psByteCode.data(), psByteCode.size(), nullptr, _ps);
+	assert(SUCCEEDED(hr) && "Cannot Read VertexShader");
 }
 
 /// <summary>
@@ -382,7 +442,7 @@ void GraphicsEngine::CreateInputLayer(PipeLine& _pipline, D3D11_INPUT_ELEMENT_DE
 void GraphicsEngine::ClearRenderTargetView()
 {
 	// 임시 색 ( R G B A )
-	float bgRed[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	float bgRed[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
 	// 렌더 타겟을 지정한 색으로 초기화
 	this->d3d11DeviceContext->ClearRenderTargetView(
@@ -744,5 +804,106 @@ void GraphicsEngine::endDraw()
 /// </summary>
 void GraphicsEngine::begineDraw()
 {
+	// BindView();
 	RenderClearView();
+}
+
+void GraphicsEngine::BeginDeferredRender()
+{
+	ID3D11ShaderResourceView* pSRV[2] = { nullptr, nullptr };
+	this->d3d11DeviceContext->PSSetShaderResources(0, 2, pSRV);
+	BindDeferredView();
+	DeferredRenderClearView();
+	ClearDepthStencilView();
+}
+
+void GraphicsEngine::EndDeferredRender()
+{
+	ID3D11ShaderResourceView* pSRV = NULL;
+	this->d3d11DeviceContext->PSSetShaderResources(0, 1, &pSRV);
+	BindView();
+	BindPipeline(this->DPipeline);
+
+	this->d3d11DeviceContext->PSSetShaderResources(0, 3, dSRV.data());
+	this->d3d11DeviceContext->DrawIndexed(6, 0, 0);
+	for (auto& pipe : this->DSubPipeline)
+	{
+		BindPipeline(pipe);
+		this->d3d11DeviceContext->DrawIndexed(6, 0, 0);
+	}
+}
+
+void GraphicsEngine::DeferredRender(PipeLine& _pipline, int _indexSize)
+{
+	this->d3d11DeviceContext->DrawIndexed(_indexSize, 0, 0);
+}
+
+void GraphicsEngine::DeferredRenderClearView()
+{
+	float bgRed[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	for (auto& rt : this->dRenderTargets)
+	{
+		// 임시 색 ( R G B A )
+
+		// 렌더 타겟을 지정한 색으로 초기화
+		this->d3d11DeviceContext->ClearRenderTargetView(
+			rt,
+			bgRed
+		);
+	}
+}
+
+void GraphicsEngine::BindDeferredView()
+{
+	this->d3d11DeviceContext->OMSetRenderTargets(gBufferSize, this->dRenderTargets.data(), this->depthStancilView);
+}
+
+void GraphicsEngine::CreateSubView()
+{
+	float lx = (4.0f / static_cast<float>(this->gBufferSize)) - 1;
+	float rx = 1;
+	float dis = rx - lx;
+	for (int i = 0; i < this->gBufferSize; i++)
+	{
+		float uy = 1 - ((1 - lx) * i);
+		float dy = uy - dis;
+		DSubVdata[i][0] = { DirectX::XMFLOAT3{lx, uy, 0.0f}, DirectX::XMFLOAT2{0.0f, 0.0f} };
+		DSubVdata[i][1] = { DirectX::XMFLOAT3{rx, uy, 0.0f}, DirectX::XMFLOAT2{1.0f, 0.0f} };
+		DSubVdata[i][2] = { DirectX::XMFLOAT3{rx, dy, 0.0f}, DirectX::XMFLOAT2{1.0f, 1.0f} };
+		DSubVdata[i][3] = { DirectX::XMFLOAT3{lx, dy, 0.0f}, DirectX::XMFLOAT2{0.0f, 1.0f} };
+	}
+}
+
+void GraphicsEngine::CreateFinalPipeline()
+{
+	std::wstring vsPath = L"../Shader/compiled/DPass2VS.cso";
+	std::wstring psPath = L"../Shader/compiled/DPass2.cso";
+	CreateInputLayer(&this->DPipeline.inputLayout, VertexD::defaultInputLayerDECS, 2, &this->DPipeline.vertexShader, vsPath);
+	CreatePixelShader(&this->DPipeline.pixelShader, psPath);
+	CreateVertexBuffer<VertexD::Data>(this->DVdata, (UINT)(4 * VertexD::Size()), &this->DPipeline.vertexBuffer);
+	CreateIndexBuffer(this->DIdata, 6, &this->DPipeline.IndexBuffer);
+	this->DPipeline.primitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	this->DPipeline.vertexStructSize = VertexD::Size();
+	CreateRasterizerState(&this->DPipeline.rasterizerState);
+	this->DPipeline.textureView = new ID3D11ShaderResourceView * [2];
+
+	std::wstring psSubPath[3] =
+	{
+		L"../Shader/compiled/DPass2Textuer.cso",
+		L"../Shader/compiled/DPass2Normal.cso",
+		L"../Shader/compiled/DPass2Depth.cso"
+	};
+	int pindx = 0;
+	for (auto& pipe : this->DSubPipeline)
+	{
+		CreateInputLayer(&pipe.inputLayout, VertexD::defaultInputLayerDECS, 2, &pipe.vertexShader, vsPath);
+		CreatePixelShader(&pipe.pixelShader, psSubPath[pindx]);
+		CreateIndexBuffer(this->DIdata, 6, &pipe.IndexBuffer);
+		CreateVertexBuffer<VertexD::Data>(this->DSubVdata[pindx], (UINT)(4 * VertexD::Size()), &pipe.vertexBuffer);
+		pipe.primitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+		pipe.vertexStructSize = VertexD::Size();
+		CreateRasterizerState(&pipe.rasterizerState);
+		pipe.textureView = new ID3D11ShaderResourceView * [2];
+		pindx++;
+	}
 }

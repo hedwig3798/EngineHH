@@ -18,8 +18,8 @@ private:
 
 	std::wstring path[2]
 	{
-		L"../Shader/VertexShader.hlsl",
-		L"../Shader/PixelShader.hlsl",
+		L"../Shader/compiled/VertexShader.cso",
+		L"../Shader/compiled/PixelShader.cso",
 	};
 
 	Material demoMat;
