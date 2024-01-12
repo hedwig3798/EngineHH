@@ -357,7 +357,7 @@ void GraphicsEngine::CreateWriter()
 	ZeroMemory(&equalsDesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
 	equalsDesc.DepthEnable = true;
 	equalsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;		// 깊이버퍼에 쓰기는 한다
-	equalsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	equalsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 	this->d3d11Device->CreateDepthStencilState(&equalsDesc, &writerDSS);
 
 	// Render State 중 Rasterizer State

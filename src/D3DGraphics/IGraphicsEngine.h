@@ -83,8 +83,8 @@ public:
 #pragma region CreatePipeline
 	virtual void CreateInputLayer(ID3D11InputLayout** _inputLayout, D3D11_INPUT_ELEMENT_DESC* _defaultInputLayerDECS, UINT _numberOfElement, ID3D11VertexShader** _vs, std::wstring _path) abstract;
 	virtual void CreatePixelShader(ID3D11PixelShader** _ps, std::wstring _path) abstract;
-	template<typename V>
-	void CreateVertexBuffer(V* _verteies, UINT _size, ID3D11Buffer** _vertexbuffer);
+// 	template<typename V>
+// 	void CreateVertexBuffer(V* _verteies, UINT _size, ID3D11Buffer** _vertexbuffer);
 	virtual void CreateIndexBuffer(UINT* _indices, UINT _size, ID3D11Buffer** _indexbuffer) abstract;
 	virtual void CreateRasterizerState(ID3D11RasterizerState** _rasterizerState) abstract;
 
@@ -98,28 +98,3 @@ public:
 
 	virtual FObject* LoadFbxData(std::string _path) abstract;
 };
-
-template<typename V>
-void IGraphicsEngine::CreateVertexBuffer(V* _verteies, UINT _size, ID3D11Buffer** _vertexbuffer)
-{
-	HRESULT hr = S_OK;
-
-	D3D11_BUFFER_DESC vb = {};
-
-	vb.Usage = D3D11_USAGE_IMMUTABLE;
-	vb.ByteWidth = _size;
-	vb.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vb.CPUAccessFlags = 0;
-	vb.MiscFlags = 0;
-	vb.StructureByteStride = 0;
-
-	D3D11_SUBRESOURCE_DATA initData = {};
-	initData.pSysMem = _verteies;
-
-	hr = this->d3d11Device->CreateBuffer(
-		&vb,
-		&initData,
-		_vertexbuffer
-	);
-	assert(SUCCEEDED(hr) && "cannot create vertex buffer");
-}
