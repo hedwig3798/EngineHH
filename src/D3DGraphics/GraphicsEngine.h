@@ -88,6 +88,7 @@ private:
 
 	FbxLoader* fbxLoader;
 
+	int gBufferSize = 2;
 	std::vector<ID3D11Texture2D*> dTexture;
 	std::vector<ID3D11ShaderResourceView*> dSRV;
 	std::vector<ID3D11RenderTargetView*> dRenderTargets;

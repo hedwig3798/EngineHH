@@ -92,9 +92,9 @@ void GraphicsEngine::Initialize(HWND _hwnd)
 	DIdata[5] = 3;
 
 
-	dTexture.resize(2);
-	dRenderTargets.resize(2);
-	dSRV.resize(2);
+	dTexture.resize(gBufferSize);
+	dRenderTargets.resize(gBufferSize);
+	dSRV.resize(gBufferSize);
 
 	D3D11_TEXTURE2D_DESC renderTargetTextureDesc{};
 	renderTargetTextureDesc.Width = static_cast<UINT>(windowWidth);
@@ -117,7 +117,7 @@ void GraphicsEngine::Initialize(HWND _hwnd)
 	ZeroMemory(&rendertargetViewDesc, sizeof(rendertargetViewDesc));
 	rendertargetViewDesc.Format = renderTargetTextureDesc.Format;
 	rendertargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-	for (int i = 0; i < 2; ++i)
+	for (int i = 0; i < gBufferSize; ++i)
 	{
 		hr = this->d3d11Device->CreateRenderTargetView(this->dTexture[i], &rendertargetViewDesc, &this->dRenderTargets[i]);
 		assert(SUCCEEDED(hr));
@@ -131,7 +131,7 @@ void GraphicsEngine::Initialize(HWND _hwnd)
 	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
 
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < gBufferSize; i++)
 	{
 		hr = this->d3d11Device->CreateShaderResourceView(this->dTexture[i], &shaderResourceViewDesc, &this->dSRV[i]);
 		assert(SUCCEEDED(hr));
@@ -450,7 +450,7 @@ void GraphicsEngine::CreatePixelShader(ID3D11PixelShader** _ps, std::wstring _pa
 void GraphicsEngine::ClearRenderTargetView()
 {
 	// 임시 색 ( R G B A )
-	float bgRed[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	float bgRed[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
 	// 렌더 타겟을 지정한 색으로 초기화
 	this->d3d11DeviceContext->ClearRenderTargetView(
@@ -848,7 +848,7 @@ void GraphicsEngine::DeferredRender(PipeLine& _pipline, int _indexSize)
 
 void GraphicsEngine::DeferredRenderClearView()
 {
-	float bgRed[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	float bgRed[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	for (auto& rt : this->dRenderTargets)
 	{
 		// 임시 색 ( R G B A )

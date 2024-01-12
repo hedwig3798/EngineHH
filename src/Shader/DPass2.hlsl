@@ -17,6 +17,5 @@ float4 PS(VOUT pin) : SV_Target
 	float4 textureColor = diffuseMaps[0].Sample(samAnisotropic, pin.Tex);
 	float4 normal = diffuseMaps[1].Sample(samAnisotropic, pin.Tex);
 
-    return textureColor;
-    // return normal;
+    return textureColor + normal;
 }
