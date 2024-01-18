@@ -52,15 +52,15 @@ void RenderObject::SetParent(RenderObject* _parent)
 	this->parent = _parent;
 }
 
-void RenderObject::Render(GraphicsEngine* _graphicsEngine, const DirectX::XMMATRIX& _viewTM, const DirectX::XMMATRIX& _projTM)
+void RenderObject::Render(GraphicsEngine* _graphicsEngine)
 {
 	for (auto& m : this->meshes)
 	{
-		m->Render(_graphicsEngine, this->nodeTM, _viewTM, _projTM);
+		m->Render(_graphicsEngine, this->nodeTM);
 	}
 	for (auto& c : this->children)
 	{
-		c->Render(_graphicsEngine, _viewTM, _projTM);
+		c->Render(_graphicsEngine);
 	}
 }
 

@@ -1,11 +1,8 @@
 #pragma once
-#include "pch.h"
-#include "pipeline.h"
-#include "LightHelper.h"
-
-
+#include <string>
 class FbxData;
 class GraphicsEngine;
+class IGraphicsEngine;
 class FbxMeshData;
 
 namespace VertexF
@@ -17,7 +14,6 @@ class FObject
 {
 public:
 	FbxData* fData;
-	Material demoMat;
 
 private:
 	GraphicsEngine* gp;
@@ -28,10 +24,11 @@ public:
 	FObject();
 	~FObject();
 
-	void Render(GraphicsEngine* _gp, DirectX::XMMATRIX _viewTM, DirectX::XMMATRIX _projTM);
-	void Initalize(GraphicsEngine* gp, std::wstring _sPath[], std::wstring _texturePath, FbxData* _nowData);
+	void Render();
+	void Initalize(IGraphicsEngine* gp, std::wstring _sPath[], std::wstring _texturePath, FbxData* _nowData);
 
 private:
 	void CreatePipeline(FbxMeshData* _nowMesh);
+	void ReleasePipeline(FbxMeshData* _nowMesh);
 };
 

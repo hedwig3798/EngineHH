@@ -1,7 +1,7 @@
 #pragma once
 #include "pch.h"
 
-class GraphicsEngine;
+class IGraphicsEngine;
 class DemoProcess;
 class ManagerSet;
 class Mesh;
@@ -11,8 +11,7 @@ class FObject;
 class DemoObject
 {
 private:
-	std::vector<RenderObject*> gemoObject;
-	GraphicsEngine* graphicsEngine;
+	IGraphicsEngine* graphicsEngine;
 
 	DemoProcess* scene;
 
@@ -24,8 +23,6 @@ private:
 
 	std::wstring texturePath = L"../Model/";
 
-	Material demoMat;
-	DirectionalLight dirLights[3];
 	UINT lightCount;
 	ManagerSet* managers;
 
@@ -34,10 +31,10 @@ private:
 	FObject* testFMesh;
 
 public:
-	DemoObject(GraphicsEngine* _graphicsEngine, DemoProcess* _scene, ManagerSet* _manager);
+	DemoObject(IGraphicsEngine* _graphicsEngine, DemoProcess* _scene, ManagerSet* _manager);
 	~DemoObject();
 
 	void Update(float _dt);
-	void Render(GraphicsEngine* ge);
+	void Render(IGraphicsEngine* ge);
 };
 

@@ -7,6 +7,9 @@
 #include "RenderObject.h"
 #include "FbxLoader.h"
 #include "FObject.h"
+#include "Camera.h"
+#include "Axes.h"
+#include "LineObject.h"
 
 GraphicsEngine::GraphicsEngine()
 	: featureLevel{}
@@ -26,6 +29,16 @@ GraphicsEngine::GraphicsEngine()
 	, lightBuffer(nullptr)
 	, fbxLoader(nullptr)
 	, boneBuffer(nullptr)
+	, dAxes(nullptr)
+	, dLine(nullptr)
+	, windowHeight(0)
+	, windowWidth(0)
+	, mainCamera(nullptr)
+	, DVdata{}
+	, DSubVdata{}
+	, DSubPipeline{}
+	, DPipeline{}
+	, DIdata{}
 {
 }
 
@@ -35,11 +48,44 @@ GraphicsEngine::~GraphicsEngine()
 	this->writerRS->Release();
 	delete this->writer;
 
+	delete fbxLoader;
+
 	this->matrixBuffer->Release();
+	this->lightBuffer->Release();
+	this->boneBuffer->Release();
+
 	this->depthStancilView->Release();
 	this->depthStancilBuffer->Release();
 	this->renderTargetView->Release();
 	this->swapChain->Release();
+
+	for (int i = 0; i < gBufferSize; i++)
+	{
+		this->dTexture[i]->Release();
+		this->dSRV[i]->Release();
+		this->dRenderTargets[i]->Release();
+	}
+
+	this->DPipeline.RelasePipline();
+	for (auto& pip : this->DSubPipeline)
+	{
+		pip.RelasePipline();
+	}
+
+	ID3D11RenderTargetView* nullViews[] = { nullptr };
+	this->d3d11DeviceContext->OMSetRenderTargets(_countof(nullViews), nullViews, nullptr);
+	this->d3d11DeviceContext->Flush();
+
+#if defined(DEBUG) || defined(_DEBUG)
+	ID3D11Debug* dxgiDebug;
+
+	if (SUCCEEDED(this->d3d11Device->QueryInterface(IID_PPV_ARGS(&dxgiDebug))))
+	{
+		dxgiDebug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+		dxgiDebug = nullptr;
+	}
+#endif
+
 	this->d3d11Device->Release();
 	this->d3d11DeviceContext->Release();
 }
@@ -52,6 +98,7 @@ void GraphicsEngine::Initialize(HWND _hwnd)
 {
 	HRESULT hr = S_OK;
 	this->hwnd = _hwnd;
+
 
 	CreateD3D11DeviceContext();
 	CreateChainValue();
@@ -135,6 +182,10 @@ void GraphicsEngine::Initialize(HWND _hwnd)
 
 	this->fbxLoader = new FbxLoader();
 	this->fbxLoader->Initalize();
+
+
+	dAxes = new Axes(this);
+	dLine = new LineObject(this);
 }
 
 /// <summary>
@@ -151,11 +202,10 @@ void GraphicsEngine::RenderClearView()
 /// </summary>
 void GraphicsEngine::RenderTestThing(PipeLine& _pipline)
 {
-
 	this->d3d11DeviceContext->DrawIndexed(36, 0, 0);
 }
 
-void GraphicsEngine::RenderByIndex(PipeLine& _pipline, int _indexSize)
+void GraphicsEngine::Render(PipeLine& _pipline, int _indexSize)
 {
 	this->d3d11DeviceContext->DrawIndexed(_indexSize, 0, 0);
 }
@@ -354,6 +404,26 @@ void GraphicsEngine::BindView()
 
 }
 
+void GraphicsEngine::CreateCamera(ICamera** _camera, float _w, float _h)
+{
+	(*_camera) = new Camera(_w, _h);
+}
+
+void GraphicsEngine::SetMainCamera(ICamera* _camera)
+{
+	this->mainCamera = dynamic_cast<Camera*>(_camera);
+}
+
+void GraphicsEngine::DrawDefaultAxes()
+{
+	this->dAxes->Render(this);
+}
+
+void GraphicsEngine::DrawDefaultLine()
+{
+	this->dLine->Render(this);
+}
+
 void GraphicsEngine::CreateWriter()
 {
 	// 폰트용 DSS
@@ -503,7 +573,7 @@ void GraphicsEngine::CreateMatrixBuffer()
 /// <param name="_w">월드 TM</param>
 /// <param name="_v">뷰포트 TM</param>
 /// <param name="_p">프로젝션 TM</param>
-void GraphicsEngine::BindMatrixParameter(DirectX::XMMATRIX _w, DirectX::XMMATRIX _v, DirectX::XMMATRIX _p, Material _material)
+void GraphicsEngine::BindMatrixParameter(DirectX::XMMATRIX _w)
 {
 	HRESULT hr;
 
@@ -515,14 +585,12 @@ void GraphicsEngine::BindMatrixParameter(DirectX::XMMATRIX _w, DirectX::XMMATRIX
 	MatrixBufferType* dataptr = (MatrixBufferType*)mappedResource.pData;
 
 	dataptr->world = _w;
-	dataptr->wvp = _w * _v * _p;
+	dataptr->wvp = _w * this->mainCamera->GetViewTM() * this->mainCamera->GetProjectionTM();
 	dataptr->worldInversTranspose = DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(nullptr, _w));
 
 	dataptr->world = DirectX::XMMatrixTranspose(_w);
 	dataptr->wvp = DirectX::XMMatrixTranspose(dataptr->wvp);
 	dataptr->worldInversTranspose = DirectX::XMMatrixTranspose(dataptr->worldInversTranspose);
-
-	dataptr->material = _material;
 
 	this->d3d11DeviceContext->Unmap(matrixBuffer, 0);
 	this->d3d11DeviceContext->VSSetConstantBuffers(0, 1, &matrixBuffer);
@@ -583,7 +651,7 @@ void GraphicsEngine::CreateLightingBffer()
 	this->d3d11Device->CreateBuffer(&mbd, nullptr, &this->lightBuffer);
 }
 
-void GraphicsEngine::BindLightingParameter(DirectionalLight _directionLight[], UINT _lightCount, DirectX::XMFLOAT3 _cameraPos)
+void GraphicsEngine::BindLightingParameter(DirectionalLight _directionLight[], UINT _lightCount)
 {
 	HRESULT hr;
 
@@ -600,7 +668,7 @@ void GraphicsEngine::BindLightingParameter(DirectionalLight _directionLight[], U
 
 	dataptr->lightCount = _lightCount;
 
-	dataptr->eyePosW = _cameraPos;
+	dataptr->eyePosW = this->mainCamera->GetPositoin();
 
 	this->d3d11DeviceContext->Unmap(this->lightBuffer, 0);
 	this->d3d11DeviceContext->PSSetConstantBuffers(1, 1, &this->lightBuffer);
@@ -625,9 +693,10 @@ void GraphicsEngine::BindPipeline(PipeLine& _pipline)
 	this->d3d11DeviceContext->PSSetShader(_pipline.pixelShader, nullptr, 0);
 }
 
-void GraphicsEngine::WriteText(int x, int y, DirectX::XMFLOAT4 color, TCHAR* text)
+void GraphicsEngine::WriteText(int _x, int _y, float _rgba[4], TCHAR* _text)
 {
-	this->writer->DrawTextColor(x, y, color, text);
+	DirectX::XMFLOAT4 color = { _rgba[0], _rgba[1] , _rgba[2] , _rgba[3] };
+	this->writer->DrawTextColor(_x, _y, color, _text);
 }
 
 /// <summary>
@@ -796,6 +865,7 @@ void GraphicsEngine::CreateIndexBuffer(UINT* _indices, UINT _size, ID3D11Buffer*
 /// </summary>
 void GraphicsEngine::endDraw()
 {
+	EndDeferredRender();
 	this->swapChain->Present(0, 0);
 }
 
@@ -806,12 +876,14 @@ void GraphicsEngine::begineDraw()
 {
 	// BindView();
 	RenderClearView();
+	DeferredRenderClearView();
+	BeginDeferredRender();
 }
 
 void GraphicsEngine::BeginDeferredRender()
 {
-	ID3D11ShaderResourceView* pSRV[2] = { nullptr, nullptr };
-	this->d3d11DeviceContext->PSSetShaderResources(0, 2, pSRV);
+	ID3D11ShaderResourceView* pSRV[3] = { nullptr, nullptr, nullptr };
+	this->d3d11DeviceContext->PSSetShaderResources(0, 3, pSRV);
 	BindDeferredView();
 	DeferredRenderClearView();
 	ClearDepthStencilView();

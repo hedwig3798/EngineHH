@@ -5,7 +5,6 @@ cbuffer cbPerObject : register(b0)
     matrix g_world;
     matrix g_wvp;
     matrix g_worldInvTranspose;
-	Material g_material;
 };
 
 cbuffer cbPerFrame : register(b1)
@@ -32,7 +31,6 @@ struct VertexOut
     float3 PosW    : POSITION;
 	float2 Tex     : TEXCOORD;
     float3 NormalW : NORMAL;
-	Material material : MATERIAL;
 	unsigned int texindex : TEXINDEX;
 };
 
@@ -51,7 +49,6 @@ VertexOut VS(VertexIn vin)
 
 	//정점의 월드 공간에서 법선 벡터
 	vout.NormalW = mul(vin.NormalL, (float3x3)g_worldInvTranspose);
-	vout.material = g_material;
 	vout.texindex = vin.texindex;
 	return vout;
 }

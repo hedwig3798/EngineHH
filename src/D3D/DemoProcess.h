@@ -1,33 +1,33 @@
 #pragma once
-#include <windows.h>
-#include "pch.h"
-#include "pipeline.h"
 
-class GraphicsEngine;
-class DemoCamera;
+#include "pch.h"
+
+class IGraphicsEngine;
 class DemoObject;
 class ManagerSet;
 class LineObject;
 class ModelParser;
 class Axes;
+class ICamera;
 
 class DemoProcess
 {
 private:
 	// 윈도우 핸들러
 	HWND hwnd;
-	GraphicsEngine* graphicsEngine;
+	IGraphicsEngine* graphicsEngine;
 
 	ManagerSet* managers;
 	static ManagerSet* staticManagers;
 
-	DemoCamera* camera;
 	DemoObject* object;
 
 	LineObject* line;
 	Axes* axes;
 
 	std::wstring explain;
+
+	ICamera* camera;
 
 public:
 	// 생성자 소멸자
@@ -40,8 +40,6 @@ public:
 	// 루프에서 실행되는 함수
 	void Process();
 
-	DemoCamera* getCamera();
-
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT message,
 		WPARAM wParam, LPARAM lParam);
 
@@ -49,6 +47,6 @@ private:
 	// 실제 수행되는 함수
 	void Update();
 	void Render();
-
+	void CameraUpdate(float _dt);
 };
 

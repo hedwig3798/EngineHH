@@ -1,10 +1,8 @@
 ﻿#include "DemoProcess.h"
-#include "GraphicsEngine.h"
-#include "DemoCamera.h"
+#include "IGraphicsEngine.h"
 #include "DemoObject.h"
 #include "ManagerSet.h"
-#include "LineObject.h"
-#include "Axes.h"
+#include "ICamera.h"
 
 ManagerSet* DemoProcess::staticManagers = nullptr;
 
@@ -30,9 +28,6 @@ DemoProcess::~DemoProcess()
 {
 	delete this->graphicsEngine;
 	delete this->object;
-
-	delete this->line;
-
 	delete this->camera;
 	delete this->managers;
 }
@@ -40,25 +35,25 @@ DemoProcess::~DemoProcess()
 void DemoProcess::Initialize(HWND _hwnd)
 {
 	this->hwnd = _hwnd;
-	this->graphicsEngine = new GraphicsEngine();
+	CreateGrapicsEngine(&graphicsEngine);
 	this->graphicsEngine->Initialize(this->hwnd);
-	this->graphicsEngine->RenderClearView();
 
 	RECT windowSize;
 	GetWindowRect(this->hwnd, &windowSize);
 
+	this->graphicsEngine->CreateCamera(
+		&this->camera,
+		static_cast<float>(windowSize.bottom - windowSize.top),
+		static_cast<float>(windowSize.right - windowSize.left));
+	this->graphicsEngine->SetMainCamera(this->camera);
 
-	this->line = new LineObject(this->graphicsEngine, this);
-	this->axes = new Axes(this->graphicsEngine, this);
+// 	this->line = new LineObject(this->graphicsEngine, this);
+// 	this->axes = new Axes(this->graphicsEngine, this);
 
 	this->managers = new ManagerSet();
 	this->staticManagers = this->managers;
 	this->managers->Initialize(this->hwnd);
 	this->object = new DemoObject(this->graphicsEngine, this, this->managers);
-	this->camera = new DemoCamera(
-		static_cast<float>(windowSize.bottom - windowSize.top), 
-		static_cast<float>(windowSize.right - windowSize.left),
-		this->managers);
 }
 
 void DemoProcess::Process()
@@ -67,16 +62,11 @@ void DemoProcess::Process()
 	Render();
 }
 
-DemoCamera* DemoProcess::getCamera()
-{
-	return this->camera;
-}
-
 void DemoProcess::Update()
 {
 	this->managers->Update();
-	camera->Update();
 	this->object->Update(this->managers->timeManager->GetfDT());
+	CameraUpdate(this->managers->timeManager->GetfDT());
 	this->managers->keyManager->mouseDX = 0;
 	this->managers->keyManager->mouseDY = 0;
 }
@@ -84,11 +74,11 @@ void DemoProcess::Update()
 void DemoProcess::Render()
 {
 	this->graphicsEngine->begineDraw();
-	this->graphicsEngine->BeginDeferredRender();
 
 	this->object->Render(graphicsEngine);
-	this->line->Render(graphicsEngine);
-	this->axes->Render(graphicsEngine);
+	
+	this->graphicsEngine->DrawDefaultAxes();
+	this->graphicsEngine->DrawDefaultLine();
 
 	std::wstring dt = L"DeltaTime : ";
 	dt += std::to_wstring(this->managers->timeManager->GetfDT());
@@ -96,12 +86,65 @@ void DemoProcess::Render()
 	dt += L"FPS : ";
 	dt += std::to_wstring(1 / this->managers->timeManager->GetfDT());
 
-	this->graphicsEngine->WriteText(10, 12, COLORS::White, const_cast<TCHAR*>(this->explain.c_str()));
-	this->graphicsEngine->WriteText(200, 12, COLORS::White, const_cast<TCHAR*>(dt.c_str()));
+	float w[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	this->graphicsEngine->WriteText(10, 12, w, const_cast<TCHAR*>(this->explain.c_str()));
+	this->graphicsEngine->WriteText(200, 12, w, const_cast<TCHAR*>(dt.c_str()));
 
-	this->graphicsEngine->EndDeferredRender();
 	this->graphicsEngine->endDraw();
 	int test = 0;
+}
+
+void DemoProcess::CameraUpdate(float _dt)
+{
+	float speed = 100;
+	if (this->managers->keyManager->GetKeyState(KEY::RIGHT) == KEY_STATE::HOLD)
+	{
+		this->camera->RotateRight(this->managers->timeManager->GetfDT());
+	}
+	if (this->managers->keyManager->GetKeyState(KEY::LEFT) == KEY_STATE::HOLD)
+	{
+		this->camera->RotateRight(-this->managers->timeManager->GetfDT());
+	}
+	if (this->managers->keyManager->GetKeyState(KEY::UP) == KEY_STATE::HOLD)
+	{
+		this->camera->RotateUp(-this->managers->timeManager->GetfDT());
+	}
+	if (this->managers->keyManager->GetKeyState(KEY::DOWN) == KEY_STATE::HOLD)
+	{
+		this->camera->RotateUp(this->managers->timeManager->GetfDT());
+	}
+
+	if (this->managers->keyManager->GetKeyState(KEY::W) == KEY_STATE::HOLD)
+	{
+		this->camera->MoveFoward(this->managers->timeManager->GetfDT() * speed);
+	}
+	if (this->managers->keyManager->GetKeyState(KEY::S) == KEY_STATE::HOLD)
+	{
+		this->camera->MoveFoward(-this->managers->timeManager->GetfDT() * speed);
+	}
+	if (this->managers->keyManager->GetKeyState(KEY::A) == KEY_STATE::HOLD)
+	{
+		this->camera->MoveRight(-this->managers->timeManager->GetfDT() * speed);
+	}
+	if (this->managers->keyManager->GetKeyState(KEY::D) == KEY_STATE::HOLD)
+	{
+		this->camera->MoveRight(this->managers->timeManager->GetfDT() * speed);
+	}
+	if (this->managers->keyManager->GetKeyState(KEY::Q) == KEY_STATE::HOLD)
+	{
+		this->camera->MoveUP(-this->managers->timeManager->GetfDT() * speed);
+	}
+	if (this->managers->keyManager->GetKeyState(KEY::E) == KEY_STATE::HOLD)
+	{
+		this->camera->MoveUP(this->managers->timeManager->GetfDT() * speed);
+	}
+
+	if (this->managers->keyManager->GetMouseState(MOUSE::LEFT) == KEY_STATE::HOLD)
+	{
+		this->camera->RotateRight(this->managers->keyManager->mouseDX * 0.003f);
+		this->camera->RotateUp(this->managers->keyManager->mouseDY * 0.003f);
+	}
+
 }
 
 LRESULT CALLBACK DemoProcess::WndProc(HWND hWnd, UINT message,

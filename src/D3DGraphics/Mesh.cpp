@@ -20,13 +20,10 @@ Mesh::~Mesh()
 	delete[] this->indexes;
 }
 
-void Mesh::Render(GraphicsEngine* _gp, const DirectX::XMMATRIX& _worldTM, const DirectX::XMMATRIX& _viewTM, const DirectX::XMMATRIX& _projTM)
+void Mesh::Render(GraphicsEngine* _gp, const DirectX::XMMATRIX& _worldTM)
 {
 	_gp->BindMatrixParameter(
-		_worldTM,
-		_viewTM,
-		_projTM,
-		this->demoMat
+		_worldTM
 	);
 
 	if (!this->bones.empty())
@@ -36,7 +33,7 @@ void Mesh::Render(GraphicsEngine* _gp, const DirectX::XMMATRIX& _worldTM, const 
 
 	_gp->BindPipeline(this->pipeline);
 	//_gp->SetTexture(0, 1, &this->pipeline.textureView);
-	_gp->RenderByIndex(this->pipeline, (int)this->indexList.size());
+	_gp->Render(this->pipeline, (int)this->indexList.size());
 }
 
 void Mesh::CreatePipeline(GraphicsEngine* graphicsEngine, std::wstring _sPath[], std::wstring _texturePath)

@@ -43,8 +43,26 @@
     <Filter Include="Renderer\UI">
       <UniqueIdentifier>{7dc11287-70b7-454b-acfc-fc483900c09f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Interface">
-      <UniqueIdentifier>{bf2ca9cd-f01b-4cba-84f0-7dc710672a9e}</UniqueIdentifier>
+    <Filter Include="Camera">
+      <UniqueIdentifier>{e95cc373-f5e0-43ba-bcc1-5d29c4480bbf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Camera\Interface">
+      <UniqueIdentifier>{3c7b6454-ea53-42c9-9c16-1fa89725fc19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DebugObject">
+      <UniqueIdentifier>{4f8cc874-86ba-42be-8d7b-a86f0e7d940a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DebugObject\Axes">
+      <UniqueIdentifier>{e69df720-dc58-44a0-aade-384a6ecee280}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DebugObject\Coordinate">
+      <UniqueIdentifier>{17a56afb-30e5-4cce-a08c-36a4b6c94d8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DebugObject\Box">
+      <UniqueIdentifier>{d3f91a28-202c-4fe6-8920-e53df36ac2fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Interface">
+      <UniqueIdentifier>{91a3257c-53db-4e31-80a4-f477ad0ca91f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -75,7 +93,21 @@
     <ClCompile Include="FowardRenderer.cpp">
       <Filter>Renderer\Forward</Filter>
     </ClCompile>
-    <ClCompile Include="IGraphicsEngine.cpp" />
+    <ClCompile Include="Camera.cpp">
+      <Filter>Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="ICamera.cpp">
+      <Filter>Camera\Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="IGraphicsEngine.cpp">
+      <Filter>Engine\Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="Axes.cpp">
+      <Filter>DebugObject\Axes</Filter>
+    </ClCompile>
+    <ClCompile Include="LineObject.cpp">
+      <Filter>DebugObject\Coordinate</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -113,7 +145,21 @@
     <ClInclude Include="FowardRenderer.h">
       <Filter>Renderer\Forward</Filter>
     </ClInclude>
-    <ClInclude Include="IGraphicsEngine.h" />
+    <ClInclude Include="Camera.h">
+      <Filter>Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="ICamera.h">
+      <Filter>Camera\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="IGraphicsEngine.h">
+      <Filter>Engine\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Axes.h">
+      <Filter>DebugObject\Axes</Filter>
+    </ClInclude>
+    <ClInclude Include="LineObject.h">
+      <Filter>DebugObject\Coordinate</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Shader\PixelShader.hlsl">
