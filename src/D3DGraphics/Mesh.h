@@ -42,7 +42,7 @@ public:
 	Mesh();
 	~Mesh();
 
-	void Render(GraphicsEngine* gp, const DirectX::XMMATRIX& _worldTM, const DirectX::XMMATRIX& _viewTM, const DirectX::XMMATRIX& _projTM);
+	void Render(GraphicsEngine* gp, const DirectX::XMMATRIX& _worldTM);
 	void CreatePipeline(GraphicsEngine* gp, std::wstring _sPath[], std::wstring _texturePath);
 	void SetVertexesData();
 };

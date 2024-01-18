@@ -133,14 +133,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Axes.h" />
     <ClInclude Include="D3D.h" />
-    <ClInclude Include="DemoCamera.h" />
     <ClInclude Include="DemoObject.h" />
     <ClInclude Include="DemoProcess.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="KeyManager.h" />
-    <ClInclude Include="LineObject.h" />
     <ClInclude Include="ManagerSet.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
@@ -148,13 +145,10 @@
     <ClInclude Include="TimeManager.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Axes.cpp" />
     <ClCompile Include="D3D.cpp" />
-    <ClCompile Include="DemoCamera.cpp" />
     <ClCompile Include="DemoObject.cpp" />
     <ClCompile Include="DemoProcess.cpp" />
     <ClCompile Include="KeyManager.cpp" />
-    <ClCompile Include="LineObject.cpp" />
     <ClCompile Include="ManagerSet.cpp" />
     <ClCompile Include="TimeManager.cpp" />
   </ItemGroup>

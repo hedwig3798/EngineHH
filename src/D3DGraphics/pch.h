@@ -9,7 +9,6 @@
 #include <dxgi.h>
 #include <tchar.h>
 #include <DirectXPackedVector.h>
-#include <dxgi.h>
 #include <map>
 #include <iostream>
 #include <fstream>

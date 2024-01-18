@@ -29,20 +29,20 @@ float4 PS(VertexOut pin) : SV_Target
 	float4 test = {1.0f, 1.0f, 1.0f, 1.0f};
 	float4 normal = float4(pin.NormalW, 1.0f);
 	// Sum the light contribution from each light source.  
- 	[unroll(3)]
- 	for(int i = 0; i < g_lightCount; ++i)
- 	{
-		float4 A, D, S;
-		ComputeDirectionalLight(pin.material, g_dirLights[i], pin.NormalW, toEye, A, D, S);
-
-		ambient += A;
-		diffuse += D;
-		spec    += S;
-	}
+//  	[unroll(3)]
+//  	for(int i = 0; i < g_lightCount; ++i)
+//  	{
+// 		float4 A, D, S;
+// 		ComputeDirectionalLight(pin.material, g_dirLights[i], pin.NormalW, toEye, A, D, S);
+// 
+// 		ambient += A;
+// 		diffuse += D;
+// 		spec    += S;
+// 	}
 	
 	float4 litColor = ambient + diffuse + spec;
 	// litColor = ceil(((diffuse + spec) * 10)/2 ) * litColor;
-	litColor.a = pin.material.Diffuse.a;
+	// litColor.a = pin.material.Diffuse.a;
 	
 	float4 textureColor = diffuseMaps.Sample( samAnisotropic, float3( pin.Tex, pin.texindex ) );
 

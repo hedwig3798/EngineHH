@@ -2,46 +2,43 @@
 #include "FbxData.h"
 #include "FbxLoader.h"
 #include "GraphicsEngine.h"
+#include "IGraphicsEngine.h"
 #include "fbxVertex.h"
 #include "FbxMeshData.h"
+#include "LightHelper.h"
+#include "pipeline.h"
 
 FObject::FObject()
 	: fData(nullptr)
-	, demoMat{}
+	, path(nullptr)
+	, gp(nullptr)
 {
-	this->demoMat.Ambient = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
-	this->demoMat.Diffuse = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
-	this->demoMat.Specular = XMFLOAT4(0.8f, 0.8f, 0.8f, 16.0f);
 }
 
 FObject::~FObject()
 {
-
+	ReleasePipeline(this->fData->mesh);
+	delete this->fData;
 }
 
-void FObject::Render(GraphicsEngine* _gp, DirectX::XMMATRIX _viewTM, DirectX::XMMATRIX _projTM)
+void FObject::Render()
 {
 	FbxMeshData* _nowData = this->fData->mesh;
 	for (auto& c : _nowData->children)
 	{
-		_gp->BindMatrixParameter(
-			c->globalTM,
-			_viewTM,
-			_projTM,
-			this->demoMat
-		);
+		gp->BindMatrixParameter(c->globalTM);
 		if (c->vertexData.size() != 0)
 		{
-			_gp->BindPipeline(*c->pipeline);
-			_gp->SetTexture(0, 1, c->pipeline->textureView);
-			_gp->RenderByIndex(*c->pipeline, static_cast<int>(c->indexData.size()));
+			gp->BindPipeline(*c->pipeline);
+			gp->SetTexture(0, 1, c->pipeline->textureView);
+			gp->Render(*c->pipeline, static_cast<int>(c->indexData.size()));
 		}
 	}
 }
 
-void FObject::Initalize(GraphicsEngine* _gp, std::wstring _sPath[], std::wstring _texturePath, FbxData* _nowData)
+void FObject::Initalize(IGraphicsEngine* _gp, std::wstring _sPath[], std::wstring _texturePath, FbxData* _nowData)
 {
-	this->gp = _gp;
+	this->gp = dynamic_cast<GraphicsEngine*>(_gp);
 	this->path = _sPath;
 	this->texturePath = _texturePath;
 	CreatePipeline(this->fData->mesh);
@@ -85,5 +82,18 @@ void FObject::CreatePipeline(FbxMeshData* _nowMesh)
 	for (auto& c : _nowMesh->children)
 	{
 		CreatePipeline(c);
+	}
+}
+
+void FObject::ReleasePipeline(FbxMeshData* _nowMesh)
+{
+	if (_nowMesh->pipeline)
+	{
+		_nowMesh->pipeline->RelasePipline();
+		delete _nowMesh->pipeline;
+	}
+	for (auto& c : _nowMesh->children)
+	{
+		ReleasePipeline(c);
 	}
 }

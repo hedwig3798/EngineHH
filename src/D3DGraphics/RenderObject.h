@@ -74,7 +74,7 @@ public:
 	std::string GetName() const { return name; }
 	void SetName(std::string val) { name = val; }
 
-	void Render(GraphicsEngine* _graphicsEngine, const DirectX::XMMATRIX& _viewTM, const DirectX::XMMATRIX& _projTM);
+	void Render(GraphicsEngine* _graphicsEngine);
 
 	void Initalize(GraphicsEngine* _graphicsEngine, std::wstring _path = L" ");
 

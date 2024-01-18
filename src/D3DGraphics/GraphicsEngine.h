@@ -1,9 +1,11 @@
 #pragma once
 #include "pch.h"
+#include "IGraphicsEngine.h"
 #include "Vertex.h"
 #include "color.h"
 #include "pipeline.h"
 #include "LightHelper.h"
+
 
 /// <summary>
 /// D3D 그래픽 엔진
@@ -18,8 +20,13 @@ class DXTKFont;
 class RenderObject;
 class FObject;
 class FbxLoader;
+class Camera;
+class ICamera;
+class Axes;
+class LineObject;
 
 class GraphicsEngine
+	: public IGraphicsEngine
 {
 private:
 
@@ -56,7 +63,7 @@ private:
 	ID3D11DeviceContext* d3d11DeviceContext;
 
 	// 디바이스 플래그
-	UINT createDeviceFlags = D3D11_CREATE_DEVICE_DEBUG;
+	UINT createDeviceFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT | D3D11_CREATE_DEVICE_DEBUG;
 
 	// 윈도우 핸들러
 	HWND hwnd;
@@ -93,8 +100,6 @@ private:
 	std::vector<ID3D11ShaderResourceView*> dSRV;
 	std::vector<ID3D11RenderTargetView*> dRenderTargets;
 
-	std::vector<D3D11_VIEWPORT> dViewport;
-
 	PipeLine DPipeline;
 	VertexD::Data DVdata[4];
 	UINT DIdata[6];
@@ -102,16 +107,35 @@ private:
 	PipeLine DSubPipeline[3];
 	VertexD::Data DSubVdata[3][4];
 
+	Camera* mainCamera;
+
+	Axes* dAxes;
+	LineObject* dLine;
+
 public:
 	GraphicsEngine();
 	~GraphicsEngine();
 
-	void Initialize(HWND _hwnd);
+	virtual void Initialize(HWND _hwnd) override;
+
+	virtual void Render(PipeLine& _pipline, int _indexSize) override;
+	virtual void endDraw() override;
+	virtual void begineDraw() override;
+
+	virtual void BindPipeline(PipeLine& _pipline) override;
+
+	virtual void WriteText(int _x, int _y, float _rgba[4], TCHAR* _text);
+
+	virtual FObject* LoadFbxData(std::string _path) override;
+
+	virtual void CreateCamera(ICamera** _camera, float _w, float _h) override;
+	virtual void SetMainCamera(ICamera* _camera) override;
+
+	virtual void DrawDefaultAxes() override;
+	virtual void DrawDefaultLine() override;
+
 	void RenderClearView();
 	void RenderTestThing(PipeLine& _pipline);
-	void RenderByIndex(PipeLine& _pipline, int _indexSize);
-	void endDraw();
-	void begineDraw();
 
 	void BeginDeferredRender();
 	void EndDeferredRender();
@@ -136,24 +160,19 @@ public:
 	void CreateRasterizerState(ID3D11RasterizerState** _rasterizerState);
 
 	void CreateMatrixBuffer();
-	void BindMatrixParameter(DirectX::XMMATRIX _w, DirectX::XMMATRIX _v, DirectX::XMMATRIX _p, Material _material);
+	void BindMatrixParameter(DirectX::XMMATRIX _w);
 
 	void CreateBoneBuffer();
 	void BindBonesData(std::vector<RenderObject*>& bones, DirectX::XMMATRIX _worldTM);
 
 	void CreateLightingBffer();
-	void BindLightingParameter(DirectionalLight _directionLight[], UINT _lightCount, DirectX::XMFLOAT3 _cameraPos);
-
-	void BindPipeline(PipeLine& _pipline);
-
-	void WriteText(int x, int y, DirectX::XMFLOAT4 color, TCHAR* text);
+	void BindLightingParameter(DirectionalLight _directionLight[], UINT _lightCount);
 
 	void CreateTextureDataFromDDS(std::wstring _path, ID3D11ShaderResourceView** _resourceView);
 	void CreateTextureDataFromTGA(std::wstring _path, ID3D11ShaderResourceView** _resourceView);
 	void CreateTextureDataFromTGA(std::vector<std::wstring> _path, ID3D11ShaderResourceView** _resourceView);
 	void SetTexture(UINT _start, UINT _viewNumbers, ID3D11ShaderResourceView** _resourceView);
 
-	FObject* LoadFbxData(std::string _path);
 	void BindView();
 
 private:

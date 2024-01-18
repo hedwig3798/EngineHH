@@ -34,9 +34,6 @@
     <Filter Include="DemoManager\Set">
       <UniqueIdentifier>{20737f34-5642-4dce-9811-5a61c444e549}</UniqueIdentifier>
     </Filter>
-    <Filter Include="DemoObject\LineObject">
-      <UniqueIdentifier>{0ecc2980-a92f-4de6-82a8-4d84b3b47760}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -60,23 +57,14 @@
     <ClInclude Include="pch.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="DemoCamera.h">
-      <Filter>DemoCamera</Filter>
-    </ClInclude>
     <ClInclude Include="KeyManager.h">
       <Filter>DemoManager\Key</Filter>
     </ClInclude>
     <ClInclude Include="TimeManager.h">
       <Filter>DemoManager\Time</Filter>
     </ClInclude>
-    <ClInclude Include="LineObject.h">
-      <Filter>DemoObject\LineObject</Filter>
-    </ClInclude>
     <ClInclude Include="ManagerSet.h">
       <Filter>DemoManager\Set</Filter>
-    </ClInclude>
-    <ClInclude Include="Axes.h">
-      <Filter>DemoObject\LineObject</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -89,23 +77,14 @@
     <ClCompile Include="DemoObject.cpp">
       <Filter>DemoObject</Filter>
     </ClCompile>
-    <ClCompile Include="DemoCamera.cpp">
-      <Filter>DemoCamera</Filter>
-    </ClCompile>
     <ClCompile Include="KeyManager.cpp">
       <Filter>DemoManager\Key</Filter>
     </ClCompile>
     <ClCompile Include="TimeManager.cpp">
       <Filter>DemoManager\Time</Filter>
     </ClCompile>
-    <ClCompile Include="LineObject.cpp">
-      <Filter>DemoObject\LineObject</Filter>
-    </ClCompile>
     <ClCompile Include="ManagerSet.cpp">
       <Filter>DemoManager\Set</Filter>
-    </ClCompile>
-    <ClCompile Include="Axes.cpp">
-      <Filter>DemoObject\LineObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

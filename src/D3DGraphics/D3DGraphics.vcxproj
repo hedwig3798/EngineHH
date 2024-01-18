@@ -137,12 +137,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ASEFile.h" />
+    <ClInclude Include="Axes.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="ICamera.h" />
     <ClInclude Include="color.h" />
     <ClInclude Include="DXTKFont.h" />
     <ClInclude Include="FObject.h" />
     <ClInclude Include="FowardRenderer.h" />
     <ClInclude Include="IGraphicsEngine.h" />
     <ClInclude Include="IRenderer.h" />
+    <ClInclude Include="LineObject.h" />
     <ClInclude Include="RenderObject.h" />
     <ClInclude Include="GraphicsEngine.h" />
     <ClInclude Include="Mesh.h" />
@@ -152,11 +156,15 @@
     <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Axes.cpp" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="ICamera.cpp" />
     <ClCompile Include="DXTKFont.cpp" />
     <ClCompile Include="FObject.cpp" />
     <ClCompile Include="FowardRenderer.cpp" />
     <ClCompile Include="IGraphicsEngine.cpp" />
     <ClCompile Include="IRenderer.cpp" />
+    <ClCompile Include="LineObject.cpp" />
     <ClCompile Include="RenderObject.cpp" />
     <ClCompile Include="GraphicsEngine.cpp" />
     <ClCompile Include="Mesh.cpp" />
