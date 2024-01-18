@@ -57,6 +57,7 @@ void FObject::CreatePipeline(FbxMeshData* _nowMesh)
 
 
 		std::vector<std::wstring> path(_nowMesh->textureFileName.size());
+		_nowMesh->pipeline->textureCount = 1;
 		for (int i = 0; i < _nowMesh->textureFileName.size(); i++)
 		{
 			path[i].assign(_nowMesh->textureFileName[i].begin(), _nowMesh->textureFileName[i].end());

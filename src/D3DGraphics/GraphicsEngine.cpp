@@ -72,9 +72,16 @@ GraphicsEngine::~GraphicsEngine()
 		pip.RelasePipline();
 	}
 
+	delete this->dAxes;
+	delete this->dLine;
+
 	ID3D11RenderTargetView* nullViews[] = { nullptr };
 	this->d3d11DeviceContext->OMSetRenderTargets(_countof(nullViews), nullViews, nullptr);
 	this->d3d11DeviceContext->Flush();
+
+	this->d3d11DeviceContext->Release();
+
+	this->d3d11Device->Release();
 
 #if defined(DEBUG) || defined(_DEBUG)
 	ID3D11Debug* dxgiDebug;
@@ -86,8 +93,6 @@ GraphicsEngine::~GraphicsEngine()
 	}
 #endif
 
-	this->d3d11Device->Release();
-	this->d3d11DeviceContext->Release();
 }
 
 /// <summary>
@@ -592,8 +597,8 @@ void GraphicsEngine::BindMatrixParameter(DirectX::XMMATRIX _w)
 	dataptr->wvp = DirectX::XMMatrixTranspose(dataptr->wvp);
 	dataptr->worldInversTranspose = DirectX::XMMatrixTranspose(dataptr->worldInversTranspose);
 
-	this->d3d11DeviceContext->Unmap(matrixBuffer, 0);
 	this->d3d11DeviceContext->VSSetConstantBuffers(0, 1, &matrixBuffer);
+	this->d3d11DeviceContext->Unmap(matrixBuffer, 0);
 }
 
 
@@ -896,7 +901,7 @@ void GraphicsEngine::EndDeferredRender()
 	BindView();
 	BindPipeline(this->DPipeline);
 
-	this->d3d11DeviceContext->PSSetShaderResources(0, 3, dSRV.data());
+	this->d3d11DeviceContext->PSSetShaderResources(0, this->gBufferSize, dSRV.data());
 	this->d3d11DeviceContext->DrawIndexed(6, 0, 0);
 	for (auto& pipe : this->DSubPipeline)
 	{
@@ -912,7 +917,7 @@ void GraphicsEngine::DeferredRender(PipeLine& _pipline, int _indexSize)
 
 void GraphicsEngine::DeferredRenderClearView()
 {
-	float bgRed[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	float bgRed[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	for (auto& rt : this->dRenderTargets)
 	{
 		// 임시 색 ( R G B A )
@@ -957,7 +962,6 @@ void GraphicsEngine::CreateFinalPipeline()
 	this->DPipeline.primitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	this->DPipeline.vertexStructSize = VertexD::Size();
 	CreateRasterizerState(&this->DPipeline.rasterizerState);
-	this->DPipeline.textureView = new ID3D11ShaderResourceView * [2];
 
 	std::wstring psSubPath[3] =
 	{
@@ -975,7 +979,6 @@ void GraphicsEngine::CreateFinalPipeline()
 		pipe.primitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 		pipe.vertexStructSize = VertexD::Size();
 		CreateRasterizerState(&pipe.rasterizerState);
-		pipe.textureView = new ID3D11ShaderResourceView * [2];
 		pindx++;
 	}
 }

@@ -28,7 +28,8 @@ DeferredOutput PS(VertexOut pin)
 	output.texDiffuse = textureColor;
 	output.texNormal = float4(pin.NormalW, 1.0f);
 	float d = pin.PosH.z / pin.PosH.w;
-	output.zDepth = float4(d, d, d, 1.0f);
+	d *= 10;
+	output.zDepth = float4(1 - d, 1 - d, 1 - d, 1.0f);
 
     return output;
 }
