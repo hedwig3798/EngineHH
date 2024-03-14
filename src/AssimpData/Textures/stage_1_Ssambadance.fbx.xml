@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Materials>
+    <Material>
+        <Name>Material.002</Name>
+        <DiffuseFile>wall_tex.png</DiffuseFile>
+        <SpecularFile>wall_tex.png</SpecularFile>
+        <NormalFile>wall_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.003</Name>
+        <DiffuseFile>ornaments_tex.png</DiffuseFile>
+        <SpecularFile>ornaments_tex.png</SpecularFile>
+        <NormalFile>ornaments_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.008</Name>
+        <DiffuseFile>shelf_bedroom_tex.png</DiffuseFile>
+        <SpecularFile>shelf_bedroom_tex.png</SpecularFile>
+        <NormalFile>shelf_bedroom_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.007</Name>
+        <DiffuseFile>floor_tex.png</DiffuseFile>
+        <SpecularFile>floor_tex.png</SpecularFile>
+        <NormalFile>floor_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material</Name>
+        <DiffuseFile>desk_tex.png</DiffuseFile>
+        <SpecularFile>desk_tex.png</SpecularFile>
+        <NormalFile>desk_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.004</Name>
+        <DiffuseFile>bed_tex.png</DiffuseFile>
+        <SpecularFile>bed_tex.png</SpecularFile>
+        <NormalFile>bed_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.005</Name>
+        <DiffuseFile>bed_block_tex.png</DiffuseFile>
+        <SpecularFile>bed_block_tex.png</SpecularFile>
+        <NormalFile>bed_block_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.006</Name>
+        <DiffuseFile>dog_cushion_tex.png</DiffuseFile>
+        <SpecularFile>dog_cushion_tex.png</SpecularFile>
+        <NormalFile>dog_cushion_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.010</Name>
+        <DiffuseFile>chair_tex.png</DiffuseFile>
+        <SpecularFile>chair_tex.png</SpecularFile>
+        <NormalFile>chair_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.001</Name>
+        <DiffuseFile>closet_tex.png</DiffuseFile>
+        <SpecularFile>closet_tex.png</SpecularFile>
+        <NormalFile>closet_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.015</Name>
+        <DiffuseFile>doll_tex.png</DiffuseFile>
+        <SpecularFile>doll_tex.png</SpecularFile>
+        <NormalFile>doll_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.011</Name>
+        <DiffuseFile>ball_tex.png</DiffuseFile>
+        <SpecularFile>ball_tex.png</SpecularFile>
+        <NormalFile>ball_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.012</Name>
+        <DiffuseFile>bigball_tex.png</DiffuseFile>
+        <SpecularFile>bigball_tex.png</SpecularFile>
+        <NormalFile>bigball_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.014</Name>
+        <DiffuseFile>chewbone_tex.png</DiffuseFile>
+        <SpecularFile>chewbone_tex.png</SpecularFile>
+        <NormalFile>chewbone_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.009</Name>
+        <DiffuseFile>clock_tex.png</DiffuseFile>
+        <SpecularFile>clock_tex.png</SpecularFile>
+        <NormalFile>clock_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.016</Name>
+        <DiffuseFile>cup_tex.png</DiffuseFile>
+        <SpecularFile>cup_tex.png</SpecularFile>
+        <NormalFile>cup_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.017</Name>
+        <DiffuseFile>rope_1_broken_tex.png</DiffuseFile>
+        <SpecularFile>rope_1_broken_tex.png</SpecularFile>
+        <NormalFile>rope_1_broken_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.018</Name>
+        <DiffuseFile>rope_2_broken_tex.png</DiffuseFile>
+        <SpecularFile>rope_2_broken_tex.png</SpecularFile>
+        <NormalFile>rope_2_broken_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.013</Name>
+        <DiffuseFile>trashcan_tex.png</DiffuseFile>
+        <SpecularFile>trashcan_tex.png</SpecularFile>
+        <NormalFile>trashcan_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.019</Name>
+        <DiffuseFile>stage1_background_wall_tex.png</DiffuseFile>
+        <SpecularFile>stage1_background_wall_tex.png</SpecularFile>
+        <NormalFile>stage1_background_wall_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.020</Name>
+        <DiffuseFile>background_window_tex.png</DiffuseFile>
+        <SpecularFile>background_window_tex.png</SpecularFile>
+        <NormalFile>background_window_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.002</Name>
+        <DiffuseFile>wall_tex.png</DiffuseFile>
+        <SpecularFile>wall_tex.png</SpecularFile>
+        <NormalFile>wall_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.003</Name>
+        <DiffuseFile>ornaments_tex.png</DiffuseFile>
+        <SpecularFile>ornaments_tex.png</SpecularFile>
+        <NormalFile>ornaments_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.008</Name>
+        <DiffuseFile>shelf_bedroom_tex.png</DiffuseFile>
+        <SpecularFile>shelf_bedroom_tex.png</SpecularFile>
+        <NormalFile>shelf_bedroom_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.007</Name>
+        <DiffuseFile>floor_tex.png</DiffuseFile>
+        <SpecularFile>floor_tex.png</SpecularFile>
+        <NormalFile>floor_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material</Name>
+        <DiffuseFile>desk_tex.png</DiffuseFile>
+        <SpecularFile>desk_tex.png</SpecularFile>
+        <NormalFile>desk_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.004</Name>
+        <DiffuseFile>bed_tex.png</DiffuseFile>
+        <SpecularFile>bed_tex.png</SpecularFile>
+        <NormalFile>bed_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.005</Name>
+        <DiffuseFile>bed_block_tex.png</DiffuseFile>
+        <SpecularFile>bed_block_tex.png</SpecularFile>
+        <NormalFile>bed_block_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.006</Name>
+        <DiffuseFile>dog_cushion_tex.png</DiffuseFile>
+        <SpecularFile>dog_cushion_tex.png</SpecularFile>
+        <NormalFile>dog_cushion_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.010</Name>
+        <DiffuseFile>chair_tex.png</DiffuseFile>
+        <SpecularFile>chair_tex.png</SpecularFile>
+        <NormalFile>chair_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.001</Name>
+        <DiffuseFile>closet_tex.png</DiffuseFile>
+        <SpecularFile>closet_tex.png</SpecularFile>
+        <NormalFile>closet_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.015</Name>
+        <DiffuseFile>doll_tex.png</DiffuseFile>
+        <SpecularFile>doll_tex.png</SpecularFile>
+        <NormalFile>doll_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.011</Name>
+        <DiffuseFile>ball_tex.png</DiffuseFile>
+        <SpecularFile>ball_tex.png</SpecularFile>
+        <NormalFile>ball_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.012</Name>
+        <DiffuseFile>bigball_tex.png</DiffuseFile>
+        <SpecularFile>bigball_tex.png</SpecularFile>
+        <NormalFile>bigball_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.014</Name>
+        <DiffuseFile>chewbone_tex.png</DiffuseFile>
+        <SpecularFile>chewbone_tex.png</SpecularFile>
+        <NormalFile>chewbone_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.009</Name>
+        <DiffuseFile>clock_tex.png</DiffuseFile>
+        <SpecularFile>clock_tex.png</SpecularFile>
+        <NormalFile>clock_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.016</Name>
+        <DiffuseFile>cup_tex.png</DiffuseFile>
+        <SpecularFile>cup_tex.png</SpecularFile>
+        <NormalFile>cup_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.017</Name>
+        <DiffuseFile>rope_1_broken_tex.png</DiffuseFile>
+        <SpecularFile>rope_1_broken_tex.png</SpecularFile>
+        <NormalFile>rope_1_broken_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.018</Name>
+        <DiffuseFile>rope_2_broken_tex.png</DiffuseFile>
+        <SpecularFile>rope_2_broken_tex.png</SpecularFile>
+        <NormalFile>rope_2_broken_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.013</Name>
+        <DiffuseFile>trashcan_tex.png</DiffuseFile>
+        <SpecularFile>trashcan_tex.png</SpecularFile>
+        <NormalFile>trashcan_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.019</Name>
+        <DiffuseFile>stage1_background_wall_tex.png</DiffuseFile>
+        <SpecularFile>stage1_background_wall_tex.png</SpecularFile>
+        <NormalFile>stage1_background_wall_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.020</Name>
+        <DiffuseFile>background_window_tex.png</DiffuseFile>
+        <SpecularFile>background_window_tex.png</SpecularFile>
+        <NormalFile>background_window_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+</Materials>

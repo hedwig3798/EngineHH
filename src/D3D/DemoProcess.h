@@ -4,11 +4,19 @@
 
 class IGraphicsEngine;
 class DemoObject;
+class DemoBoxObject;
+class DemoBackObject;
+class DemoUIObject;
+class DemoSpriteObject;
+class DemoDog;
+class DemoGun;
 class ManagerSet;
 class LineObject;
 class ModelParser;
 class Axes;
 class ICamera;
+class DemoMap;
+class TObject;
 
 class DemoProcess
 {
@@ -21,7 +29,16 @@ private:
 	static ManagerSet* staticManagers;
 
 	DemoObject* object;
+	DemoBoxObject* object2;
+	DemoBackObject* objectBack;
+	DemoDog* objectDog;
+	DemoUIObject* objectUI;
+	DemoSpriteObject* objectSprit;
+	DemoMap* demoMap;
+	TObject* tobject;
 
+	DemoGun* object3;
+	
 	LineObject* line;
 	Axes* axes;
 
@@ -48,5 +65,7 @@ private:
 	void Update();
 	void Render();
 	void CameraUpdate(float _dt);
+
+	void EffectOnOff();
 };
 

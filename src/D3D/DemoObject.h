@@ -6,7 +6,7 @@ class DemoProcess;
 class ManagerSet;
 class Mesh;
 class RenderObject;
-class FObject;
+class AObject;
 
 class DemoObject
 {
@@ -15,22 +15,17 @@ private:
 
 	DemoProcess* scene;
 
-	std::wstring path[2]
-	{
-		L"../Shader/compiled/VertexShader3.cso",
-		L"../Shader/compiled/DPass1.cso",
-	};
-
-	std::wstring texturePath = L"../Model/";
+	std::wstring texturePath = L"..\\Model\\DeferredTestMesh\\";
 
 	UINT lightCount;
 	ManagerSet* managers;
 
 	bool isLocal;
 
-	FObject* testFMesh;
+	float aniTime;
 
 public:
+	AObject* teatAssimp;
 	DemoObject(IGraphicsEngine* _graphicsEngine, DemoProcess* _scene, ManagerSet* _manager);
 	~DemoObject();
 

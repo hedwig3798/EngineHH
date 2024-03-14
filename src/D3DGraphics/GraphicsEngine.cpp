@@ -1,15 +1,22 @@
 ﻿#include "GraphicsEngine.h"
 #include <minwinbase.h>
 #include "DXTKFont.h"
-#include "DirectXTex.h"
 #include "DDSTextureLoader.h"
 #include "LightHelper.h"
 #include "RenderObject.h"
-#include "FbxLoader.h"
-#include "FObject.h"
+#include "UObject.h"
 #include "Camera.h"
 #include "Axes.h"
 #include "LineObject.h"
+#include "DeferredRenderer.h"
+#include "ForwardRenderer.h"
+#include "PostRenderer.h"
+#include "UIRenderer.h"
+#include "BackgroundRenderer.h"
+
+#include <algorithm>
+#include "ABone.h"
+#include "Utils.h"
 
 GraphicsEngine::GraphicsEngine()
 	: featureLevel{}
@@ -27,50 +34,42 @@ GraphicsEngine::GraphicsEngine()
 	, writerRS(nullptr)
 	, writer(nullptr)
 	, lightBuffer(nullptr)
-	, fbxLoader(nullptr)
 	, boneBuffer(nullptr)
 	, dAxes(nullptr)
 	, dLine(nullptr)
 	, windowHeight(0)
 	, windowWidth(0)
 	, mainCamera(nullptr)
-	, DVdata{}
-	, DSubVdata{}
-	, DSubPipeline{}
-	, DPipeline{}
-	, DIdata{}
+	, pixelOnOff(false)
+	, flashOnOff(false)
+	, whiteOutOnOff(false)
 {
 }
 
 GraphicsEngine::~GraphicsEngine()
 {
-	this->writerDSS->Release();
-	this->writerRS->Release();
+	this->textureResourceManager->UnLoadResource();
+	this->VSResourceManager->UnLoadResource();
+	this->PSResourceManager->UnLoadResource();
+	this->IAResourceManager->UnLoadResource();
+
 	delete this->writer;
 
-	delete fbxLoader;
+	this->deferredRenderer->Finalize();
+	//this->deferredTexture->Release();
+	delete this->deferredRenderer;
 
-	this->matrixBuffer->Release();
-	this->lightBuffer->Release();
-	this->boneBuffer->Release();
+	this->forwardRenderer->Finalize();
+	delete this->forwardRenderer;
 
-	this->depthStancilView->Release();
-	this->depthStancilBuffer->Release();
-	this->renderTargetView->Release();
-	this->swapChain->Release();
+	this->postRenderer->Finalize();
+	delete this->postRenderer;
 
-	for (int i = 0; i < gBufferSize; i++)
-	{
-		this->dTexture[i]->Release();
-		this->dSRV[i]->Release();
-		this->dRenderTargets[i]->Release();
-	}
+	this->uiRenderer->Finalize();
+	delete this->uiRenderer;
 
-	this->DPipeline.RelasePipline();
-	for (auto& pip : this->DSubPipeline)
-	{
-		pip.RelasePipline();
-	}
+	this->backgroundRenderer->Finalize();
+	delete this->backgroundRenderer;
 
 	ID3D11RenderTargetView* nullViews[] = { nullptr };
 	this->d3d11DeviceContext->OMSetRenderTargets(_countof(nullViews), nullViews, nullptr);
@@ -86,8 +85,6 @@ GraphicsEngine::~GraphicsEngine()
 	}
 #endif
 
-	this->d3d11Device->Release();
-	this->d3d11DeviceContext->Release();
 }
 
 /// <summary>
@@ -99,6 +96,12 @@ void GraphicsEngine::Initialize(HWND _hwnd)
 	HRESULT hr = S_OK;
 	this->hwnd = _hwnd;
 
+	this->textureResourceManager = std::make_unique<ComResourceManager<ID3D11ShaderResourceView>>();
+	this->VSResourceManager = std::make_unique<ComResourceManager<ID3D11VertexShader>>();
+	this->PSResourceManager = std::make_unique<ComResourceManager<ID3D11PixelShader>>();
+	this->IAResourceManager = std::make_unique<ComResourceManager<ID3D11InputLayout>>();
+
+	hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 
 	CreateD3D11DeviceContext();
 	CreateChainValue();
@@ -109,83 +112,89 @@ void GraphicsEngine::Initialize(HWND _hwnd)
 	CreateMatrixBuffer();
 	CreateLightingBffer();
 	CreateBoneBuffer();
+	CreateCameraBuffer();
+	CreateRasterizerState();
 
-	RECT windowSize;
+	RECT windowSize = {0, 0, 0, 0};
+	GetWindowRect(hwnd, &windowSize);
 	assert(GetWindowRect(hwnd, &windowSize) && "cannot get window rectangle");
 
 	this->windowWidth = windowSize.right - windowSize.left;
 	this->windowHeight = windowSize.bottom - windowSize.top;
 
-	DVdata[0] = { DirectX::XMFLOAT3{-1.0f, 1.0f, 0.0f}, DirectX::XMFLOAT2{0.0f, 0.0f} };
-	DVdata[1] = { DirectX::XMFLOAT3{1.0f, 1.0f, 0.0f}, DirectX::XMFLOAT2{1.0f, 0.0f} };
-	DVdata[2] = { DirectX::XMFLOAT3{1.0f, -1.0f, 0.0f}, DirectX::XMFLOAT2{1.0f, 1.0f} };
-	DVdata[3] = { DirectX::XMFLOAT3{-1.0f, -1.0f, 0.0f}, DirectX::XMFLOAT2{0.0f, 1.0f} };
+	//BackgroundRenderer
+	this->backgroundRenderer = new BackgroundRenderer(d3d11Device.Get(), d3d11DeviceContext.Get(), depthStancilView.Get(), windowWidth, windowHeight);
+	this->backgroundRenderer->Initailze(this);
 
-	CreateSubView();
+	//defferedRenderer
+	this->deferredRenderer = new DeferredRenderer(d3d11Device.Get(), d3d11DeviceContext.Get(), depthStancilView.Get(), windowWidth, windowHeight);
+	this->deferredRenderer->Initailze(this);
 
-	DIdata[0] = 0;
-	DIdata[1] = 1;
-	DIdata[2] = 3;
-	DIdata[3] = 1;
-	DIdata[4] = 2;
-	DIdata[5] = 3;
+	//UIRenderer
+	this->uiRenderer = new UIRenderer(d3d11Device.Get(), d3d11DeviceContext.Get(), depthStancilView.Get(), windowWidth, windowHeight);
+	this->uiRenderer->Initailze(this);
 
+	//forwardRenderer
+	this->forwardRenderer = new ForwardRenderer(d3d11Device.Get(), d3d11DeviceContext.Get(), depthStancilView.Get(), windowWidth, windowHeight);
+	this->forwardRenderer->Initailze(this);
 
-	dTexture.resize(gBufferSize);
-	dRenderTargets.resize(gBufferSize);
-	dSRV.resize(gBufferSize);
+	//postRenderer
+	this->postRenderer = new PostRenderer(d3d11Device.Get(), d3d11DeviceContext.Get(), depthStancilView.Get(), windowWidth, windowHeight);
+	this->postRenderer->Initailze(this);
 
-	D3D11_TEXTURE2D_DESC renderTargetTextureDesc{};
-	renderTargetTextureDesc.Width = static_cast<UINT>(windowWidth);
-	renderTargetTextureDesc.Height = static_cast<UINT>(windowHeight);
-	renderTargetTextureDesc.MipLevels = 1;
-	renderTargetTextureDesc.ArraySize = 1;
-	renderTargetTextureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;  // 스펙큘러, 디퓨즈는 8비트로 괜찮을 것 같은데 포지션 노말은?
-	renderTargetTextureDesc.SampleDesc.Count = 1;
-	renderTargetTextureDesc.Usage = D3D11_USAGE_DEFAULT;
-	renderTargetTextureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	dAxes = std::make_unique<Axes>(this);
+	dLine = std::make_unique<LineObject>(this);
 
-	for (auto& dt : dTexture)
-	{
-		hr = this->d3d11Device->CreateTexture2D(&renderTargetTextureDesc, nullptr, &dt);
-		assert(SUCCEEDED(hr));
-	}
+	//모든 그림을 그릴 마지막 SRV를 만든다.
+	FVdata[0] = { DirectX::XMFLOAT3{-1.0f, 1.0f, 0.0f}, DirectX::XMFLOAT2{0.0f, 0.0f} };
+	FVdata[1] = { DirectX::XMFLOAT3{1.0f, 1.0f, 0.0f}, DirectX::XMFLOAT2{1.0f, 0.0f} };
+	FVdata[2] = { DirectX::XMFLOAT3{1.0f, -1.0f, 0.0f}, DirectX::XMFLOAT2{1.0f, 1.0f} };
+	FVdata[3] = { DirectX::XMFLOAT3{-1.0f, -1.0f, 0.0f}, DirectX::XMFLOAT2{0.0f, 1.0f} };
 
-	// 1-2. RenderTargetView
-	D3D11_RENDER_TARGET_VIEW_DESC rendertargetViewDesc;
-	ZeroMemory(&rendertargetViewDesc, sizeof(rendertargetViewDesc));
-	rendertargetViewDesc.Format = renderTargetTextureDesc.Format;
-	rendertargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-	for (int i = 0; i < gBufferSize; ++i)
-	{
-		hr = this->d3d11Device->CreateRenderTargetView(this->dTexture[i], &rendertargetViewDesc, &this->dRenderTargets[i]);
-		assert(SUCCEEDED(hr));
-	}
+	FIdata[0] = 0;
+	FIdata[1] = 1;
+	FIdata[2] = 3;
+	FIdata[3] = 1;
+	FIdata[4] = 2;
+	FIdata[5] = 3;
 
+	D3D11_BLEND_DESC bd;
+	bd.AlphaToCoverageEnable = false;
+	bd.IndependentBlendEnable = false;
+	bd.RenderTarget[0].BlendEnable = true;
+	bd.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	bd.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	bd.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	bd.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	bd.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	bd.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	bd.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
-	// 2. ShaderResourceView
-	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc{};
-	ZeroMemory(&shaderResourceViewDesc, sizeof(shaderResourceViewDesc));
-	shaderResourceViewDesc.Format = renderTargetTextureDesc.Format;
-	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	shaderResourceViewDesc.Texture2D.MipLevels = 1;
+	this->d3d11Device->CreateBlendState(&bd, &defaultBlend);
 
-	for (int i = 0; i < gBufferSize; i++)
-	{
-		hr = this->d3d11Device->CreateShaderResourceView(this->dTexture[i], &shaderResourceViewDesc, &this->dSRV[i]);
-		assert(SUCCEEDED(hr));
-	}
+	D3D11_SAMPLER_DESC sampDesc;
+	ZeroMemory(&sampDesc, sizeof(sampDesc));
+	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	sampDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	sampDesc.BorderColor[0] = 1.0f;
+	sampDesc.BorderColor[1] = 1.0f;
+	sampDesc.BorderColor[2] = 1.0f;
+	sampDesc.BorderColor[3] = 1.0f;
+	sampDesc.MinLOD = 0;
+	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-	BindDeferredView();
+	hr = this->d3d11Device->CreateSamplerState(&sampDesc, defaultSampler.GetAddressOf());
+	assert(SUCCEEDED(hr));
 
+	CreateFinalView();
 	CreateFinalPipeline();
 
-	this->fbxLoader = new FbxLoader();
-	this->fbxLoader->Initalize();
+	BindSamplerState();
 
 
-	dAxes = new Axes(this);
-	dLine = new LineObject(this);
 }
 
 /// <summary>
@@ -194,6 +203,7 @@ void GraphicsEngine::Initialize(HWND _hwnd)
 void GraphicsEngine::RenderClearView()
 {
 	ClearRenderTargetView();
+	ClearFinalRenderTargetView();
 	ClearDepthStencilView();
 }
 
@@ -225,9 +235,9 @@ void GraphicsEngine::CreateD3D11DeviceContext()
 		0,
 		0,
 		D3D11_SDK_VERSION,
-		&this->d3d11Device,
+		this->d3d11Device.GetAddressOf(),
 		&this->featureLevel,
-		&this->d3d11DeviceContext
+		this->d3d11DeviceContext.GetAddressOf()
 	);
 	assert(hr == S_OK && "cannot create d3d11 device");
 }
@@ -237,7 +247,9 @@ void GraphicsEngine::CreateD3D11DeviceContext()
 /// </summary>
 void GraphicsEngine::CreateChainValue()
 {
-	RECT windowSize;
+	RECT windowSize = {};
+	GetWindowRect(hwnd, &windowSize);
+
 	assert(GetWindowRect(hwnd, &windowSize) && "cannot get window rectangle");
 
 	HRESULT hr = S_OK;
@@ -287,7 +299,7 @@ void GraphicsEngine::CreateChainValue()
 	assert(hr == S_OK && "cannot get DXGI factory");
 
 	// 스왑 체인 생성
-	hr = (dxgiFactory->CreateSwapChain(this->d3d11Device, &chainDesc, &this->swapChain));
+	hr = (dxgiFactory->CreateSwapChain(this->d3d11Device.Get(), &chainDesc, this->swapChain.GetAddressOf()));
 	assert(hr == S_OK && "cannot create swapChain");
 
 	// 사용한 인터페이스 제거
@@ -316,7 +328,7 @@ void GraphicsEngine::CreateRenderTargetView()
 	hr = this->d3d11Device->CreateRenderTargetView(
 		backBuffer,
 		0,
-		&this->renderTargetView
+		this->renderTargetView.GetAddressOf()
 	);
 	assert(hr == S_OK && "cannot create RenderTargetView");
 
@@ -332,7 +344,9 @@ void GraphicsEngine::CreateDepthStencilBufferAndView()
 {
 	HRESULT hr = S_OK;
 
-	RECT windowSize;
+	RECT windowSize = {};
+	GetWindowRect(hwnd, &windowSize);
+
 	assert(GetWindowRect(hwnd, &windowSize) && "cannot get window rectangle");
 
 	// 구조체 값 채우기
@@ -346,8 +360,6 @@ void GraphicsEngine::CreateDepthStencilBufferAndView()
 	depthStancilDesc.SampleDesc.Count = 1;
 	depthStancilDesc.SampleDesc.Quality = 0;
 
-
-
 	depthStancilDesc.Usage = D3D11_USAGE_DEFAULT;
 	depthStancilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 	depthStancilDesc.CPUAccessFlags = 0;
@@ -357,15 +369,15 @@ void GraphicsEngine::CreateDepthStencilBufferAndView()
 	hr = this->d3d11Device->CreateTexture2D(
 		&depthStancilDesc,
 		nullptr,
-		&this->depthStancilBuffer
+		this->depthStancilBuffer.GetAddressOf()
 	);
 	assert(hr == S_OK && "cannot create depth-stancil buffer");
 
 	// 깊이 스텐실 뷰 생성
 	hr = d3d11Device->CreateDepthStencilView(
-		this->depthStancilBuffer,
+		this->depthStancilBuffer.Get(),
 		0,
-		&this->depthStancilView
+		this->depthStancilView.GetAddressOf()
 	);
 	assert(hr == S_OK && "cannot create depth-stancil view");
 }
@@ -375,7 +387,9 @@ void GraphicsEngine::CreateDepthStencilBufferAndView()
 /// </summary>
 void GraphicsEngine::CreateViewport()
 {
-	RECT windowSize;
+	RECT windowSize = {};
+	GetWindowRect(hwnd, &windowSize);
+
 	assert(GetWindowRect(hwnd, &windowSize) && "cannot get window rectangle");
 
 	D3D11_VIEWPORT vp = {};
@@ -394,31 +408,177 @@ void GraphicsEngine::CreateViewport()
 /// </summary>
 void GraphicsEngine::BindView()
 {
-	CreateViewport();
-	// 뷰를 렌더링 파이프라인에 바인드
 	this->d3d11DeviceContext->OMSetRenderTargets(
 		1,
-		&this->renderTargetView,
-		this->depthStancilView
+		this->finalRenderTartView.GetAddressOf(),
+		this->depthStancilView.Get()
 	);
 
 }
 
+void GraphicsEngine::BindFinalView()
+{
+	CreateViewport();
+	// 뷰를 렌더링 파이프라인에 바인드
+	this->d3d11DeviceContext->OMSetRenderTargets(
+		1,
+		this->renderTargetView.GetAddressOf(),
+		this->depthStancilView.Get()
+	);
+}
+
+/// <summary>
+/// 단일 텍스쳐 로드
+/// </summary>
+/// <param name="_path">경로</param>
+/// <param name="_resourceView">output</param>
+void GraphicsEngine::LoadTexture(std::wstring _path, ComPtr<ID3D11ShaderResourceView>& _resourceView)
+{
+	HRESULT hr;
+
+	string sPath = Utils::ToString(_path);
+	_resourceView = this->textureResourceManager->GetResource(sPath);
+
+	if (_resourceView != nullptr)
+	{
+		return;
+	}
+
+	std::wstring format = _path.substr(_path.length() - 3, _path.length());
+	std::transform(format.begin(), format.end(), format.begin(), ::tolower);
+
+	DirectX::ScratchImage image;
+	ID3D11Resource* texResource = nullptr;
+
+	if (format == L"tga")
+	{
+		CreateTextureDataFromTGA(_path, &image);
+	}
+	else if (format == L"dds")
+	{
+		CreateTextureDataFromDDS(_path, &image);
+	}
+	else if (format == L"png" || format == L"jpg" || format == L"jpge" || format == L"tiff" || format == L"bmp")
+	{
+		CreateTextureDataFromWIC(_path, &image);
+	}
+
+	hr = DirectX::CreateTexture(this->d3d11Device.Get(), image.GetImages(), image.GetImageCount(), image.GetMetadata(), &texResource);
+	assert(SUCCEEDED(hr) && "cannot create image when load TGA data");
+
+	hr = this->d3d11Device->CreateShaderResourceView(texResource, nullptr, _resourceView.GetAddressOf());
+	assert(SUCCEEDED(hr) && "cannot create image when load TGA data");
+
+	this->textureResourceManager->StoreResource(sPath, _resourceView);
+
+	texResource->Release();
+}
+
+/// <summary>
+/// 텍스쳐 배열 로드
+/// </summary>
+/// <param name="_path">경로</param>
+/// <param name="_resourceView">output</param>
+void GraphicsEngine::LoadTexture(std::vector<std::wstring> _path, ComPtr<ID3D11ShaderResourceView>& _resourceView)
+{
+	HRESULT hr = S_OK;
+
+	UINT arraySize = static_cast<UINT>(_path.size());
+
+	D3D11_SUBRESOURCE_DATA* texture = new D3D11_SUBRESOURCE_DATA[arraySize];
+
+	ID3D11Resource** texResource = new ID3D11Resource * [arraySize];
+	DirectX::ScratchImage* image = new DirectX::ScratchImage[arraySize];
+	*texResource = nullptr;
+	for (UINT i = 0; i < arraySize; i++)
+	{
+		std::wstring format = _path[i].substr(_path[i].length() - 3, _path[i].length());
+		std::transform(format.begin(), format.end(), format.begin(), ::tolower);
+
+		if (format == L"tga")
+		{
+			CreateTextureDataFromTGA(_path[i], &image[i]);
+		}
+		else if (format == L"dds")
+		{
+			CreateTextureDataFromDDS(_path[i], &image[i]);
+		}
+		else if (format == L"png" || format == L"jpg" || format == L"jpge" || format == L"tiff" || format == L"bmp")
+		{
+			CreateTextureDataFromWIC(_path[i], &image[i]);
+		}
+		else
+		{
+			_resourceView.GetAddressOf()[i] = nullptr;
+			continue;
+		}
+
+		hr = DirectX::CreateTexture(
+			this->d3d11Device.Get(),
+			image[i].GetImages(),
+			image[i].GetImageCount(),
+			image[i].GetMetadata(),
+			&texResource[i]
+		);
+		assert(SUCCEEDED(hr) && "cannot create texture");
+
+	}
+	assert(*texResource);
+	hr = this->d3d11Device->CreateShaderResourceView(*texResource, nullptr, _resourceView.GetAddressOf());
+	assert(SUCCEEDED(hr) && "cannot create shader resource view");
+}
+
+void GraphicsEngine::UIRender(PipeLine& _pipline, int _indexSize)
+{
+	this->d3d11DeviceContext->DrawIndexed(_indexSize, 0, 0);
+}
+
+/// <summary>
+/// 카메라 생성
+/// </summary>
+/// <param name="_camera">output</param>
+/// <param name="_w">넓이</param>
+/// <param name="_h">높이</param>
 void GraphicsEngine::CreateCamera(ICamera** _camera, float _w, float _h)
 {
 	(*_camera) = new Camera(_w, _h);
 }
 
+/// <summary>
+/// 렌더 할 카메라 설정
+/// </summary>
+/// <param name="_camera"></param>
 void GraphicsEngine::SetMainCamera(ICamera* _camera)
 {
 	this->mainCamera = dynamic_cast<Camera*>(_camera);
 }
 
+/// <summary>
+/// 주어진 카메라가 그래픽 엔진에서 렌더링 되는 카메라인지
+/// </summary>
+/// <param name="_camera">카메라</param>
+/// <returns>결과</returns>
+bool GraphicsEngine::IsMainCamera(ICamera* _camera) const
+{
+	return this->mainCamera == _camera;
+}
+
+Camera* GraphicsEngine::GetCamera()
+{
+	return this->mainCamera;
+}
+
+/// <summary>
+/// 디버깅용 기본 축 그리기
+/// </summary>
 void GraphicsEngine::DrawDefaultAxes()
 {
 	this->dAxes->Render(this);
 }
 
+/// <summary>
+/// 디버깅용 기본 선 그리기
+/// </summary>
 void GraphicsEngine::DrawDefaultLine()
 {
 	this->dLine->Render(this);
@@ -432,7 +592,7 @@ void GraphicsEngine::CreateWriter()
 	equalsDesc.DepthEnable = true;
 	equalsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;		// 깊이버퍼에 쓰기는 한다
 	equalsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-	this->d3d11Device->CreateDepthStencilState(&equalsDesc, &writerDSS);
+	this->d3d11Device->CreateDepthStencilState(&equalsDesc, writerDSS.GetAddressOf());
 
 	// Render State 중 Rasterizer State
 	D3D11_RASTERIZER_DESC solidDesc;
@@ -442,11 +602,16 @@ void GraphicsEngine::CreateWriter()
 	solidDesc.FrontCounterClockwise = false;
 	solidDesc.DepthClipEnable = true;
 
-	this->d3d11Device->CreateRasterizerState(&solidDesc, &writerRS);
+	this->d3d11Device->CreateRasterizerState(&solidDesc, writerRS.GetAddressOf());
 	this->writer = new DXTKFont();
-	this->writer->Create(this->d3d11Device, this->writerRS, this->writerDSS);
+	this->writer->Create(this->d3d11Device.Get(), this->writerRS.Get(), this->writerDSS.Get());
 }
 
+/// <summary>
+/// 파일을 바이트로 읽기
+/// </summary>
+/// <param name="File">경로</param>
+/// <returns>바이트 벡터</returns>
 std::vector<byte> GraphicsEngine::Read(std::string File)
 {
 	std::vector<byte> Text;
@@ -470,14 +635,21 @@ std::vector<byte> GraphicsEngine::Read(std::string File)
 /// <param name="_numberOfElement">요소 갯수</param>
 /// <param name="_vs">VS</param>
 /// <param name="_path">VS의 경로</param>
-void GraphicsEngine::CreateInputLayer(ID3D11InputLayout** _inputLayout, D3D11_INPUT_ELEMENT_DESC* _defaultInputLayerDECS, UINT _numberOfElement, ID3D11VertexShader** _vs, std::wstring _path)
+void GraphicsEngine::CreateInputLayer(ComPtr<ID3D11InputLayout>& _inputLayout, D3D11_INPUT_ELEMENT_DESC* _defaultInputLayerDECS, UINT _numberOfElement, ComPtr<ID3D11VertexShader>& _vs, std::wstring _path)
 {
 	HRESULT hr = S_OK;
-	std::string vs = "";
-	vs.assign(_path.begin(), _path.end());
+	std::string vs = Utils::ToString(_path);
+
+	_vs = this->VSResourceManager->GetResource(vs);
+	if (_vs != nullptr)
+	{
+		_inputLayout = this->IAResourceManager->GetResource(vs);
+		return;
+	}
+
 	auto vsByteCode = Read(vs);
 
-	hr = this->d3d11Device->CreateVertexShader(vsByteCode.data(), vsByteCode.size(), nullptr, _vs);
+	hr = this->d3d11Device->CreateVertexShader(vsByteCode.data(), vsByteCode.size(), nullptr, _vs.GetAddressOf());
 	assert(SUCCEEDED(hr) && "Cannot Read VertexShader");
 
 	hr = this->d3d11Device->CreateInputLayout(
@@ -485,9 +657,12 @@ void GraphicsEngine::CreateInputLayer(ID3D11InputLayout** _inputLayout, D3D11_IN
 		_numberOfElement,
 		vsByteCode.data(),
 		vsByteCode.size(),
-		_inputLayout
+		_inputLayout.GetAddressOf()
 	);
 	assert(SUCCEEDED(hr) && "cannot create input layer");
+
+	this->VSResourceManager->StoreResource(vs, _vs);
+	this->IAResourceManager->StoreResource(vs, _inputLayout);
 }
 
 /// <summary>
@@ -495,15 +670,15 @@ void GraphicsEngine::CreateInputLayer(ID3D11InputLayout** _inputLayout, D3D11_IN
 /// </summary>
 /// <param name="_pipline">픽셀 셰이더가 있는 파이프라인</param>
 /// <param name="_path">경로</param>
-void GraphicsEngine::CreatePixelShader(ID3D11PixelShader** _ps, std::wstring _path)
+void GraphicsEngine::CreatePixelShader(ComPtr<ID3D11PixelShader>& _ps, std::wstring _path)
 {
 	HRESULT hr = S_OK;
 	std::string ps = "";
-	ps.assign(_path.begin(), _path.end());
+	ps = Utils::ToString(_path);
 	auto psByteCode = Read(ps);
 
-	hr = this->d3d11Device->CreatePixelShader(psByteCode.data(), psByteCode.size(), nullptr, _ps);
-	assert(SUCCEEDED(hr) && "Cannot Read VertexShader");
+	hr = this->d3d11Device->CreatePixelShader(psByteCode.data(), psByteCode.size(), nullptr, _ps.GetAddressOf());
+	assert(SUCCEEDED(hr) && "Cannot Read PixelShader");
 }
 
 /// <summary>
@@ -516,7 +691,7 @@ void GraphicsEngine::ClearRenderTargetView()
 
 	// 렌더 타겟을 지정한 색으로 초기화
 	this->d3d11DeviceContext->ClearRenderTargetView(
-		this->renderTargetView,
+		this->renderTargetView.Get(),
 		bgRed
 	);
 }
@@ -528,10 +703,24 @@ void GraphicsEngine::ClearDepthStencilView()
 {
 	// 깊이 스텐실 뷰 초기화
 	this->d3d11DeviceContext->ClearDepthStencilView(
-		this->depthStancilView,
+		this->depthStancilView.Get(),
 		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
 		1.0f,
 		0
+	);
+}
+/// <summary>
+/// 최종 그림을 그리는 렌더 타겟 뷰 클리어
+/// </summary>
+void GraphicsEngine::ClearFinalRenderTargetView()
+{
+	// 임시 색 ( R G B A )
+	float bgRed[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+
+	// 렌더 타겟을 지정한 색으로 초기화
+	this->d3d11DeviceContext->ClearRenderTargetView(
+		this->finalRenderTartView.Get(),
+		bgRed
 	);
 }
 
@@ -539,7 +728,7 @@ void GraphicsEngine::ClearDepthStencilView()
 /// 레스터라이저 생성
 /// </summary>
 /// <param name="_rasterizerState">반환 받을 레스터라이저</param>
-void GraphicsEngine::CreateRasterizerState(ID3D11RasterizerState** _rasterizerState)
+void GraphicsEngine::CreateRasterizerState(ComPtr<ID3D11RasterizerState>& _rasterizerState)
 {
 	HRESULT hr = S_OK;
 
@@ -550,8 +739,13 @@ void GraphicsEngine::CreateRasterizerState(ID3D11RasterizerState** _rasterizerSt
 	rsDesc.FrontCounterClockwise = false;
 	rsDesc.DepthClipEnable = true;
 
-	hr = this->d3d11Device->CreateRasterizerState(&rsDesc, _rasterizerState);
+	hr = this->d3d11Device->CreateRasterizerState(&rsDesc, _rasterizerState.GetAddressOf());
 	assert(SUCCEEDED(hr) && "cannot create Rasterizser State");
+}
+
+void GraphicsEngine::CreateRasterizerState()
+{
+	CreateRasterizerState(this->rasterizerState);
 }
 
 void GraphicsEngine::CreateMatrixBuffer()
@@ -564,7 +758,7 @@ void GraphicsEngine::CreateMatrixBuffer()
 	mbd.MiscFlags = 0;
 	mbd.StructureByteStride = 0;
 
-	this->d3d11Device->CreateBuffer(&mbd, nullptr, &matrixBuffer);
+	this->d3d11Device->CreateBuffer(&mbd, nullptr, matrixBuffer.GetAddressOf());
 }
 
 /// <summary>
@@ -579,7 +773,7 @@ void GraphicsEngine::BindMatrixParameter(DirectX::XMMATRIX _w)
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 
-	hr = this->d3d11DeviceContext->Map(this->matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	hr = this->d3d11DeviceContext->Map(this->matrixBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	assert(SUCCEEDED(hr));
 
 	MatrixBufferType* dataptr = (MatrixBufferType*)mappedResource.pData;
@@ -592,8 +786,8 @@ void GraphicsEngine::BindMatrixParameter(DirectX::XMMATRIX _w)
 	dataptr->wvp = DirectX::XMMatrixTranspose(dataptr->wvp);
 	dataptr->worldInversTranspose = DirectX::XMMatrixTranspose(dataptr->worldInversTranspose);
 
-	this->d3d11DeviceContext->Unmap(matrixBuffer, 0);
-	this->d3d11DeviceContext->VSSetConstantBuffers(0, 1, &matrixBuffer);
+	this->d3d11DeviceContext->VSSetConstantBuffers(0, 1, this->matrixBuffer.GetAddressOf());
+	this->d3d11DeviceContext->Unmap(matrixBuffer.Get(), 0);
 }
 
 
@@ -607,7 +801,7 @@ void GraphicsEngine::CreateBoneBuffer()
 	mbd.MiscFlags = 0;
 	mbd.StructureByteStride = 0;
 
-	this->d3d11Device->CreateBuffer(&mbd, nullptr, &this->boneBuffer);
+	this->d3d11Device->CreateBuffer(&mbd, nullptr, this->boneBuffer.GetAddressOf());
 }
 
 void GraphicsEngine::BindBonesData(std::vector<RenderObject*>& _bones, DirectX::XMMATRIX _worldTM)
@@ -615,7 +809,7 @@ void GraphicsEngine::BindBonesData(std::vector<RenderObject*>& _bones, DirectX::
 	HRESULT hr;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 
-	hr = this->d3d11DeviceContext->Map(this->boneBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	hr = this->d3d11DeviceContext->Map(this->boneBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	assert(SUCCEEDED(hr));
 
 	BonesBufferType* dataptr = static_cast<BonesBufferType*>(mappedResource.pData);
@@ -634,8 +828,47 @@ void GraphicsEngine::BindBonesData(std::vector<RenderObject*>& _bones, DirectX::
 
 		dataptr->bones[i] = DirectX::XMMatrixTranspose(finalboneTM);
 	}
-	this->d3d11DeviceContext->Unmap(this->boneBuffer, 0);
-	this->d3d11DeviceContext->VSSetConstantBuffers(2, 1, &boneBuffer);
+	this->d3d11DeviceContext->Unmap(this->boneBuffer.Get(), 0);
+	this->d3d11DeviceContext->VSSetConstantBuffers(2, 1, boneBuffer.GetAddressOf());
+}
+
+void GraphicsEngine::BindBonesData(std::vector<std::shared_ptr<ABone>>& _bones, DirectX::XMMATRIX _worldTM)
+{
+	HRESULT hr;
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+	hr = this->d3d11DeviceContext->Map(this->boneBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	assert(SUCCEEDED(hr));
+
+	BonesBufferType* dataptr = static_cast<BonesBufferType*>(mappedResource.pData);
+
+	// 	std::vector<DirectX::SimpleMath::Matrix> toRootTransforms;
+	// 	toRootTransforms.reserve(128);
+	// 
+	// 	toRootTransforms.push_back(_bones[0]->transform);
+	// 	for (size_t i = 1; i < _bones.size(); ++i)
+	// 	{
+	// 		auto& parent = toRootTransforms[_bones[i]->parentIndex];
+	// 		toRootTransforms.push_back(_bones[i]->transform * parent);
+	// 	}
+
+	for (int i = 0; i < (int)_bones.size(); i++)
+	{
+		DirectX::XMMATRIX boneWorldTM = _bones[i]->transform;
+		DirectX::XMMATRIX boneNodeTM = _bones[i]->oriinalWorldTransform;
+
+		DirectX::XMMATRIX skinWorldTM = _worldTM;
+		DirectX::XMMATRIX skinWorldTMInverse = DirectX::XMMatrixInverse(nullptr, skinWorldTM);
+
+		DirectX::XMMATRIX boneoffsetTM = boneNodeTM * skinWorldTMInverse;
+		DirectX::XMMATRIX boneoffsetTM_Inverse = DirectX::XMMatrixInverse(nullptr, boneoffsetTM);
+
+		DirectX::XMMATRIX finalboneTM = boneoffsetTM_Inverse * boneWorldTM;
+
+		dataptr->bones[i] = DirectX::XMMatrixTranspose(_bones[i]->offsetTrasform * _bones[i]->transform); //  _bones[i]->transform);
+	}
+	this->d3d11DeviceContext->Unmap(this->boneBuffer.Get(), 0);
+	this->d3d11DeviceContext->VSSetConstantBuffers(1, 1, boneBuffer.GetAddressOf());
 }
 
 void GraphicsEngine::CreateLightingBffer()
@@ -648,7 +881,7 @@ void GraphicsEngine::CreateLightingBffer()
 	mbd.MiscFlags = 0;
 	mbd.StructureByteStride = 0;
 
-	this->d3d11Device->CreateBuffer(&mbd, nullptr, &this->lightBuffer);
+	this->d3d11Device->CreateBuffer(&mbd, nullptr, this->lightBuffer.GetAddressOf());
 }
 
 void GraphicsEngine::BindLightingParameter(DirectionalLight _directionLight[], UINT _lightCount)
@@ -657,7 +890,7 @@ void GraphicsEngine::BindLightingParameter(DirectionalLight _directionLight[], U
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 
-	hr = this->d3d11DeviceContext->Map(this->lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	hr = this->d3d11DeviceContext->Map(this->lightBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	assert(SUCCEEDED(hr));
 
 	LightingBufferType* dataptr = static_cast<LightingBufferType*>(mappedResource.pData);
@@ -670,8 +903,8 @@ void GraphicsEngine::BindLightingParameter(DirectionalLight _directionLight[], U
 
 	dataptr->eyePosW = this->mainCamera->GetPositoin();
 
-	this->d3d11DeviceContext->Unmap(this->lightBuffer, 0);
-	this->d3d11DeviceContext->PSSetConstantBuffers(1, 1, &this->lightBuffer);
+	this->d3d11DeviceContext->Unmap(this->lightBuffer.Get(), 0);
+	this->d3d11DeviceContext->PSSetConstantBuffers(1, 1, this->lightBuffer.GetAddressOf());
 }
 
 /// <summary>
@@ -680,17 +913,17 @@ void GraphicsEngine::BindLightingParameter(DirectionalLight _directionLight[], U
 /// <param name="_pipline"></param>
 void GraphicsEngine::BindPipeline(PipeLine& _pipline)
 {
-	this->d3d11DeviceContext->IASetInputLayout(_pipline.inputLayout);
+	this->d3d11DeviceContext->IASetInputLayout(_pipline.inputLayout.Get());
 	this->d3d11DeviceContext->IASetPrimitiveTopology(_pipline.primitiveTopology);
 
 	UINT stride = _pipline.vertexStructSize;
 	UINT offset = 0;
 
-	this->d3d11DeviceContext->IASetIndexBuffer(_pipline.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	this->d3d11DeviceContext->IASetVertexBuffers(0, 1, &_pipline.vertexBuffer, &stride, &offset);
-	this->d3d11DeviceContext->RSSetState(_pipline.rasterizerState);
-	this->d3d11DeviceContext->VSSetShader(_pipline.vertexShader, nullptr, 0);
-	this->d3d11DeviceContext->PSSetShader(_pipline.pixelShader, nullptr, 0);
+	this->d3d11DeviceContext->IASetIndexBuffer(_pipline.IndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+	this->d3d11DeviceContext->IASetVertexBuffers(0, 1, _pipline.vertexBuffer.GetAddressOf(), &stride, &offset);
+	this->d3d11DeviceContext->RSSetState(this->rasterizerState.Get());
+	this->d3d11DeviceContext->VSSetShader(_pipline.vertexShader.Get(), nullptr, 0);
+	this->d3d11DeviceContext->PSSetShader(_pipline.pixelShader.Get(), nullptr, 0);
 }
 
 void GraphicsEngine::WriteText(int _x, int _y, float _rgba[4], TCHAR* _text)
@@ -700,122 +933,260 @@ void GraphicsEngine::WriteText(int _x, int _y, float _rgba[4], TCHAR* _text)
 }
 
 /// <summary>
-/// 텍스쳐 데이터 생성
+/// DDS 파일에서 이미지 데이터 생성
 /// </summary>
-/// <param name="_path">데이터 경로</param>
-/// <param name="_resourceView">텍스쳐 데이터를 저장할 렌더 리소스 뷰</param>
-void GraphicsEngine::CreateTextureDataFromDDS(std::wstring _path, ID3D11ShaderResourceView** _resourceView)
+/// <param name="_path">경로</param>
+/// <param name="_image">output</param>
+void GraphicsEngine::CreateTextureDataFromDDS(std::wstring _path, ScratchImage* _image)
 {
 	HRESULT hr = S_OK;
-	ID3D11Resource* texResource = nullptr;
-	hr = DirectX::CreateDDSTextureFromFile(this->d3d11Device, _path.c_str(), &texResource, _resourceView);
-	assert(SUCCEEDED(hr) && "cannot create resource view");
-	texResource->Release();
+
+	hr = DirectX::LoadFromDDSFile(_path.c_str(), DirectX::DDS_FLAGS_NONE, nullptr, *_image);
+	assert(SUCCEEDED(hr) && "cannot create image when load DDS data");
 }
 
-void GraphicsEngine::CreateTextureDataFromTGA(std::wstring _path, ID3D11ShaderResourceView** _resourceView)
+/// <summary>
+/// TGA 파일에서 이미지 데이터 생성
+/// </summary>
+/// <param name="_path">경로</param>
+/// <param name="_image">output</param>
+void GraphicsEngine::CreateTextureDataFromTGA(std::wstring _path, ScratchImage* _image)
 {
 	HRESULT hr = S_OK;
-	ID3D11Resource* texResource = nullptr;
 
-	DirectX::ScratchImage image;
-	hr = DirectX::LoadFromTGAFile(_path.c_str(), nullptr, image);
+	hr = DirectX::LoadFromTGAFile(_path.c_str(), nullptr, *_image);
 	assert(SUCCEEDED(hr) && "cannot create image when load TGA data");
 
-	hr = DirectX::CreateTexture(this->d3d11Device, image.GetImages(), image.GetImageCount(), image.GetMetadata(), &texResource);
-	assert(SUCCEEDED(hr) && "cannot create image when load TGA data");
-
-	hr = this->d3d11Device->CreateShaderResourceView(texResource, nullptr, _resourceView);
-	assert(SUCCEEDED(hr) && "cannot create image when load TGA data");
-
-	texResource->Release();
+	// 	hr = DirectX::CreateTexture(this->d3d11Device, image.GetImages(), image.GetImageCount(), image.GetMetadata(), &texResource);
+	// 	assert(SUCCEEDED(hr) && "cannot create image when load TGA data");
+	// 
+	// 	hr = this->d3d11Device->CreateShaderResourceView(texResource, nullptr, _resourceView);
+	// 	assert(SUCCEEDED(hr) && "cannot create image when load TGA data");
 }
 
-void GraphicsEngine::CreateTextureDataFromTGA(std::vector<std::wstring> _path, ID3D11ShaderResourceView** _resourceView)
+/// <summary>
+/// WIC (PNG, JPG 등) 파일에서 이미지 데이터 생성
+/// </summary>
+/// <param name="_path">경로</param>
+/// <param name="_image">output</param>
+void GraphicsEngine::CreateTextureDataFromWIC(std::wstring _path, ScratchImage* _image)
 {
 	HRESULT hr = S_OK;
 
-	UINT arraySize = static_cast<UINT>(_path.size());
+	hr = DirectX::LoadFromWICFile(_path.c_str(), DirectX::WIC_FLAGS_NONE, nullptr, *_image);
+	assert(SUCCEEDED(hr) && "cannot create image when load WIC data");
+}
 
-	D3D11_SUBRESOURCE_DATA* texture = new D3D11_SUBRESOURCE_DATA[arraySize];
+/// <summary>
+/// 카메라 버퍼 생성
+/// </summary>
+void GraphicsEngine::CreateCameraBuffer()
+{
+	D3D11_BUFFER_DESC mbd = {};
+	mbd.Usage = D3D11_USAGE_DYNAMIC;
+	mbd.ByteWidth = sizeof(CameraBufferType);
+	mbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	mbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	mbd.MiscFlags = 0;
+	mbd.StructureByteStride = 0;
 
-	ID3D11Resource** texResource = new ID3D11Resource * [2];
-	DirectX::ScratchImage* image = new DirectX::ScratchImage[2];
-	for (UINT i = 0; i < arraySize; i++)
+	HRESULT hr;
+
+	hr = this->d3d11Device->CreateBuffer(&mbd, nullptr, this->cameraBuffer.GetAddressOf());
+	return;
+}
+
+/// <summary>
+/// 최종 그림을 그리게 될 SRV를 받아서 화면에 띄우는 역할을 하게 될 파이프라인
+/// </summary>
+void GraphicsEngine::CreateFinalPipeline()
+{
+	std::wstring vsPath = L"../Shader/compiled/FinalVertexShader.cso";
+	std::wstring psPath = L"../Shader/compiled/FinalPixelShader.cso";
+
+	this->CreateInputLayer(this->finalPipeline.inputLayout, VertexD::defaultInputLayerDECS, 2, this->finalPipeline.vertexShader, vsPath);
+	this->CreatePixelShader(this->finalPipeline.pixelShader, psPath);
+	this->CreateVertexBuffer<VertexD::Data>(this->FVdata, (UINT)(4 * VertexD::Size()), this->finalPipeline.vertexBuffer, "FinalDrawVB");
+	this->CreateIndexBuffer(this->FIdata, 6, this->finalPipeline.IndexBuffer);
+	this->finalPipeline.primitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	this->finalPipeline.vertexStructSize = VertexD::Size();
+	this->CreateRasterizerState(this->finalPipeline.rasterizerState);
+}
+
+/// <summary>
+/// 카메라를 픽셀 셰이더에 바인딩
+/// </summary>
+void GraphicsEngine::BindCameraAtPS()
+{
+	HRESULT hr;
+
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+	hr = this->d3d11DeviceContext->Map(this->cameraBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	assert(SUCCEEDED(hr));
+
+	CameraBufferType* dataptr = static_cast<CameraBufferType*>(mappedResource.pData);
+	DirectX::XMFLOAT3 dir = this->mainCamera->GetLook();
+	DirectX::XMFLOAT3 p = this->mainCamera->GetPositoin();
+	dataptr->lookDir = DirectX::XMFLOAT4(dir.x, dir.y, dir.z, 1.0f);
+	dataptr->pos = DirectX::XMFLOAT4(p.x, p.y, p.z, 1.0f);
+
+	this->d3d11DeviceContext->Unmap(this->cameraBuffer.Get(), 0);
+	this->d3d11DeviceContext->PSSetConstantBuffers(0, 1, this->cameraBuffer.GetAddressOf());
+}
+
+void GraphicsEngine::CreateFinalView()
+{
+	D3D11_TEXTURE2D_DESC renderTargetTextureDesc{};
+	renderTargetTextureDesc.Width = static_cast<UINT>(windowWidth);
+	renderTargetTextureDesc.Height = static_cast<UINT>(windowHeight);
+	renderTargetTextureDesc.MipLevels = 1;
+	renderTargetTextureDesc.ArraySize = 1;
+	renderTargetTextureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	renderTargetTextureDesc.SampleDesc.Count = 1;
+	renderTargetTextureDesc.Usage = D3D11_USAGE_DEFAULT;
+	renderTargetTextureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+
+	this->d3d11Device->CreateTexture2D(&renderTargetTextureDesc, nullptr, this->finalTexture2D.GetAddressOf());
+
+	this->d3d11Device->CreateRenderTargetView(this->finalTexture2D.Get(), 0, this->finalRenderTartView.GetAddressOf());
+
+	// 2. ShaderResourceView
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc{};
+	ZeroMemory(&shaderResourceViewDesc, sizeof(shaderResourceViewDesc));
+	shaderResourceViewDesc.Format = renderTargetTextureDesc.Format;
+	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	shaderResourceViewDesc.Texture2D.MipLevels = 1;
+
+	this->d3d11Device->CreateShaderResourceView(this->finalTexture2D.Get(), &shaderResourceViewDesc, this->finalSRV.GetAddressOf());
+}
+
+void GraphicsEngine::BindSamplerState()
+{
+
+	this->d3d11DeviceContext->PSSetSamplers(0, 1, defaultSampler.GetAddressOf());
+}
+
+std::vector<float> GraphicsEngine::PickingWorldPoint(float _x, float _y)
+{
+	return std::vector<float>();
+}
+
+void GraphicsEngine::Resize()
+{
+
+}
+
+void GraphicsEngine::GetDT(float _dt)
+{
+	dt = _dt;
+}
+
+void GraphicsEngine::ChaptuerScreen(std::string _name)
+{
+	ComPtr <ID3D11RenderTargetView> nowRenderTartView;
+	ComPtr <ID3D11ShaderResourceView> nowSRV;
+	ComPtr <ID3D11Texture2D> nowTexture2D;
+
+	D3D11_TEXTURE2D_DESC renderTargetTextureDesc{};
+	renderTargetTextureDesc.Width = static_cast<UINT>(windowWidth);
+	renderTargetTextureDesc.Height = static_cast<UINT>(windowHeight);
+	renderTargetTextureDesc.MipLevels = 1;
+	renderTargetTextureDesc.ArraySize = 1;
+	renderTargetTextureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	renderTargetTextureDesc.SampleDesc.Count = 1;
+	renderTargetTextureDesc.Usage = D3D11_USAGE_DEFAULT;
+	renderTargetTextureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+
+	this->d3d11Device->CreateTexture2D(&renderTargetTextureDesc, nullptr, nowTexture2D.GetAddressOf());
+
+	this->d3d11DeviceContext->CopyResource(nowTexture2D.Get(), this->finalTexture2D.Get());
+
+	this->d3d11Device->CreateRenderTargetView(nowTexture2D.Get(), 0, nowRenderTartView.GetAddressOf());
+
+	// 2. ShaderResourceView
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc{};
+	ZeroMemory(&shaderResourceViewDesc, sizeof(shaderResourceViewDesc));
+	shaderResourceViewDesc.Format = renderTargetTextureDesc.Format;
+	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	shaderResourceViewDesc.Texture2D.MipLevels = 1;
+
+	this->d3d11Device->CreateShaderResourceView(nowTexture2D.Get(), &shaderResourceViewDesc, nowSRV.GetAddressOf());
+
+	this->screenImageMap[_name] = nowSRV;
+}
+
+void GraphicsEngine::ShowChaptueredImage(std::string _name, RECT _rect)
+{
+	if (this->screenImageMap.find(_name) == this->screenImageMap.end())
 	{
-		hr = DirectX::LoadFromTGAFile(_path[i].c_str(), DirectX::TGA_FLAGS_NONE, nullptr, image[i]);
-		assert(SUCCEEDED(hr) && "cannot create image when load TGA data");
-
-		hr = DirectX::CreateTexture(
-			this->d3d11Device,
-			image[i].GetImages(),
-			image[i].GetImageCount(),
-			image[i].GetMetadata(),
-			&texResource[i]
-		);
-		assert(SUCCEEDED(hr) && "cannot create texture when load TGA data");
+		return;
 	}
+	this->queueImage.push(std::make_pair(this->screenImageMap[_name], _rect));
+}
 
-	UINT width = static_cast<UINT>(image[0].GetImages()->width);
-	UINT height = static_cast<UINT>(image[0].GetImages()->height);
+void GraphicsEngine::SetFlashEffect(float deltaTime, bool _isOnOff)
+{
+	flashOnOff = _isOnOff;
+	flashCount = 0;
+}
 
-	D3D11_TEXTURE2D_DESC stagingTextureDecs = {};
-	D3D11_TEXTURE2D_DESC textureArrayDesc = {};
-
-	ID3D11Texture2D** resourceTexture = new ID3D11Texture2D * [arraySize];
-	ID3D11Texture2D** stagingTextureArray = new ID3D11Texture2D * [arraySize];
-
-	for (UINT i = 0; i < arraySize; i++)
+void GraphicsEngine::PlayFlashEffect()
+{
+	if (flashOnOff == true)
 	{
-		texResource[i]->QueryInterface(__uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&resourceTexture[i]));
+		float nowTime = this->postRenderer->GetTime();
+		nowTime += 100;
+		flashCount++;
+		if (flashCount == 10)
+		{
+			this->postRenderer->SetTime(nowTime);
+			flashCount = 0;
+		}
 
-		resourceTexture[i]->GetDesc(&stagingTextureDecs);
-
-		stagingTextureDecs.BindFlags = 0;
-		stagingTextureDecs.Usage = D3D11_USAGE_STAGING;
-		stagingTextureDecs.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-
-		this->d3d11Device->CreateTexture2D(&stagingTextureDecs, nullptr, &stagingTextureArray[i]);
-		assert(stagingTextureArray[i]);
-		assert(resourceTexture[i]);
-
-		this->d3d11DeviceContext->CopyResource(stagingTextureArray[i], resourceTexture[i]);
-
-		D3D11_MAPPED_SUBRESOURCE mappedResource;
-		hr = this->d3d11DeviceContext->Map(stagingTextureArray[i], 0, D3D11_MAP_READ, 0, &mappedResource);
-
-		texture[i].pSysMem = mappedResource.pData;
-		texture[i].SysMemPitch = mappedResource.RowPitch;
-		texture[i].SysMemSlicePitch = mappedResource.DepthPitch;
+		if (nowTime >= 4000)
+		{
+			flashOnOff = false;
+			flashCount = 0;
+			this->postRenderer->SetTime(0);
+		}
 	}
+}
 
-	textureArrayDesc = stagingTextureDecs;
+void GraphicsEngine::SetPixelateEffect()
+{
+	if (pixelOnOff == true)
+		pixelOnOff = false;
+	else
+		pixelOnOff = true;
+}
 
-	textureArrayDesc.ArraySize = arraySize;
-	textureArrayDesc.Usage = D3D11_USAGE_IMMUTABLE;
-	textureArrayDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	textureArrayDesc.CPUAccessFlags = 0;
-	textureArrayDesc.MiscFlags = 0;
+void GraphicsEngine::SetWhiteOutEffect(float deltaTime, bool _isOnOff)
+{
+	whiteOutOnOff = _isOnOff;
+	whiteOutCount = 0;
+}
 
-	ID3D11Texture2D* textureArray;
-
-	hr = this->d3d11Device->CreateTexture2D(&textureArrayDesc, texture, &textureArray);
-
-	assert(textureArray);
-	hr = this->d3d11Device->CreateShaderResourceView(textureArray, nullptr, _resourceView);
-
-	textureArray->Release();
-	for (UINT i = 0; i < arraySize; i++)
+void GraphicsEngine::PlayWhiteOutEffect()
+{
+	if (whiteOutOnOff == true)
 	{
-		texResource[i]->Release();
-		stagingTextureArray[i]->Release();
-		resourceTexture[i]->Release();
-	}
+		float nowTime = this->postRenderer->GetTime();
+		nowTime += 400;
+		flashCount++;
+		if (flashCount == 100)
+		{
+			this->postRenderer->SetTime(nowTime);
+			flashCount = 0;
+		}
 
-	delete[] texture;
-	delete[] texResource;
-	delete[] resourceTexture;
-	delete[] stagingTextureArray;
+		if (nowTime >= 4000)
+		{
+			whiteOutOnOff = false;
+			flashCount = 0;
+			this->postRenderer->SetTime(0);
+		}
+	}
 }
 
 /// <summary>
@@ -824,16 +1195,9 @@ void GraphicsEngine::CreateTextureDataFromTGA(std::vector<std::wstring> _path, I
 /// <param name="_start">리소스 슬릇</param>
 /// <param name="_viewNumbers">리소스 갯수</param>
 /// <param name="_resourceView">리소스 뷰 포인터</param>
-void GraphicsEngine::SetTexture(UINT _start, UINT _viewNumbers, ID3D11ShaderResourceView** _resourceView)
+void GraphicsEngine::SetTexture(UINT _start, UINT _viewNumbers, ComPtr<ID3D11ShaderResourceView>& _resourceView)
 {
-	this->d3d11DeviceContext->PSSetShaderResources(_start, _viewNumbers, _resourceView);
-}
-
-FObject* GraphicsEngine::LoadFbxData(std::string _path)
-{
-	FObject* res = new FObject();
-	res->fData = this->fbxLoader->Load(_path);
-	return res;
+	this->d3d11DeviceContext->PSSetShaderResources(_start, _viewNumbers, _resourceView.GetAddressOf());
 }
 
 /// <summary>
@@ -842,7 +1206,7 @@ FObject* GraphicsEngine::LoadFbxData(std::string _path)
 /// <param name="_indices">인덱스 배열</param>
 /// <param name="_size">배열의 사이즈</param>
 /// <param name="_indexbuffer">버퍼를 반환받을 포인터</param>
-void GraphicsEngine::CreateIndexBuffer(UINT* _indices, UINT _size, ID3D11Buffer** _indexbuffer)
+void GraphicsEngine::CreateIndexBuffer(UINT* _indices, UINT _size, ComPtr<ID3D11Buffer>& _indexbuffer)
 {
 	HRESULT hr = S_OK;
 	D3D11_BUFFER_DESC ibd = {};
@@ -856,7 +1220,7 @@ void GraphicsEngine::CreateIndexBuffer(UINT* _indices, UINT _size, ID3D11Buffer*
 	D3D11_SUBRESOURCE_DATA iinitData = {};
 	iinitData.pSysMem = _indices;
 
-	hr = this->d3d11Device->CreateBuffer(&ibd, &iinitData, _indexbuffer);
+	hr = this->d3d11Device->CreateBuffer(&ibd, &iinitData, _indexbuffer.GetAddressOf());
 	assert(SUCCEEDED(hr) && "cannot create Index Buffer");
 }
 
@@ -865,7 +1229,69 @@ void GraphicsEngine::CreateIndexBuffer(UINT* _indices, UINT _size, ID3D11Buffer*
 /// </summary>
 void GraphicsEngine::endDraw()
 {
-	EndDeferredRender();
+
+
+	this->deferredRenderer->EndRender();
+
+	//여기서 디퍼드텍스쳐를 받아와야한다. 그리고 포워드친구한테 던져줘서 깊이계산을 해야 됨.
+	this->deferredRenderer->UpdateTexture();
+	this->forwardRenderer->UpdateDeferredTexture();
+
+	//여기서 Forward가 렌더링 되었음 좋것다.
+	//this->forwardRenderer->ForwardRenderClearView();
+	this->forwardRenderer->BeginRender();
+	this->forwardRenderer->EndRender();
+
+	//여기서 postProcessing이 될 예정이다..
+	this->postRenderer->BeginRender();
+	this->postRenderer->EndRender();
+
+	//postRendering중 Pixelate는 모든게 그려진 이후에 잘라야한다.
+	//일단은 꺼둡시다.
+	if (pixelOnOff == true)
+	{
+		this->postRenderer->FirstpassPixel();
+	}
+
+	//여기서 UI가 렌더링 되었음 좋것다
+	// BindSamplerState();
+	this->uiRenderer->BeginRender();
+	this->uiRenderer->EndRender();
+	
+	FLOAT temp[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	
+	//최종적으로 받아서 그려둔 친구를 그립시다!
+	//화면 전환 처리는 UI와 함께 되는게 맞다.
+	if (flashOnOff == true)
+	{
+		PlayFlashEffect();
+		this->postRenderer->FirstPassFlash();
+	}
+
+	//최종적으로 받아서 그려둔 친구를 그립시다!
+	//화면 전환 처리는 UI와 함께 되는게 맞다.
+	if (whiteOutOnOff == true)
+	{
+		PlayWhiteOutEffect();
+		this->postRenderer->FirstPassFlash();
+	}
+
+	this->d3d11DeviceContext->OMSetBlendState(nullptr, temp, 0xffffffff);
+	
+	while (!this->queueImage.empty())
+	{
+		auto& nowImage = this->queueImage.front();
+		this->uiRenderer->RenderChapturedImage(nowImage);
+		this->queueImage.pop();
+	}
+
+	this->BindFinalView();
+	this->ClearDepthStencilView();
+	this->BindPipeline(finalPipeline);
+
+	this->d3d11DeviceContext->PSSetShaderResources(0, 1, this->finalSRV.GetAddressOf());
+	this->d3d11DeviceContext->DrawIndexed(6, 0, 0);
+
 	this->swapChain->Present(0, 0);
 }
 
@@ -876,106 +1302,17 @@ void GraphicsEngine::begineDraw()
 {
 	// BindView();
 	RenderClearView();
-	DeferredRenderClearView();
-	BeginDeferredRender();
+
+	std::wstring dt = L" ";
+	float w[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	WriteText(200, 12, w, const_cast<TCHAR*>(dt.c_str()));
+
+	FLOAT temp[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	this->d3d11DeviceContext->OMSetBlendState(defaultBlend, temp, 0xffffffff);
+
+	this->backgroundRenderer->BeginRender();
+	this->backgroundRenderer->EndRender();
+
+	this->deferredRenderer->BeginRender();
 }
 
-void GraphicsEngine::BeginDeferredRender()
-{
-	ID3D11ShaderResourceView* pSRV[3] = { nullptr, nullptr, nullptr };
-	this->d3d11DeviceContext->PSSetShaderResources(0, 3, pSRV);
-	BindDeferredView();
-	DeferredRenderClearView();
-	ClearDepthStencilView();
-}
-
-void GraphicsEngine::EndDeferredRender()
-{
-	ID3D11ShaderResourceView* pSRV = NULL;
-	this->d3d11DeviceContext->PSSetShaderResources(0, 1, &pSRV);
-	BindView();
-	BindPipeline(this->DPipeline);
-
-	this->d3d11DeviceContext->PSSetShaderResources(0, 3, dSRV.data());
-	this->d3d11DeviceContext->DrawIndexed(6, 0, 0);
-	for (auto& pipe : this->DSubPipeline)
-	{
-		BindPipeline(pipe);
-		this->d3d11DeviceContext->DrawIndexed(6, 0, 0);
-	}
-}
-
-void GraphicsEngine::DeferredRender(PipeLine& _pipline, int _indexSize)
-{
-	this->d3d11DeviceContext->DrawIndexed(_indexSize, 0, 0);
-}
-
-void GraphicsEngine::DeferredRenderClearView()
-{
-	float bgRed[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	for (auto& rt : this->dRenderTargets)
-	{
-		// 임시 색 ( R G B A )
-
-		// 렌더 타겟을 지정한 색으로 초기화
-		this->d3d11DeviceContext->ClearRenderTargetView(
-			rt,
-			bgRed
-		);
-	}
-}
-
-void GraphicsEngine::BindDeferredView()
-{
-	this->d3d11DeviceContext->OMSetRenderTargets(gBufferSize, this->dRenderTargets.data(), this->depthStancilView);
-}
-
-void GraphicsEngine::CreateSubView()
-{
-	float lx = (4.0f / static_cast<float>(this->gBufferSize)) - 1;
-	float rx = 1;
-	float dis = rx - lx;
-	for (int i = 0; i < this->gBufferSize; i++)
-	{
-		float uy = 1 - ((1 - lx) * i);
-		float dy = uy - dis;
-		DSubVdata[i][0] = { DirectX::XMFLOAT3{lx, uy, 0.0f}, DirectX::XMFLOAT2{0.0f, 0.0f} };
-		DSubVdata[i][1] = { DirectX::XMFLOAT3{rx, uy, 0.0f}, DirectX::XMFLOAT2{1.0f, 0.0f} };
-		DSubVdata[i][2] = { DirectX::XMFLOAT3{rx, dy, 0.0f}, DirectX::XMFLOAT2{1.0f, 1.0f} };
-		DSubVdata[i][3] = { DirectX::XMFLOAT3{lx, dy, 0.0f}, DirectX::XMFLOAT2{0.0f, 1.0f} };
-	}
-}
-
-void GraphicsEngine::CreateFinalPipeline()
-{
-	std::wstring vsPath = L"../Shader/compiled/DPass2VS.cso";
-	std::wstring psPath = L"../Shader/compiled/DPass2.cso";
-	CreateInputLayer(&this->DPipeline.inputLayout, VertexD::defaultInputLayerDECS, 2, &this->DPipeline.vertexShader, vsPath);
-	CreatePixelShader(&this->DPipeline.pixelShader, psPath);
-	CreateVertexBuffer<VertexD::Data>(this->DVdata, (UINT)(4 * VertexD::Size()), &this->DPipeline.vertexBuffer);
-	CreateIndexBuffer(this->DIdata, 6, &this->DPipeline.IndexBuffer);
-	this->DPipeline.primitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	this->DPipeline.vertexStructSize = VertexD::Size();
-	CreateRasterizerState(&this->DPipeline.rasterizerState);
-	this->DPipeline.textureView = new ID3D11ShaderResourceView * [2];
-
-	std::wstring psSubPath[3] =
-	{
-		L"../Shader/compiled/DPass2Textuer.cso",
-		L"../Shader/compiled/DPass2Normal.cso",
-		L"../Shader/compiled/DPass2Depth.cso"
-	};
-	int pindx = 0;
-	for (auto& pipe : this->DSubPipeline)
-	{
-		CreateInputLayer(&pipe.inputLayout, VertexD::defaultInputLayerDECS, 2, &pipe.vertexShader, vsPath);
-		CreatePixelShader(&pipe.pixelShader, psSubPath[pindx]);
-		CreateIndexBuffer(this->DIdata, 6, &pipe.IndexBuffer);
-		CreateVertexBuffer<VertexD::Data>(this->DSubVdata[pindx], (UINT)(4 * VertexD::Size()), &pipe.vertexBuffer);
-		pipe.primitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-		pipe.vertexStructSize = VertexD::Size();
-		CreateRasterizerState(&pipe.rasterizerState);
-		pipe.textureView = new ID3D11ShaderResourceView * [2];
-		pindx++;
-	}
-}

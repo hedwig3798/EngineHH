@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Materials>
+    <Material>
+        <Name>1</Name>
+        <DiffuseFile>1_Base_color.png</DiffuseFile>
+        <SpecularFile>1_Base_color.png</SpecularFile>
+        <NormalFile>1_Normal_OpenGL.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000007" G="0" B="0.033248357" A="1"/>
+        <Specular R="0.80000007" G="0" B="0.033248357" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>2</Name>
+        <DiffuseFile>2_Base_color.png</DiffuseFile>
+        <SpecularFile>2_Base_color.png</SpecularFile>
+        <NormalFile>2_Normal_OpenGL.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.092968144" G="0.80000007" B="0" A="1"/>
+        <Specular R="0.092968144" G="0.80000007" B="0" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+</Materials>

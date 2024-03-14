@@ -42,11 +42,11 @@ void Mesh::CreatePipeline(GraphicsEngine* graphicsEngine, std::wstring _sPath[],
 	{
 		//graphicsEngine->CreateTextureDataFromDDS(_texturePath, this->pipeline.textureView);
 	}
-	graphicsEngine->CreateInputLayer(&this->pipeline.inputLayout, VertexT::defaultInputLayerDECS, 5, &this->pipeline.vertexShader, _sPath[0]);
-	graphicsEngine->CreatePixelShader(&this->pipeline.pixelShader, _sPath[1]);
-	graphicsEngine->CreateVertexBuffer(this->vertexes, static_cast<UINT>(this->vertexList.size()) * VertexT::Size(), &this->pipeline.vertexBuffer);
-	graphicsEngine->CreateIndexBuffer(this->indexes, static_cast<UINT>(this->indexList.size()), &this->pipeline.IndexBuffer);
-	graphicsEngine->CreateRasterizerState(&this->pipeline.rasterizerState);
+	graphicsEngine->CreateInputLayer(this->pipeline.inputLayout, VertexT::defaultInputLayerDECS, 5, this->pipeline.vertexShader, _sPath[0]);
+	graphicsEngine->CreatePixelShader(this->pipeline.pixelShader, _sPath[1]);
+	graphicsEngine->CreateVertexBuffer(this->vertexes, static_cast<UINT>(this->vertexList.size()) * VertexT::Size(), this->pipeline.vertexBuffer, "trash");
+	graphicsEngine->CreateIndexBuffer(this->indexes, static_cast<UINT>(this->indexList.size()), this->pipeline.IndexBuffer);
+	graphicsEngine->CreateRasterizerState(this->pipeline.rasterizerState);
 	pipeline.primitiveTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	pipeline.vertexStructSize = VertexT::Size();
 }

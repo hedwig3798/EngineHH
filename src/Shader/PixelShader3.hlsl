@@ -1,7 +1,7 @@
 #include "../Shader/VertexShader3.hlsl"
 
 
-Texture2DArray diffuseMaps : register(t0);
+Texture2DArray gBuffer : register(t0);
 SamplerState samAnisotropic
 {
 	Filter = ANISOTROPIC;
@@ -16,7 +16,7 @@ float4 PS(VertexOut pin) : SV_Target
 	// 법선 벡터의 정규화
 	pin.NormalW = normalize(pin.NormalW);
 	// 물체에서 카메라 까지의 벡터
-	float3 toEye = g_eyePosW - pin.PosW;
+	float3 toEye = pin.PosW;
 	// 그 길이
 	float3 distEye = length(toEye);
 	// 정규화
@@ -44,7 +44,7 @@ float4 PS(VertexOut pin) : SV_Target
 	// litColor = ceil(((diffuse + spec) * 10)/2 ) * litColor;
 	// litColor.a = pin.material.Diffuse.a;
 	
-	float4 textureColor = diffuseMaps.Sample( samAnisotropic, float3( pin.Tex, pin.texindex ) );
+	float4 textureColor = gBuffer.Sample( samAnisotropic, float3( pin.Tex, pin.texindex ) );
 
  	textureColor.a = 1.0f;
 

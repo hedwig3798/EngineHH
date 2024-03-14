@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Materials>
+    <Material>
+        <Name>Material.025</Name>
+        <DiffuseFile>stage4_soju_tex.png</DiffuseFile>
+        <SpecularFile>stage4_soju_tex.png</SpecularFile>
+        <NormalFile>stage4_soju_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.026</Name>
+        <DiffuseFile>stage4_cabinets_tex.png</DiffuseFile>
+        <SpecularFile>stage4_cabinets_tex.png</SpecularFile>
+        <NormalFile>stage4_cabinets_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.027</Name>
+        <DiffuseFile>stage4_calender_tex.png</DiffuseFile>
+        <SpecularFile>stage4_calender_tex.png</SpecularFile>
+        <NormalFile>stage4_calender_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.028</Name>
+        <DiffuseFile>stage4_display_cupboard_tex.png</DiffuseFile>
+        <SpecularFile>stage4_display_cupboard_tex.png</SpecularFile>
+        <NormalFile>stage4_display_cupboard_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.029</Name>
+        <DiffuseFile>stage4_door_tex.png</DiffuseFile>
+        <SpecularFile>stage4_door_tex.png</SpecularFile>
+        <NormalFile>stage4_door_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.030</Name>
+        <DiffuseFile>stage4_floor_tex.png</DiffuseFile>
+        <SpecularFile>stage4_floor_tex.png</SpecularFile>
+        <NormalFile>stage4_floor_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.031</Name>
+        <DiffuseFile>lamp_tex.png</DiffuseFile>
+        <SpecularFile>lamp_tex.png</SpecularFile>
+        <NormalFile>lamp_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.032</Name>
+        <DiffuseFile>stage4_ornaments_tex.png</DiffuseFile>
+        <SpecularFile>stage4_ornaments_tex.png</SpecularFile>
+        <NormalFile>stage4_ornaments_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.033</Name>
+        <DiffuseFile>stage4_pot_tex.png</DiffuseFile>
+        <SpecularFile>stage4_pot_tex.png</SpecularFile>
+        <NormalFile>stage4_pot_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.034</Name>
+        <DiffuseFile>stage4_shelf_livingroom_tex.png</DiffuseFile>
+        <SpecularFile>stage4_shelf_livingroom_tex.png</SpecularFile>
+        <NormalFile>stage4_shelf_livingroom_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.035</Name>
+        <DiffuseFile>stage4_shoe_rack_tex.png</DiffuseFile>
+        <SpecularFile>stage4_shoe_rack_tex.png</SpecularFile>
+        <NormalFile>stage4_shoe_rack_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.036</Name>
+        <DiffuseFile>stage4_shoes_L_tex.png</DiffuseFile>
+        <SpecularFile>stage4_shoes_L_tex.png</SpecularFile>
+        <NormalFile>stage4_shoes_L_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.037</Name>
+        <DiffuseFile>stage4_shoes_R_tex.png</DiffuseFile>
+        <SpecularFile>stage4_shoes_R_tex.png</SpecularFile>
+        <NormalFile>stage4_shoes_R_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.038</Name>
+        <DiffuseFile>stage4_slippers_tex.png</DiffuseFile>
+        <SpecularFile>stage4_slippers_tex.png</SpecularFile>
+        <NormalFile>stage4_slippers_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.039</Name>
+        <DiffuseFile>stage4_sofa_tex.png</DiffuseFile>
+        <SpecularFile>stage4_sofa_tex.png</SpecularFile>
+        <NormalFile>stage4_sofa_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.040</Name>
+        <DiffuseFile>stage4_background_wall_tex.png</DiffuseFile>
+        <SpecularFile>stage4_background_wall_tex.png</SpecularFile>
+        <NormalFile>stage4_background_wall_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.041</Name>
+        <DiffuseFile>stage4_table_tex.png</DiffuseFile>
+        <SpecularFile>stage4_table_tex.png</SpecularFile>
+        <NormalFile>stage4_table_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.042</Name>
+        <DiffuseFile>stage4_wall_tex.png</DiffuseFile>
+        <SpecularFile>stage4_wall_tex.png</SpecularFile>
+        <NormalFile>stage4_wall_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>DefaultMaterial</Name>
+        <DiffuseFile></DiffuseFile>
+        <SpecularFile></SpecularFile>
+        <NormalFile></NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0" G="0" B="0" A="1"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.043</Name>
+        <DiffuseFile>stage4_paperpile_tex.png</DiffuseFile>
+        <SpecularFile>stage4_paperpile_tex.png</SpecularFile>
+        <NormalFile>stage4_paperpile_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.025</Name>
+        <DiffuseFile>stage4_soju_tex.png</DiffuseFile>
+        <SpecularFile>stage4_soju_tex.png</SpecularFile>
+        <NormalFile>stage4_soju_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.026</Name>
+        <DiffuseFile>stage4_cabinets_tex.png</DiffuseFile>
+        <SpecularFile>stage4_cabinets_tex.png</SpecularFile>
+        <NormalFile>stage4_cabinets_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.027</Name>
+        <DiffuseFile>stage4_calender_tex.png</DiffuseFile>
+        <SpecularFile>stage4_calender_tex.png</SpecularFile>
+        <NormalFile>stage4_calender_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.028</Name>
+        <DiffuseFile>stage4_display_cupboard_tex.png</DiffuseFile>
+        <SpecularFile>stage4_display_cupboard_tex.png</SpecularFile>
+        <NormalFile>stage4_display_cupboard_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.029</Name>
+        <DiffuseFile>stage4_door_tex.png</DiffuseFile>
+        <SpecularFile>stage4_door_tex.png</SpecularFile>
+        <NormalFile>stage4_door_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.030</Name>
+        <DiffuseFile>stage4_floor_tex.png</DiffuseFile>
+        <SpecularFile>stage4_floor_tex.png</SpecularFile>
+        <NormalFile>stage4_floor_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.031</Name>
+        <DiffuseFile>lamp_tex.png</DiffuseFile>
+        <SpecularFile>lamp_tex.png</SpecularFile>
+        <NormalFile>lamp_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.032</Name>
+        <DiffuseFile>stage4_ornaments_tex.png</DiffuseFile>
+        <SpecularFile>stage4_ornaments_tex.png</SpecularFile>
+        <NormalFile>stage4_ornaments_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.033</Name>
+        <DiffuseFile>stage4_pot_tex.png</DiffuseFile>
+        <SpecularFile>stage4_pot_tex.png</SpecularFile>
+        <NormalFile>stage4_pot_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.034</Name>
+        <DiffuseFile>stage4_shelf_livingroom_tex.png</DiffuseFile>
+        <SpecularFile>stage4_shelf_livingroom_tex.png</SpecularFile>
+        <NormalFile>stage4_shelf_livingroom_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.035</Name>
+        <DiffuseFile>stage4_shoe_rack_tex.png</DiffuseFile>
+        <SpecularFile>stage4_shoe_rack_tex.png</SpecularFile>
+        <NormalFile>stage4_shoe_rack_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.036</Name>
+        <DiffuseFile>stage4_shoes_L_tex.png</DiffuseFile>
+        <SpecularFile>stage4_shoes_L_tex.png</SpecularFile>
+        <NormalFile>stage4_shoes_L_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.037</Name>
+        <DiffuseFile>stage4_shoes_R_tex.png</DiffuseFile>
+        <SpecularFile>stage4_shoes_R_tex.png</SpecularFile>
+        <NormalFile>stage4_shoes_R_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.038</Name>
+        <DiffuseFile>stage4_slippers_tex.png</DiffuseFile>
+        <SpecularFile>stage4_slippers_tex.png</SpecularFile>
+        <NormalFile>stage4_slippers_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.039</Name>
+        <DiffuseFile>stage4_sofa_tex.png</DiffuseFile>
+        <SpecularFile>stage4_sofa_tex.png</SpecularFile>
+        <NormalFile>stage4_sofa_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.040</Name>
+        <DiffuseFile>stage4_background_wall_tex.png</DiffuseFile>
+        <SpecularFile>stage4_background_wall_tex.png</SpecularFile>
+        <NormalFile>stage4_background_wall_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.041</Name>
+        <DiffuseFile>stage4_table_tex.png</DiffuseFile>
+        <SpecularFile>stage4_table_tex.png</SpecularFile>
+        <NormalFile>stage4_table_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.042</Name>
+        <DiffuseFile>stage4_wall_tex.png</DiffuseFile>
+        <SpecularFile>stage4_wall_tex.png</SpecularFile>
+        <NormalFile>stage4_wall_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>DefaultMaterial</Name>
+        <DiffuseFile></DiffuseFile>
+        <SpecularFile></SpecularFile>
+        <NormalFile></NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0" G="0" B="0" A="1"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.043</Name>
+        <DiffuseFile>stage4_paperpile_tex.png</DiffuseFile>
+        <SpecularFile>stage4_paperpile_tex.png</SpecularFile>
+        <NormalFile>stage4_paperpile_tex.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+</Materials>

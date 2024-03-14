@@ -1,0 +1,9 @@
+human_cry,0
+human_idle,1
+human_look,2
+human_open,3
+human_sit,4
+human_sit_loop,5
+human_stand,6
+human_tripple_accle,7
+human_walk,8

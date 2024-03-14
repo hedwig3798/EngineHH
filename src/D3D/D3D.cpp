@@ -49,14 +49,13 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
 	hWnd = CreateWindowW(szAppName,
 		szAppName,
 		WS_OVERLAPPEDWINDOW,
-		100, 100, 1024, 768,
+		100, 100, 1920, 1080,
 		NULL, NULL, hInstance, NULL);
 
 	if (!hWnd) return FALSE;
 
 	// 생성된 윈도를 화면에 표시
 
-	demoProcess->Initialize(hWnd);
 
 	ShowWindow(hWnd, SW_SHOWNORMAL);
 	UpdateWindow(hWnd);
@@ -70,10 +69,11 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
 	RECT newRect;
 	newRect.left = 0;
 	newRect.top = 0;
-	newRect.right = 1024;
-	newRect.bottom = 768;
+	newRect.right = 1920;
+	newRect.bottom = 1080;
 
-	AdjustWindowRectEx(&newRect, _style, NULL, _exstyle);
+	AdjustWindowRect(&newRect, _style, NULL);
+	//AdjustWindowRectEx(&newRect, _style, NULL, _exstyle);
 
 	// 클라이언트 영역보다 윈도 크기는 더 커야 한다. (외곽선, 타이틀 등)
 	int _newWidth = (newRect.right - newRect.left);
@@ -81,6 +81,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
 
 	SetWindowPos(hWnd, HWND_NOTOPMOST, nowRect.left, nowRect.top,
 		_newWidth, _newHeight, SWP_SHOWWINDOW);
+	demoProcess->Initialize(hWnd);
 
 	// 메시지 루프
 	while (TRUE)

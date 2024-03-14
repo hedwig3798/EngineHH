@@ -7,21 +7,13 @@ cbuffer cbPerObject : register(b0)
     matrix g_worldInvTranspose;
 };
 
-cbuffer cbPerFrame : register(b1)
-{
-	DirectionalLight g_dirLights[3];
-	uniform int g_lightCount;
-	float3 g_eyePosW;
-};
-
-
 struct VertexIn
 {
 	float3 PosL    : POSITION;
 	float3 NormalL : NORMAL;
 	float2 Tex     : TEXCOORD;
-    float3 Weight : BINORMAL;
-    float3 BoneIndices : TANGENT;
+    float3 Binormal : BINORMAL;
+    float3 Tangent : TANGENT;
 	unsigned int texindex : TEXINDEX;
 };
 
@@ -31,6 +23,8 @@ struct VertexOut
     float3 PosW    : POSITION;
 	float2 Tex     : TEXCOORD;
     float3 NormalW : NORMAL;
+    float3 Tangent : TANGENT;
+    float3 Binormal : BINORMAL;
 	unsigned int texindex : TEXINDEX;
 };
 
@@ -48,7 +42,9 @@ VertexOut VS(VertexIn vin)
 	vout.Tex = vin.Tex;
 
 	//정점의 월드 공간에서 법선 벡터
-	vout.NormalW = mul(vin.NormalL, (float3x3)g_worldInvTranspose);
+	vout.NormalW = normalize(mul(vin.NormalL, (float3x3)g_worldInvTranspose));
+	vout.Tangent = normalize(mul(vin.Tangent, (float3x3)g_worldInvTranspose));
+	vout.Binormal = normalize(mul(vin.Binormal, (float3x3)g_worldInvTranspose));
 	vout.texindex = vin.texindex;
 	return vout;
 }

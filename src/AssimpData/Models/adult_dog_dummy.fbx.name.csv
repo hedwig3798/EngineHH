@@ -1,0 +1,15 @@
+basic_position,0
+dog_bark_sit,1
+dog_bark_stand,2
+dog_bite_idle,3
+dog_bite_jump,4
+dog_bite_walk,5
+dog_idle,6
+dog_jump,7
+dog_jump_Root_O,8
+dog_sit_loop,9
+dog_sit_to_stand,10
+dog_smell,11
+dog_stand_to_sit,12
+dog_use_bite_stand,13
+dog_walk,14

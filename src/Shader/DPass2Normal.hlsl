@@ -1,7 +1,7 @@
 #include "../Shader/DPass2VS.hlsl"
 
 
-Texture2D diffuseMaps[3] : register(t0);
+Texture2D gBuffer[4] : register(t0);
 
 SamplerState samAnisotropic
 {
@@ -14,6 +14,6 @@ SamplerState samAnisotropic
 
 float4 PS(VOUT pin) : SV_Target
 {
-	float4 normal = diffuseMaps[1].Sample(samAnisotropic, pin.Tex);
+	float4 normal = gBuffer[1].Sample(samAnisotropic, pin.Tex);
     return normal;
 }
