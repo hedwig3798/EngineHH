@@ -117,7 +117,6 @@ void DeferredRenderer::BeginRender()
 	this->d3d11DeviceContext->PSSetShaderResources(0, 5, pSRV);
 	BindDeferredView();
 	DeferredRenderClearView();
-	gp->ClearDepthStencilView();
 }
 
 void DeferredRenderer::EndRender()
@@ -133,11 +132,11 @@ void DeferredRenderer::EndRender()
 	
 	this->d3d11DeviceContext->DrawIndexed(6, 0, 0);
 	
-	/*for (auto& pipe : this->DSubPipeline)
-	{
-		gp->BindPipeline(pipe);
-		this->d3d11DeviceContext->DrawIndexed(6, 0, 0);
-	}*/
+// 	for (auto& pipe : this->DSubPipeline)
+// 	{
+// 		gp->BindPipeline(pipe);
+// 		this->d3d11DeviceContext->DrawIndexed(6, 0, 0);
+// 	}
 
 	//렌더 타겟 자원 언바인딩
 	for (int i = 0; i < 6; i++)
@@ -152,12 +151,11 @@ void DeferredRenderer::EndRender()
 	this->d3d11DeviceContext->DrawIndexed(6, 0, 0);*/
 
 	//마지막으로 한번 더 그려야 됨!
-	/*gp->BindView();
-	gp->ClearDepthStencilView();
+	gp->BindView();
 	gp->BindPipeline(this->DFinalPipeline);
 	this->d3d11DeviceContext->PSSetShaderResources(0, 1, &this->dFinalSRV);
 
-	this->d3d11DeviceContext->DrawIndexed(6, 0, 0);*/
+	this->d3d11DeviceContext->DrawIndexed(6, 0, 0);
 }
 
 

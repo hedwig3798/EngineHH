@@ -29,18 +29,6 @@ private:
 	static ManagerSet* staticManagers;
 
 	DemoObject* object;
-	DemoBoxObject* object2;
-	DemoBackObject* objectBack;
-	DemoDog* objectDog;
-	DemoUIObject* objectUI;
-	DemoSpriteObject* objectSprit;
-	DemoMap* demoMap;
-	TObject* tobject;
-
-	DemoGun* object3;
-	
-	LineObject* line;
-	Axes* axes;
 
 	std::wstring explain;
 
@@ -65,7 +53,5 @@ private:
 	void Update();
 	void Render();
 	void CameraUpdate(float _dt);
-
-	void EffectOnOff();
 };
 

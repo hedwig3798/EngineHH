@@ -4,15 +4,10 @@
 #include "DDSTextureLoader.h"
 #include "LightHelper.h"
 #include "RenderObject.h"
-#include "UObject.h"
 #include "Camera.h"
 #include "Axes.h"
 #include "LineObject.h"
 #include "DeferredRenderer.h"
-#include "ForwardRenderer.h"
-#include "PostRenderer.h"
-#include "UIRenderer.h"
-#include "BackgroundRenderer.h"
 
 #include <algorithm>
 #include "ABone.h"
@@ -58,18 +53,6 @@ GraphicsEngine::~GraphicsEngine()
 	this->deferredRenderer->Finalize();
 	//this->deferredTexture->Release();
 	delete this->deferredRenderer;
-
-	this->forwardRenderer->Finalize();
-	delete this->forwardRenderer;
-
-	this->postRenderer->Finalize();
-	delete this->postRenderer;
-
-	this->uiRenderer->Finalize();
-	delete this->uiRenderer;
-
-	this->backgroundRenderer->Finalize();
-	delete this->backgroundRenderer;
 
 	ID3D11RenderTargetView* nullViews[] = { nullptr };
 	this->d3d11DeviceContext->OMSetRenderTargets(_countof(nullViews), nullViews, nullptr);
@@ -122,25 +105,9 @@ void GraphicsEngine::Initialize(HWND _hwnd)
 	this->windowWidth = windowSize.right - windowSize.left;
 	this->windowHeight = windowSize.bottom - windowSize.top;
 
-	//BackgroundRenderer
-	this->backgroundRenderer = new BackgroundRenderer(d3d11Device.Get(), d3d11DeviceContext.Get(), depthStancilView.Get(), windowWidth, windowHeight);
-	this->backgroundRenderer->Initailze(this);
-
 	//defferedRenderer
 	this->deferredRenderer = new DeferredRenderer(d3d11Device.Get(), d3d11DeviceContext.Get(), depthStancilView.Get(), windowWidth, windowHeight);
 	this->deferredRenderer->Initailze(this);
-
-	//UIRenderer
-	this->uiRenderer = new UIRenderer(d3d11Device.Get(), d3d11DeviceContext.Get(), depthStancilView.Get(), windowWidth, windowHeight);
-	this->uiRenderer->Initailze(this);
-
-	//forwardRenderer
-	this->forwardRenderer = new ForwardRenderer(d3d11Device.Get(), d3d11DeviceContext.Get(), depthStancilView.Get(), windowWidth, windowHeight);
-	this->forwardRenderer->Initailze(this);
-
-	//postRenderer
-	this->postRenderer = new PostRenderer(d3d11Device.Get(), d3d11DeviceContext.Get(), depthStancilView.Get(), windowWidth, windowHeight);
-	this->postRenderer->Initailze(this);
 
 	dAxes = std::make_unique<Axes>(this);
 	dLine = std::make_unique<LineObject>(this);
@@ -1133,24 +1100,7 @@ void GraphicsEngine::SetFlashEffect(float deltaTime, bool _isOnOff)
 
 void GraphicsEngine::PlayFlashEffect()
 {
-	if (flashOnOff == true)
-	{
-		float nowTime = this->postRenderer->GetTime();
-		nowTime += 100;
-		flashCount++;
-		if (flashCount == 10)
-		{
-			this->postRenderer->SetTime(nowTime);
-			flashCount = 0;
-		}
 
-		if (nowTime >= 4000)
-		{
-			flashOnOff = false;
-			flashCount = 0;
-			this->postRenderer->SetTime(0);
-		}
-	}
 }
 
 void GraphicsEngine::SetPixelateEffect()
@@ -1169,24 +1119,7 @@ void GraphicsEngine::SetWhiteOutEffect(float deltaTime, bool _isOnOff)
 
 void GraphicsEngine::PlayWhiteOutEffect()
 {
-	if (whiteOutOnOff == true)
-	{
-		float nowTime = this->postRenderer->GetTime();
-		nowTime += 400;
-		flashCount++;
-		if (flashCount == 100)
-		{
-			this->postRenderer->SetTime(nowTime);
-			flashCount = 0;
-		}
 
-		if (nowTime >= 4000)
-		{
-			whiteOutOnOff = false;
-			flashCount = 0;
-			this->postRenderer->SetTime(0);
-		}
-	}
 }
 
 /// <summary>
@@ -1229,61 +1162,7 @@ void GraphicsEngine::CreateIndexBuffer(UINT* _indices, UINT _size, ComPtr<ID3D11
 /// </summary>
 void GraphicsEngine::endDraw()
 {
-
-
 	this->deferredRenderer->EndRender();
-
-	//여기서 디퍼드텍스쳐를 받아와야한다. 그리고 포워드친구한테 던져줘서 깊이계산을 해야 됨.
-	this->deferredRenderer->UpdateTexture();
-	this->forwardRenderer->UpdateDeferredTexture();
-
-	//여기서 Forward가 렌더링 되었음 좋것다.
-	//this->forwardRenderer->ForwardRenderClearView();
-	this->forwardRenderer->BeginRender();
-	this->forwardRenderer->EndRender();
-
-	//여기서 postProcessing이 될 예정이다..
-	this->postRenderer->BeginRender();
-	this->postRenderer->EndRender();
-
-	//postRendering중 Pixelate는 모든게 그려진 이후에 잘라야한다.
-	//일단은 꺼둡시다.
-	if (pixelOnOff == true)
-	{
-		this->postRenderer->FirstpassPixel();
-	}
-
-	//여기서 UI가 렌더링 되었음 좋것다
-	// BindSamplerState();
-	this->uiRenderer->BeginRender();
-	this->uiRenderer->EndRender();
-	
-	FLOAT temp[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	
-	//최종적으로 받아서 그려둔 친구를 그립시다!
-	//화면 전환 처리는 UI와 함께 되는게 맞다.
-	if (flashOnOff == true)
-	{
-		PlayFlashEffect();
-		this->postRenderer->FirstPassFlash();
-	}
-
-	//최종적으로 받아서 그려둔 친구를 그립시다!
-	//화면 전환 처리는 UI와 함께 되는게 맞다.
-	if (whiteOutOnOff == true)
-	{
-		PlayWhiteOutEffect();
-		this->postRenderer->FirstPassFlash();
-	}
-
-	this->d3d11DeviceContext->OMSetBlendState(nullptr, temp, 0xffffffff);
-	
-	while (!this->queueImage.empty())
-	{
-		auto& nowImage = this->queueImage.front();
-		this->uiRenderer->RenderChapturedImage(nowImage);
-		this->queueImage.pop();
-	}
 
 	this->BindFinalView();
 	this->ClearDepthStencilView();
@@ -1300,7 +1179,7 @@ void GraphicsEngine::endDraw()
 /// </summary>
 void GraphicsEngine::begineDraw()
 {
-	// BindView();
+	BindView();
 	RenderClearView();
 
 	std::wstring dt = L" ";
@@ -1310,8 +1189,6 @@ void GraphicsEngine::begineDraw()
 	FLOAT temp[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	this->d3d11DeviceContext->OMSetBlendState(defaultBlend, temp, 0xffffffff);
 
-	this->backgroundRenderer->BeginRender();
-	this->backgroundRenderer->EndRender();
 
 	this->deferredRenderer->BeginRender();
 }

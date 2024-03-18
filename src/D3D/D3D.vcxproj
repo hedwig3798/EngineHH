@@ -139,32 +139,19 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="D3D.h" />
-    <ClInclude Include="DemoBoxObject.h" />
-    <ClInclude Include="DemoDog.h" />
-    <ClInclude Include="DemoGun.h" />
-    <ClInclude Include="DemoMap.h" />
     <ClInclude Include="DemoObject.h" />
     <ClInclude Include="DemoProcess.h" />
-    <ClInclude Include="DemoSpriteObject.h" />
-    <ClInclude Include="DemoUIObject.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="KeyManager.h" />
     <ClInclude Include="ManagerSet.h" />
-    <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TimeManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="D3D.cpp" />
-    <ClCompile Include="DemoBoxObject.cpp" />
-    <ClCompile Include="DemoDog.cpp" />
-    <ClCompile Include="DemoGun.cpp" />
-    <ClCompile Include="DemoMap.cpp" />
     <ClCompile Include="DemoObject.cpp" />
     <ClCompile Include="DemoProcess.cpp" />
-    <ClCompile Include="DemoSpriteObject.cpp" />
-    <ClCompile Include="DemoUIObject.cpp" />
     <ClCompile Include="KeyManager.cpp" />
     <ClCompile Include="ManagerSet.cpp" />
     <ClCompile Include="TimeManager.cpp" />

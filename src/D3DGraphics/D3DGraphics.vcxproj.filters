@@ -16,9 +16,6 @@
     <Filter Include="Shader">
       <UniqueIdentifier>{d603e31c-8d7e-4c96-b01e-65051adb2c9d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Mesh">
-      <UniqueIdentifier>{3dc7ed7d-f45f-4ca5-9363-6594c809bf9f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Pipeline">
       <UniqueIdentifier>{b16c405c-5559-4051-8c1c-615b202f8404}</UniqueIdentifier>
     </Filter>
@@ -30,9 +27,6 @@
     </Filter>
     <Filter Include="Renderer\Deferred">
       <UniqueIdentifier>{acd71da0-530a-4705-8119-07d2b3155ba5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Renderer\UI">
-      <UniqueIdentifier>{7dc11287-70b7-454b-acfc-fc483900c09f}</UniqueIdentifier>
     </Filter>
     <Filter Include="Camera">
       <UniqueIdentifier>{e95cc373-f5e0-43ba-bcc1-5d29c4480bbf}</UniqueIdentifier>
@@ -55,26 +49,14 @@
     <Filter Include="Engine\Interface">
       <UniqueIdentifier>{91a3257c-53db-4e31-80a4-f477ad0ca91f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Mesh\UIMesh">
-      <UniqueIdentifier>{6e4a47ad-f3ae-42af-a290-f87104c3ae5e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Shader\Deferred">
       <UniqueIdentifier>{29a41782-9745-437b-be29-bc561b33b726}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader\UI">
-      <UniqueIdentifier>{e785bb4c-40b7-4684-929e-b6a1a9ce4328}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shader\Pixel">
       <UniqueIdentifier>{e1089ce9-e1b7-4f96-bbd1-6572afcd4bd6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shader\Vertex">
       <UniqueIdentifier>{f3334694-34e6-45fc-a99a-901f9707a374}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Renderer\Forward">
-      <UniqueIdentifier>{f4b92eab-53ec-420e-8798-25a43567252b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader\Forward">
-      <UniqueIdentifier>{c0752005-eec2-4e2f-b00d-2f75422179fc}</UniqueIdentifier>
     </Filter>
     <Filter Include="Assimp">
       <UniqueIdentifier>{65deb5d4-c22f-4d99-bb31-1a40289e95bf}</UniqueIdentifier>
@@ -105,27 +87,6 @@
     </Filter>
     <Filter Include="Assimp\Data\Material">
       <UniqueIdentifier>{fadf16c7-1e85-4d79-b69f-7c214092fec4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Renderer\PostProcessing">
-      <UniqueIdentifier>{10a6e8bd-5240-4098-81a8-079c0e06badd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader\PostProcessing">
-      <UniqueIdentifier>{8d2b3d85-83c1-4710-af6a-9e92cdde3039}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader\PostProcessing\Outline">
-      <UniqueIdentifier>{762db973-9ba1-43d9-8432-0f035f99f732}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader\PostProcessing\Pixelate">
-      <UniqueIdentifier>{7187b6ca-183f-4b6e-8936-c5c0b6474d5e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Renderer\Background">
-      <UniqueIdentifier>{5a332c29-a8f5-4f50-89b0-b82185f475ad}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader\Background">
-      <UniqueIdentifier>{6efac7e1-6c86-45ca-9291-418cb93b1ad1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader\PostProcessing\Flash">
-      <UniqueIdentifier>{064fb05e-3fb1-4682-929f-89ea3c38ba20}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -158,15 +119,6 @@
     </ClCompile>
     <ClCompile Include="DeferredRenderer.cpp">
       <Filter>Renderer\Deferred</Filter>
-    </ClCompile>
-    <ClCompile Include="UIRenderer.cpp">
-      <Filter>Renderer\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="UObject.cpp">
-      <Filter>Mesh\UIMesh</Filter>
-    </ClCompile>
-    <ClCompile Include="ForwardRenderer.cpp">
-      <Filter>Renderer\Forward</Filter>
     </ClCompile>
     <ClCompile Include="AssimpLoader.cpp">
       <Filter>Assimp\Loader</Filter>
@@ -201,13 +153,6 @@
     <ClCompile Include="inputLayerDecs.cpp">
       <Filter>Assimp\Data</Filter>
     </ClCompile>
-    <ClCompile Include="PostRenderer.cpp">
-      <Filter>Renderer\PostProcessing</Filter>
-    </ClCompile>
-    <ClCompile Include="BackgroundRenderer.cpp">
-      <Filter>Renderer\Background</Filter>
-    </ClCompile>
-    <ClCompile Include="ComResourceManager.cpp" />
     <ClCompile Include="AAnimator.cpp">
       <Filter>Assimp\Data\Animation</Filter>
     </ClCompile>
@@ -256,15 +201,6 @@
     <ClInclude Include="DeferredRenderer.h">
       <Filter>Renderer\Deferred</Filter>
     </ClInclude>
-    <ClInclude Include="UIRenderer.h">
-      <Filter>Renderer\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="UObject.h">
-      <Filter>Mesh\UIMesh</Filter>
-    </ClInclude>
-    <ClInclude Include="ForwardRenderer.h">
-      <Filter>Renderer\Forward</Filter>
-    </ClInclude>
     <ClInclude Include="AssimpData.h">
       <Filter>Assimp\Data</Filter>
     </ClInclude>
@@ -307,13 +243,6 @@
     <ClInclude Include="AObject.h">
       <Filter>Assimp\Data\AObject</Filter>
     </ClInclude>
-    <ClInclude Include="PostRenderer.h">
-      <Filter>Renderer\PostProcessing</Filter>
-    </ClInclude>
-    <ClInclude Include="BackgroundRenderer.h">
-      <Filter>Renderer\Background</Filter>
-    </ClInclude>
-    <ClInclude Include="ComResourceManager.h" />
     <ClInclude Include="AAnimator.h">
       <Filter>Assimp\Data\Animation</Filter>
     </ClInclude>
@@ -352,12 +281,6 @@
     <FxCompile Include="..\Shader\DPass2VS.hlsl">
       <Filter>Shader\Deferred</Filter>
     </FxCompile>
-    <FxCompile Include="UIPixelShader.hlsl">
-      <Filter>Shader\UI</Filter>
-    </FxCompile>
-    <FxCompile Include="UIVertexShader.hlsl">
-      <Filter>Shader\UI</Filter>
-    </FxCompile>
     <FxCompile Include="..\Shader\PixelShader.hlsl">
       <Filter>Shader\Pixel</Filter>
     </FxCompile>
@@ -376,59 +299,17 @@
     <FxCompile Include="..\Shader\VertexShader3.hlsl">
       <Filter>Shader\Vertex</Filter>
     </FxCompile>
-    <FxCompile Include="ForwardPixelShader.hlsl">
-      <Filter>Shader\Forward</Filter>
-    </FxCompile>
-    <FxCompile Include="FPass2.hlsl">
-      <Filter>Shader\Forward</Filter>
-    </FxCompile>
-    <FxCompile Include="FPass2VS.hlsl">
-      <Filter>Shader\Forward</Filter>
-    </FxCompile>
-    <FxCompile Include="ForwardVertexShader.hlsl">
-      <Filter>Shader\Forward</Filter>
-    </FxCompile>
     <FxCompile Include="..\Shader\AssimpVS.hlsl">
       <Filter>Shader\Vertex</Filter>
     </FxCompile>
     <FxCompile Include="..\Shader\AssimpPSPass1.hlsl">
       <Filter>Shader\Pixel</Filter>
     </FxCompile>
-    <FxCompile Include="OutlinePixelShader.hlsl">
-      <Filter>Shader\PostProcessing\Outline</Filter>
-    </FxCompile>
-    <FxCompile Include="Outline2Pass.hlsl">
-      <Filter>Shader\PostProcessing\Outline</Filter>
-    </FxCompile>
-    <FxCompile Include="OutlineVertexShader.hlsl">
-      <Filter>Shader\PostProcessing\Outline</Filter>
-    </FxCompile>
-    <FxCompile Include="PixelatePixelShader.hlsl">
-      <Filter>Shader\PostProcessing\Pixelate</Filter>
-    </FxCompile>
     <FxCompile Include="DPass3.hlsl">
       <Filter>Shader\Deferred</Filter>
-    </FxCompile>
-    <FxCompile Include="OutlineBlurY.hlsl">
-      <Filter>Shader\PostProcessing\Outline</Filter>
-    </FxCompile>
-    <FxCompile Include="OutlineBlurX.hlsl">
-      <Filter>Shader\PostProcessing\Outline</Filter>
     </FxCompile>
     <FxCompile Include="..\Shader\AssimpVSNoneBone.hlsl">
       <Filter>Shader\Vertex</Filter>
     </FxCompile>
-    <FxCompile Include="FinalPixelShader.hlsl" />
-    <FxCompile Include="FinalVertexShader.hlsl" />
-    <FxCompile Include="BackgroundVS.hlsl">
-      <Filter>Shader\Background</Filter>
-    </FxCompile>
-    <FxCompile Include="BackgroundPS.hlsl">
-      <Filter>Shader\Background</Filter>
-    </FxCompile>
-    <FxCompile Include="FlashPS.hlsl">
-      <Filter>Shader\PostProcessing\Flash</Filter>
-    </FxCompile>
-    <FxCompile Include="UIAniVertexShader.hlsl" />
   </ItemGroup>
 </Project>

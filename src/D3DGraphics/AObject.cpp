@@ -12,9 +12,8 @@
 #include "tinyxml2.h"
 #include "GraphicsEngine.h"
 #include "DeferredRenderer.h"
-#include "ForwardRenderer.h"
-#include "BackgroundRenderer.h"
- 
+
+
 AObject::AObject(std::string _path, IGraphicsEngine* _igp, bool _hasBone, bool _hasAnimation, bool _isVisible)
 	: filePath(_path)
 	, hasAnimaiton(_hasAnimation)
@@ -49,102 +48,77 @@ AObject::~AObject()
 
 void AObject::Render()
 {
-	//Forward, 즉 투명한 물체는 forward로 그려져야 한다.
-	//여기서 안 그리고 ForwardRenderer vector에 저장해두고 그려야한다.
-	if (isVisible == false)
+
+
+	for (auto& m : this->meshes)
 	{
-		forwardRenderer->GetData
-		(
-			this->meshes,
-			this->bones,
-			this->position,
-			this->rotation,
-			this->scale
-		);
-	}
-	//Background는 deferred로 그리면 안됨니다. 이름에 넣고 싶은데
-	else if (GetName().find("floor") != std::string::npos || GetName().find("wall") != std::string::npos || GetName().find("window") != std::string::npos)
-	{
-		this->backgroundRenderer = gp->backgroundRenderer;
-		backgroundRenderer->GetData
-		(
-			this->meshes,
-			this->position,
-			this->rotation,
-			this->scale
-		);
-	}
-	else
-	{
-		for (auto& m : this->meshes)
+		Matrix movement = Matrix::Identity;
+
+		Vector3 objectRotation = { this->rotation[0], this->rotation[1], this->rotation[2] };
+		Vector3 objectPosition = { this->position[0], this->position[1] , this->position[2] };
+		Vector3 objectScale = { this->scale[0], this->scale[1] , this->scale[2] };
+
+		Quaternion quaternionRotation = Quaternion::CreateFromYawPitchRoll(objectRotation);
+
+		if (!this->attachedObject.expired())
 		{
-			Matrix movement = Matrix::Identity;
+			Vector3 bonePosition;
+			Quaternion boneQuaternion;
+			Vector3 tempScale;
 
-			Vector3 objectRotation = { this->rotation[0], this->rotation[1], this->rotation[2] };
-			Vector3 objectPosition = { this->position[0], this->position[1] , this->position[2] };
-			Vector3 objectScale = { this->scale[0], this->scale[1] , this->scale[2] };
+			Matrix temp = this->attachedObject.lock()->transform;
+			temp.Decompose(tempScale, boneQuaternion, bonePosition);
 
-			Quaternion quaternionRotation = Quaternion::CreateFromYawPitchRoll(objectRotation);
+			auto& temprotVec = this->attachedObject.lock()->obj->rotation;
+			Vector3 tempRotation = { temprotVec[0], temprotVec[1], temprotVec[2] };
+			Quaternion objQuaternion = Quaternion::CreateFromYawPitchRoll(tempRotation);
 
-			if (!this->attachedObject.expired())
-			{
-				Vector3 bonePosition;
-				Quaternion boneQuaternion;
-				Vector3 tempScale;
+			auto& tempposVec = this->attachedObject.lock()->obj->position;
+			Vector3 tempPosition = { tempposVec[0], tempposVec[1], tempposVec[2] };
 
-				Matrix temp = this->attachedObject.lock()->transform;
-				temp.Decompose(tempScale, boneQuaternion, bonePosition);
+			auto& objRot = this->attachedObject.lock()->obj->rotation;
+			Vector3 objRotVec = { objRot[0], objRot[1], objRot[2] };
+			Quaternion objrotQuaternion = Quaternion::CreateFromYawPitchRoll(objRotVec);
 
-				auto& temprotVec = this->attachedObject.lock()->obj->rotation;
-				Vector3 tempRotation = { temprotVec[0], temprotVec[1], temprotVec[2] };
-				Quaternion objQuaternion = Quaternion::CreateFromYawPitchRoll(tempRotation);
-
-				auto& tempposVec = this->attachedObject.lock()->obj->position;
-				Vector3 tempPosition = { tempposVec[0], tempposVec[1], tempposVec[2] };
-
-				auto& objRot = this->attachedObject.lock()->obj->rotation;
-				Vector3 objRotVec = { objRot[0], objRot[1], objRot[2] };
-				Quaternion objrotQuaternion = Quaternion::CreateFromYawPitchRoll(objRotVec);
-
-				auto& objScale = this->attachedObject.lock()->obj->scale;
-				tempScale = { objScale[0], objScale[1], objScale[2] };
+			auto& objScale = this->attachedObject.lock()->obj->scale;
+			tempScale = { objScale[0], objScale[1], objScale[2] };
 
 
-				movement *= Matrix::CreateScale(objectScale);
-				movement *= Matrix::CreateFromQuaternion(boneQuaternion * objQuaternion);
-				movement *= Matrix::CreateTranslation(bonePosition);
-				movement *= Matrix::CreateScale(tempScale);
-				movement *= Matrix::CreateFromQuaternion(objrotQuaternion);
-				movement *= Matrix::CreateTranslation(tempPosition);
+			movement *= Matrix::CreateScale(objectScale);
+			movement *= Matrix::CreateFromQuaternion(boneQuaternion * objQuaternion);
+			movement *= Matrix::CreateTranslation(bonePosition);
+			movement *= Matrix::CreateScale(tempScale);
+			movement *= Matrix::CreateFromQuaternion(objrotQuaternion);
+			movement *= Matrix::CreateTranslation(tempPosition);
 
-				Vector3 fianlPosition;
-				Quaternion finalQuaternion;
-				Vector3 finalScale;
+			Vector3 fianlPosition;
+			Quaternion finalQuaternion;
+			Vector3 finalScale;
 
-				movement.Decompose(finalScale, finalQuaternion, fianlPosition);
-				movement = Matrix::CreateScale(objectScale);
-				movement *= Matrix::CreateFromQuaternion(finalQuaternion);
-				movement *= Matrix::CreateTranslation(fianlPosition);
-			}
-			else
-			{
-				movement *= Matrix::CreateScale(objectScale);
-				movement *= Matrix::CreateFromQuaternion(quaternionRotation);
-				movement *= Matrix::CreateTranslation(objectPosition);
-			}
-
-			Vector3 fPos = { 0.0f, 0.0f, 0.0f };
-			fPos = Vector3::Transform(fPos, movement);
-			this->finalPos[0] = fPos.x;
-			this->finalPos[1] = fPos.y;
-			this->finalPos[2] = fPos.z;
-			this->gp->BindBonesData(this->bones, m->ori);
-			this->gp->BindMatrixParameter(movement);
-			this->gp->BindPipeline(m->pip);
-			this->gp->SetTexture(0, 1, m->material.lock()->diffusMap);
-			this->gp->Render(m->pip, static_cast<int>(m->indexData.size()));
+			movement.Decompose(finalScale, finalQuaternion, fianlPosition);
+			movement = Matrix::CreateScale(objectScale);
+			movement *= Matrix::CreateFromQuaternion(finalQuaternion);
+			movement *= Matrix::CreateTranslation(fianlPosition);
 		}
+		else
+		{
+			movement *= Matrix::CreateScale(objectScale);
+			movement *= Matrix::CreateFromQuaternion(quaternionRotation);
+			movement *= Matrix::CreateTranslation(objectPosition);
+		}
+
+		Vector3 fPos = { 0.0f, 0.0f, 0.0f };
+		fPos = Vector3::Transform(fPos, movement);
+		this->finalPos[0] = fPos.x;
+		this->finalPos[1] = fPos.y;
+		this->finalPos[2] = fPos.z;
+		this->gp->BindBonesData(this->bones, m->ori);
+		this->gp->BindMatrixParameter(movement);
+		this->gp->BindPipeline(m->pip);
+		this->gp->SetTexture(0, 1, m->material.lock()->diffusMap);
+		this->gp->Render(m->pip, static_cast<int>(m->indexData.size()));
 	}
+
 }
 
 /// <summary>
@@ -749,14 +723,14 @@ void AObject::CreateMeshBuffer()
 		}
 
 		//background도 따로 들어가야한다.
-		else if (GetName().find("floor") == std::string::npos|| GetName().find("wall") == std::string::npos || GetName().find("window") == std::string::npos)
+		else if (GetName().find("floor") == std::string::npos || GetName().find("wall") == std::string::npos || GetName().find("window") == std::string::npos)
 		{
 			mesh->SetVS(gp, "../Shader/compiled/BackgroundVS.cso");
 			mesh->SetPS(gp, "../Shader/compiled/BackgroundPS.cso");
 		}
 
 		//위에와 마찬가지로 투명한 물체에 대해서는 PS가 따로 들어가야 한다.
-		if(isVisible == false)
+		if (isVisible == false)
 		{
 			if (this->hasBone)
 			{
