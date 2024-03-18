@@ -2,7 +2,7 @@
 #include <windows.h>
 #include <vector>
 #include <string>
-
+#include <memory>
 struct PipeLine;
 class UObject;
 class ICamera;
@@ -25,10 +25,10 @@ public:
 
 	virtual std::vector<float> PickingWorldPoint(float _x, float _y) abstract;
 
-	virtual void CreateCamera(ICamera** _camera, float _w, float _h) abstract;
-	virtual void SetMainCamera(ICamera* _camera) abstract;
-	virtual bool IsMainCamera(ICamera* _camera) const abstract;
-
+	virtual void CreateCamera(std::string _name, float _w, float _h) abstract;
+	virtual void SetMainCamera(std::string _name) abstract;
+	virtual bool IsMainCamera(std::string _name) abstract;
+	virtual std::weak_ptr<ICamera> GetCamera() abstract;
 	// Debug object
 	virtual void DrawDefaultLine() abstract;
 	virtual void DrawDefaultAxes() abstract;

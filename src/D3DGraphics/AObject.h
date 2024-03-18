@@ -61,10 +61,6 @@ private:
 
 	GraphicsEngine* gp = nullptr;
 
-	DeferredRenderer* deferredRenderer = nullptr;
-	ForwardRenderer* forwardRenderer = nullptr;
-	BackgroundRenderer* backgroundRenderer = nullptr;
-
 	std::weak_ptr<ABone> attachedObject;
 	std::string attachBoneName;
 	

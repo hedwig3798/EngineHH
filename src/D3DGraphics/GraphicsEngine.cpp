@@ -34,7 +34,6 @@ GraphicsEngine::GraphicsEngine()
 	, dLine(nullptr)
 	, windowHeight(0)
 	, windowWidth(0)
-	, mainCamera(nullptr)
 	, pixelOnOff(false)
 	, flashOnOff(false)
 	, whiteOutOnOff(false)
@@ -506,18 +505,24 @@ void GraphicsEngine::UIRender(PipeLine& _pipline, int _indexSize)
 /// <param name="_camera">output</param>
 /// <param name="_w">넓이</param>
 /// <param name="_h">높이</param>
-void GraphicsEngine::CreateCamera(ICamera** _camera, float _w, float _h)
+void GraphicsEngine::CreateCamera(std::string _name, float _w, float _h)
 {
-	(*_camera) = new Camera(_w, _h);
+	this->camearaMap[_name] = std::make_shared<Camera>(_w, _h);
 }
 
 /// <summary>
 /// 렌더 할 카메라 설정
 /// </summary>
 /// <param name="_camera"></param>
-void GraphicsEngine::SetMainCamera(ICamera* _camera)
+void GraphicsEngine::SetMainCamera(std::string _name)
 {
-	this->mainCamera = dynamic_cast<Camera*>(_camera);
+	if (this->camearaMap.find(_name) == this->camearaMap.end())
+	{
+		assert(false && "no camera thier");
+		
+		return;
+	}
+	this->mainCamera = this->camearaMap[_name];
 }
 
 /// <summary>
@@ -525,12 +530,12 @@ void GraphicsEngine::SetMainCamera(ICamera* _camera)
 /// </summary>
 /// <param name="_camera">카메라</param>
 /// <returns>결과</returns>
-bool GraphicsEngine::IsMainCamera(ICamera* _camera) const
+bool GraphicsEngine::IsMainCamera(std::string _name)
 {
-	return this->mainCamera == _camera;
+	return this->mainCamera.lock().get() == this->camearaMap[_name].get();
 }
 
-Camera* GraphicsEngine::GetCamera()
+std::weak_ptr<ICamera> GraphicsEngine::GetCamera()
 {
 	return this->mainCamera;
 }
@@ -746,7 +751,7 @@ void GraphicsEngine::BindMatrixParameter(DirectX::XMMATRIX _w)
 	MatrixBufferType* dataptr = (MatrixBufferType*)mappedResource.pData;
 
 	dataptr->world = _w;
-	dataptr->wvp = _w * this->mainCamera->GetViewTM() * this->mainCamera->GetProjectionTM();
+	dataptr->wvp = _w * this->mainCamera.lock()->GetViewTM() * this->mainCamera.lock()->GetProjectionTM();
 	dataptr->worldInversTranspose = DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(nullptr, _w));
 
 	dataptr->world = DirectX::XMMatrixTranspose(_w);
@@ -868,7 +873,7 @@ void GraphicsEngine::BindLightingParameter(DirectionalLight _directionLight[], U
 
 	dataptr->lightCount = _lightCount;
 
-	dataptr->eyePosW = this->mainCamera->GetPositoin();
+	dataptr->eyePosW = this->mainCamera.lock()->GetPositoin();
 
 	this->d3d11DeviceContext->Unmap(this->lightBuffer.Get(), 0);
 	this->d3d11DeviceContext->PSSetConstantBuffers(1, 1, this->lightBuffer.GetAddressOf());
@@ -993,8 +998,8 @@ void GraphicsEngine::BindCameraAtPS()
 	assert(SUCCEEDED(hr));
 
 	CameraBufferType* dataptr = static_cast<CameraBufferType*>(mappedResource.pData);
-	DirectX::XMFLOAT3 dir = this->mainCamera->GetLook();
-	DirectX::XMFLOAT3 p = this->mainCamera->GetPositoin();
+	DirectX::XMFLOAT3 dir = this->mainCamera.lock()->GetLook();
+	DirectX::XMFLOAT3 p = this->mainCamera.lock()->GetPositoin();
 	dataptr->lookDir = DirectX::XMFLOAT4(dir.x, dir.y, dir.z, 1.0f);
 	dataptr->pos = DirectX::XMFLOAT4(p.x, p.y, p.z, 1.0f);
 

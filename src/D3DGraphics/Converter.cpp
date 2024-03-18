@@ -698,6 +698,14 @@ void Converter::WriteMaterialMapFile(std::string finalPath)
 		element->SetText(WriteTexture(folder, material->normalFile).c_str());
 		node->LinkEndChild(element);
 
+		element = document->NewElement("ShininessFile");
+		element->SetText(WriteTexture(folder, material->shininess).c_str());
+		node->LinkEndChild(element);
+
+		element = document->NewElement("MetalnessFile");
+		element->SetText(WriteTexture(folder, material->metalic).c_str());
+		node->LinkEndChild(element);
+
 		element = document->NewElement("Ambient");
 		element->SetAttribute("R", material->ambient.x);
 		element->SetAttribute("G", material->ambient.y);
@@ -804,7 +812,7 @@ void Converter::ReadMaterialData()
 		// Diffuse Texture
 		srcMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &file);
 		material->diffuseFile = file.C_Str();
-		std::wstring temp = Utils::ToWString(material->diffuseFile);
+
 		// Specular Texture
 		srcMaterial->GetTexture(aiTextureType_SPECULAR, 0, &file);
 		material->specularFile = file.C_Str();
@@ -812,6 +820,12 @@ void Converter::ReadMaterialData()
 		// Normal Texture
 		srcMaterial->GetTexture(aiTextureType_NORMALS, 0, &file);
 		material->normalFile = file.C_Str();
+
+		srcMaterial->GetTexture(aiTextureType_SHININESS, 0, &file);
+		material->shininess = file.C_Str();
+
+		srcMaterial->GetTexture(aiTextureType_METALNESS, 0, &file);
+		material->metalic = file.C_Str();
 
 		this->materials.push_back(material);
 	}
@@ -873,6 +887,14 @@ void Converter::WriteMaterialData(std::string finalPath)
 
 		element = document->NewElement("NormalFile");
 		element->SetText(WriteTexture(folder, material->normalFile).c_str());
+		node->LinkEndChild(element);
+
+		element = document->NewElement("ShininessFile");
+		element->SetText(WriteTexture(folder, material->shininess).c_str());
+		node->LinkEndChild(element);
+
+		element = document->NewElement("MetalnessFile");
+		element->SetText(WriteTexture(folder, material->metalic).c_str());
 		node->LinkEndChild(element);
 
 		element = document->NewElement("Ambient");

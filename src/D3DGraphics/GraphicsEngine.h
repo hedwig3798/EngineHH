@@ -32,7 +32,7 @@ class ForwardRenderer;
 class PostRenderer;
 class BackgroundRenderer;
 class ABone;
-
+class AObject;
 class GraphicsEngine
 	: public IGraphicsEngine
 {
@@ -105,7 +105,7 @@ private:
 	ComPtr<ID3D11DepthStencilState> writerDSS;
 	ComPtr<ID3D11RasterizerState> writerRS;
 
-	Camera* mainCamera;
+	std::weak_ptr<Camera> mainCamera;
 
 	std::unique_ptr<Axes> dAxes;
 	std::unique_ptr<LineObject> dLine;
@@ -126,6 +126,8 @@ private:
 
 	std::map<std::string, ComPtr<ID3D11ShaderResourceView>> screenImageMap;
 	std::queue<std::pair<ComPtr<ID3D11ShaderResourceView>, RECT>> queueImage;
+
+	std::map<std::string, std::shared_ptr<Camera>> camearaMap;
 
 public:
 	//Deferred
@@ -162,6 +164,8 @@ public:
 
 	ID3D11BlendState* defaultBlend;
 
+	std::queue<std::weak_ptr<AObject>> renderQueue;
+
 	VertexD::Data FVdata[4];
 	UINT FIdata[6];
 
@@ -186,11 +190,11 @@ public:
 
 	virtual void WriteText(int _x, int _y, float _rgba[4], TCHAR* _text);
 
-	virtual void CreateCamera(ICamera** _camera, float _w, float _h) override;
-	virtual void SetMainCamera(ICamera* _camera) override;
-	virtual bool IsMainCamera(ICamera* _camera) const override;
+	virtual void CreateCamera(std::string _name, float _w, float _h) override;
+	virtual void SetMainCamera(std::string _name) override;
+	virtual bool IsMainCamera(std::string _name) override;
 
-	Camera* GetCamera();
+	std::weak_ptr<ICamera> GetCamera() override;
 
 	virtual void DrawDefaultAxes() override;
 	virtual void DrawDefaultLine() override;

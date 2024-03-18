@@ -74,6 +74,8 @@ struct asMaterial
 	std::string diffuseFile;
 	std::string specularFile;
 	std::string normalFile;
+	std::string shininess;
+	std::string metalic;
 };
 
 // Animation

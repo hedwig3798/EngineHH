@@ -32,7 +32,7 @@ private:
 
 	std::wstring explain;
 
-	ICamera* camera;
+	std::weak_ptr<ICamera> camera;
 
 public:
 	// 持失切 社瑚切

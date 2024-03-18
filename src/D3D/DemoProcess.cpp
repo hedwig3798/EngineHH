@@ -12,7 +12,6 @@ ManagerSet* DemoProcess::staticManagers = nullptr;
 DemoProcess::DemoProcess()
 	: graphicsEngine(nullptr)
 	, hwnd(nullptr)
-	, camera(nullptr)
 	, object(nullptr)
 	, managers(nullptr)
 {
@@ -29,7 +28,6 @@ DemoProcess::~DemoProcess()
 {
 	delete this->graphicsEngine;
 	delete this->managers;
-	delete this->camera;
 	delete this->object;
 }
 
@@ -43,15 +41,17 @@ void DemoProcess::Initialize(HWND _hwnd)
 	GetWindowRect(this->hwnd, &windowSize);
 
 	this->graphicsEngine->CreateCamera(
-		&this->camera,
+		"default",
 		static_cast<float>(windowSize.bottom - windowSize.top),
 		static_cast<float>(windowSize.right - windowSize.left));
-	this->graphicsEngine->SetMainCamera(this->camera);
+	this->graphicsEngine->SetMainCamera("default");
+
+	this->camera = this->graphicsEngine->GetCamera();
 
 	Converter* convert1 = new Converter(graphicsEngine);
-	convert1->ReadAssetFile("sf_test_box.fbx");
-	convert1->ExportMaterialData("sf_test_box.fbx");
-	convert1->ExportModelData("sf_test_box.fbx");
+	convert1->ReadAssetFile("testBox.fbx");
+	convert1->ExportMaterialData("testBox.fbx");
+	convert1->ExportModelData("testBox.fbx");
 
 	// 	ICamera* tempcamera;
 	// 
@@ -123,33 +123,33 @@ void DemoProcess::CameraUpdate(float _dt)
 
 	if (this->managers->keyManager->GetKeyState(KEY::W) == KEY_STATE::HOLD)
 	{
-		this->camera->MoveFoward(this->managers->timeManager->GetfDT() * speed);
+		this->camera.lock()->MoveFoward(this->managers->timeManager->GetfDT() * speed);
 	}
 	if (this->managers->keyManager->GetKeyState(KEY::S) == KEY_STATE::HOLD)
 	{
-		this->camera->MoveFoward(-this->managers->timeManager->GetfDT() * speed);
+		this->camera.lock()->MoveFoward(-this->managers->timeManager->GetfDT() * speed);
 	}
 	if (this->managers->keyManager->GetKeyState(KEY::A) == KEY_STATE::HOLD)
 	{
-		this->camera->MoveRight(-this->managers->timeManager->GetfDT() * speed);
+		this->camera.lock()->MoveRight(-this->managers->timeManager->GetfDT() * speed);
 	}
 	if (this->managers->keyManager->GetKeyState(KEY::D) == KEY_STATE::HOLD)
 	{
-		this->camera->MoveRight(this->managers->timeManager->GetfDT() * speed);
+		this->camera.lock()->MoveRight(this->managers->timeManager->GetfDT() * speed);
 	}
 	if (this->managers->keyManager->GetKeyState(KEY::Q) == KEY_STATE::HOLD)
 	{
-		this->camera->MoveUP(-this->managers->timeManager->GetfDT() * speed);
+		this->camera.lock()->MoveUP(-this->managers->timeManager->GetfDT() * speed);
 	}
 	if (this->managers->keyManager->GetKeyState(KEY::E) == KEY_STATE::HOLD)
 	{
-		this->camera->MoveUP(this->managers->timeManager->GetfDT() * speed);
+		this->camera.lock()->MoveUP(this->managers->timeManager->GetfDT() * speed);
 	}
 
 	if (this->managers->keyManager->GetMouseState(MOUSE::LEFT) == KEY_STATE::HOLD)
 	{
-		this->camera->RotateRight(this->managers->keyManager->mouseDX * 0.003f);
-		this->camera->RotateUp(this->managers->keyManager->mouseDY * 0.003f);
+		this->camera.lock()->RotateRight(this->managers->keyManager->mouseDX * 0.003f);
+		this->camera.lock()->RotateUp(this->managers->keyManager->mouseDY * 0.003f);
 	}
 
 }

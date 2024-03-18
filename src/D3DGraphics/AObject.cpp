@@ -37,8 +37,6 @@ AObject::AObject(std::string _path, IGraphicsEngine* _igp, bool _hasBone, bool _
 	CreateMeshBuffer();
 	BindData();
 	DecomposeMeshMatrix();
-
-	this->forwardRenderer = gp->forwardRenderer;
 }
 
 AObject::~AObject()
@@ -48,8 +46,6 @@ AObject::~AObject()
 
 void AObject::Render()
 {
-
-
 	for (auto& m : this->meshes)
 	{
 		Matrix movement = Matrix::Identity;
@@ -421,6 +417,28 @@ void AObject::ReadMaterial()
 				std::wstring path = Utils::ToWString(this->texturePath);
 				path += Utils::ToWString(textureStr);
 				gp->LoadTexture(path, material->normalMap);
+			}
+		}
+
+		if (node->GetText())
+		{
+			std::string textureStr = node->GetText();
+			if (textureStr.length() > 0)
+			{
+				std::wstring path = Utils::ToWString(this->texturePath);
+				path += Utils::ToWString(textureStr);
+				gp->LoadTexture(path, material->shininessMap);
+			}
+		}
+
+		if (node->GetText())
+		{
+			std::string textureStr = node->GetText();
+			if (textureStr.length() > 0)
+			{
+				std::wstring path = Utils::ToWString(this->texturePath);
+				path += Utils::ToWString(textureStr);
+				gp->LoadTexture(path, material->metalnessMap);
 			}
 		}
 

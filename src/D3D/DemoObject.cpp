@@ -15,7 +15,7 @@ DemoObject::DemoObject(IGraphicsEngine* _graphicsEngine, DemoProcess* _scene, Ma
  //	testFMesh = this->graphicsEngine->LoadFbxData("../Model/DeferredTestMesh/test5.fbx");
 // 	this->testFMesh->Initalize(this->graphicsEngine, path, texturePath, this->testFMesh->fData);
 
-	this->teatAssimp = new AObject("sf_test_box.fbx", this->graphicsEngine, false, false, true);
+	this->teatAssimp = new AObject("testBox.fbx", this->graphicsEngine, false, false, true);
 }
 
 DemoObject::~DemoObject()
