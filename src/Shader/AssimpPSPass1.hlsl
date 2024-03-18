@@ -39,7 +39,12 @@ DeferredOutput PS(VertexOut pin)
 	mappedNormal = mappedNormal * 2.0f - 1.0f;
 
     float3 finalNormal;
-	output.texNormal = float4(pin.NormalW, 1.0f);
+
+	float3x3 TBN = float3x3(pin.Tangent, pin.Binormal, pin.NormalW); // 법선맵에서 가져온 벡터를 접선공간으로의 법선벡터로 매핑할 변환행렬.
+    finalNormal = normalize(mul(mappedNormal, TBN)); // 접선공간의 법선벡터로 변환.
+	finalNormal = (finalNormal + 1.0f) * 0.5f;
+
+	output.texNormal = float4(finalNormal, 1.0f);
 
 	// metalic
 	float4 mappedmetailic = metailicMap.Sample(samAnisotropic, pin.Tex).x;

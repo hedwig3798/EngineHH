@@ -132,11 +132,11 @@ void DeferredRenderer::EndRender()
 	
 	this->d3d11DeviceContext->DrawIndexed(6, 0, 0);
 	
-// 	for (auto& pipe : this->DSubPipeline)
-// 	{
-// 		gp->BindPipeline(pipe);
-// 		this->d3d11DeviceContext->DrawIndexed(6, 0, 0);
-// 	}
+	for (auto& pipe : this->DSubPipeline)
+	{
+		gp->BindPipeline(pipe);
+		this->d3d11DeviceContext->DrawIndexed(6, 0, 0);
+	}
 
 	//렌더 타겟 자원 언바인딩
 	for (int i = 0; i < 6; i++)

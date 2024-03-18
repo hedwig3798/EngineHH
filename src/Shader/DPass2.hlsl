@@ -42,7 +42,7 @@ float4 PS(VOUT pin) : SV_Target
 
 	dirLights[0].Ambient = float4(1.0f, 1.0f, 1.0f, 1.0f);
 	dirLights[0].Diffuse = float4(1.0f, 1.0f, 1.0f, 1.0f);
-	dirLights[0].Specular = float4(0.5f, 0.5f, 0.5f, 1.0f);
+	dirLights[0].Specular = float4(0.2f, 0.2f, 0.2f, 1.0f);
 	dirLights[0].Direction = float3(0.0f, -1.0f, -0.0f);
 
     float4 litColor = albedo;
@@ -95,5 +95,5 @@ float4 PS(VOUT pin) : SV_Target
  
  	//output.w = 1.0f;
 
-    return albedo;
+    return litColor;
 }

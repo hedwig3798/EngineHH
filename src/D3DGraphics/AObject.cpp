@@ -112,6 +112,9 @@ void AObject::Render()
 		this->gp->BindMatrixParameter(movement);
 		this->gp->BindPipeline(m->pip);
 		this->gp->SetTexture(0, 1, m->material.lock()->diffusMap);
+		this->gp->SetTexture(1, 1, m->material.lock()->normalMap);
+		this->gp->SetTexture(2, 1, m->material.lock()->metalnessMap);
+		this->gp->SetTexture(3, 1, m->material.lock()->shininessMap);
 		this->gp->Render(m->pip, static_cast<int>(m->indexData.size()));
 	}
 
@@ -727,40 +730,14 @@ void AObject::CreateMeshBuffer()
 		gp->CreateVertexBuffer<ModelVertexType>(mesh->vertexData.data(), static_cast<UINT>(sizeof(ModelVertexType) * mesh->vertexData.size()), mesh->pip.vertexBuffer, mesh->name);
 		gp->CreateIndexBuffer(mesh->indexData.data(), static_cast<UINT>(mesh->indexData.size()), mesh->pip.IndexBuffer);
 
-		if (isVisible == true)
+		if (this->hasBone)
 		{
-			if (this->hasBone)
-			{
-				mesh->SetVS(gp, "../Shader/compiled/AssimpVS.cso");
-			}
-			else
-			{
-				mesh->SetVS(gp, "../Shader/compiled/AssimpVSNoneBone.cso");
-			}
-			mesh->SetPS(gp, "../Shader/compiled/AssimpPSPass1.cso");
+			mesh->SetVS(gp, "../Shader/compiled/AssimpVS.cso");
 		}
-
-		//background도 따로 들어가야한다.
-		else if (GetName().find("floor") == std::string::npos || GetName().find("wall") == std::string::npos || GetName().find("window") == std::string::npos)
+		else
 		{
-			mesh->SetVS(gp, "../Shader/compiled/BackgroundVS.cso");
-			mesh->SetPS(gp, "../Shader/compiled/BackgroundPS.cso");
+			mesh->SetVS(gp, "../Shader/compiled/AssimpVSNoneBone.cso");
 		}
-
-		//위에와 마찬가지로 투명한 물체에 대해서는 PS가 따로 들어가야 한다.
-		if (isVisible == false)
-		{
-			if (this->hasBone)
-			{
-				mesh->SetVS(gp, "../Shader/compiled/AssimpVS.cso");
-			}
-			else
-			{
-				mesh->SetVS(gp, "../Shader/compiled/AssimpVSNoneBone.cso");
-			}
-
-			mesh->SetPS(gp, "../Shader/compiled/ForwardPixelShader.cso");
-		}
-
+		mesh->SetPS(gp, "../Shader/compiled/AssimpPSPass1.cso");
 	}
 }
