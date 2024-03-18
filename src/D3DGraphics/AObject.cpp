@@ -423,6 +423,7 @@ void AObject::ReadMaterial()
 			}
 		}
 
+		node = node->NextSiblingElement();
 		if (node->GetText())
 		{
 			std::string textureStr = node->GetText();
@@ -434,6 +435,7 @@ void AObject::ReadMaterial()
 			}
 		}
 
+		node = node->NextSiblingElement();
 		if (node->GetText())
 		{
 			std::string textureStr = node->GetText();
