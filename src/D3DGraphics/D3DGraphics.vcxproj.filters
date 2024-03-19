@@ -311,5 +311,17 @@
     <FxCompile Include="..\Shader\AssimpVSNoneBone.hlsl">
       <Filter>Shader\Vertex</Filter>
     </FxCompile>
+    <FxCompile Include="..\Shader\FinalVertexShader.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Shader\FinalPixelShader.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Shader\skyPs.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Shader\skyVs.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

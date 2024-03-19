@@ -47,6 +47,27 @@ namespace VertexD
 	};
 }
 
+/// <summary>
+/// 스카이 박스용 정점 구조체
+/// </summary>
+namespace VertexS
+{
+	struct Data
+	{
+		DirectX::XMFLOAT3 position;
+	};
+
+	static UINT Size()
+	{
+		return (UINT)(sizeof(Data));
+	}
+
+	static D3D11_INPUT_ELEMENT_DESC defaultInputLayerDECS[1] =
+	{
+		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
+	};
+}
+
 namespace VertexT
 {
 	struct Data

@@ -37,6 +37,7 @@ GraphicsEngine::GraphicsEngine()
 	, pixelOnOff(false)
 	, flashOnOff(false)
 	, whiteOutOnOff(false)
+	, mainSkBox(nullptr)
 {
 }
 
@@ -158,9 +159,11 @@ void GraphicsEngine::Initialize(HWND _hwnd)
 	CreateFinalView();
 	CreateFinalPipeline();
 
+	this->skyPipeline = this->finalPipeline;
+	CreatePixelShader(this->skyPipeline.pixelShader, L"../Shader/compiled/skyPs.cso");
+	CreateInputLayer(this->skyPipeline.inputLayout, VertexD::defaultInputLayerDECS, 2, this->skyPipeline.vertexShader, L"../Shader/compiled/skyVs.cso");
+	CreateSkyBuffer();
 	BindSamplerState();
-
-
 }
 
 /// <summary>
@@ -424,7 +427,7 @@ void GraphicsEngine::LoadTexture(std::wstring _path, ComPtr<ID3D11ShaderResource
 	{
 		CreateTextureDataFromDDS(_path, &image);
 	}
-	else if (format == L"png" || format == L"jpg" || format == L"jpge" || format == L"tiff" || format == L"bmp")
+	else if (format == L"png" || format == L"jpg" || format == L"peg" || format == L"tiff" || format == L"bmp")
 	{
 		CreateTextureDataFromWIC(_path, &image);
 	}
@@ -599,6 +602,19 @@ std::vector<byte> GraphicsEngine::Read(std::string File)
 	return Text;
 }
 
+void GraphicsEngine::RenderSkyBox()
+{
+	if (this->mainSkBox != nullptr)
+	{
+		BindPipeline(skyPipeline);
+		this->d3d11DeviceContext->PSSetShaderResources(0, 1, this->mainSkBox.GetAddressOf());
+		BindSkyParameter();
+
+
+		this->d3d11DeviceContext->DrawIndexed(6, 0, 0);
+	}
+}
+
 /// <summary>
 /// input layer와 vertexShader를 생성한다.
 /// </summary>
@@ -762,6 +778,23 @@ void GraphicsEngine::BindMatrixParameter(DirectX::XMMATRIX _w)
 	this->d3d11DeviceContext->Unmap(matrixBuffer.Get(), 0);
 }
 
+
+void GraphicsEngine::BindSkyParameter()
+{
+	HRESULT hr;
+
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+	hr = this->d3d11DeviceContext->Map(this->skyBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	assert(SUCCEEDED(hr));
+
+	SkyBuffer* dataptr = (SkyBuffer*)mappedResource.pData;
+
+	dataptr->vp = this->mainCamera.lock()->GetViewTM() * this->mainCamera.lock()->GetProjectionTM();
+
+	this->d3d11DeviceContext->VSSetConstantBuffers(0, 1, this->skyBuffer.GetAddressOf());
+	this->d3d11DeviceContext->Unmap(skyBuffer.Get(), 0);
+}
 
 void GraphicsEngine::CreateBoneBuffer()
 {
@@ -968,6 +1001,22 @@ void GraphicsEngine::CreateCameraBuffer()
 	return;
 }
 
+void GraphicsEngine::CreateSkyBuffer()
+{
+	D3D11_BUFFER_DESC mbd = {};
+	mbd.Usage = D3D11_USAGE_DYNAMIC;
+	mbd.ByteWidth = sizeof(SkyBuffer);
+	mbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	mbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	mbd.MiscFlags = 0;
+	mbd.StructureByteStride = 0;
+
+	HRESULT hr;
+
+	hr = this->d3d11Device->CreateBuffer(&mbd, nullptr, this->skyBuffer.GetAddressOf());
+	return;
+}
+
 /// <summary>
 /// 최종 그림을 그리게 될 SRV를 받아서 화면에 띄우는 역할을 하게 될 파이프라인
 /// </summary>
@@ -983,6 +1032,7 @@ void GraphicsEngine::CreateFinalPipeline()
 	this->finalPipeline.primitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	this->finalPipeline.vertexStructSize = VertexD::Size();
 	this->CreateRasterizerState(this->finalPipeline.rasterizerState);
+
 }
 
 /// <summary>
@@ -1097,6 +1147,30 @@ void GraphicsEngine::ShowChaptueredImage(std::string _name, RECT _rect)
 	this->queueImage.push(std::make_pair(this->screenImageMap[_name], _rect));
 }
 
+void GraphicsEngine::CreateSkyBox(std::string _name, std::string _path)
+{
+	if (this->skyMap.find(_name) != this->skyMap.end())
+	{
+		return;
+	}
+	
+	ComPtr<ID3D11ShaderResourceView> skySRV;
+	LoadTexture(Utils::ToWString(_path), skySRV);
+
+	this->skyMap[_name] = skySRV;
+	SetSkyBox(_name);
+}
+
+void GraphicsEngine::SetSkyBox(std::string _name)
+{
+	if (this->skyMap.find(_name) == this->skyMap.end())
+	{
+		return;
+	}
+
+	this->mainSkBox = this->skyMap[_name];
+}
+
 void GraphicsEngine::SetFlashEffect(float deltaTime, bool _isOnOff)
 {
 	flashOnOff = _isOnOff;
@@ -1169,9 +1243,11 @@ void GraphicsEngine::endDraw()
 {
 	this->deferredRenderer->EndRender();
 
-	this->BindFinalView();
-	this->ClearDepthStencilView();
-	this->BindPipeline(finalPipeline);
+	BindFinalView();
+	ClearDepthStencilView();
+	RenderSkyBox();
+	BindPipeline(finalPipeline);
+
 
 	this->d3d11DeviceContext->PSSetShaderResources(0, 1, this->finalSRV.GetAddressOf());
 	this->d3d11DeviceContext->DrawIndexed(6, 0, 0);
@@ -1193,6 +1269,7 @@ void GraphicsEngine::begineDraw()
 
 	FLOAT temp[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	this->d3d11DeviceContext->OMSetBlendState(defaultBlend, temp, 0xffffffff);
+
 
 
 	this->deferredRenderer->BeginRender();

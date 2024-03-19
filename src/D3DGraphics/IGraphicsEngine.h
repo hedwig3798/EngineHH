@@ -47,6 +47,9 @@ public:
 	// chaputer imgae
 	virtual void ChaptuerScreen(std::string _name) abstract;
 	virtual void ShowChaptueredImage(std::string _name, RECT _rect) abstract;
+
+	virtual void CreateSkyBox(std::string _name, std::string _path) abstract;
+	virtual void SetSkyBox(std::string _name) abstract;
 };
 
 void CreateGrapicsEngine(IGraphicsEngine** _output);

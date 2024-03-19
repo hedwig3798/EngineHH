@@ -46,6 +46,11 @@ private:
 		Material material;
 	};
 
+	struct SkyBuffer
+	{
+		DirectX::XMMATRIX vp;
+	};
+
 	struct LightingBufferType
 	{
 		// 직사광선 (3종류)
@@ -98,6 +103,7 @@ private:
 	ComPtr<ID3D11Buffer> lightBuffer;
 	ComPtr<ID3D11Buffer> boneBuffer;
 	ComPtr<ID3D11Buffer> cameraBuffer;
+	ComPtr<ID3D11Buffer> skyBuffer;
 
 	bool useMSAA;
 
@@ -161,10 +167,13 @@ public:
 	ComPtr <ID3D11ShaderResourceView> finalSRV;
 	ComPtr <ID3D11Texture2D> finalTexture2D;
 	PipeLine finalPipeline;
+	PipeLine skyPipeline;
 
 	ID3D11BlendState* defaultBlend;
 
 	std::queue<std::weak_ptr<AObject>> renderQueue;
+	std::map<std::string, ComPtr<ID3D11ShaderResourceView>> skyMap;
+	ComPtr<ID3D11ShaderResourceView> mainSkBox;
 
 	VertexD::Data FVdata[4];
 	UINT FIdata[6];
@@ -217,6 +226,8 @@ public:
 	void CreateMatrixBuffer();
 	void BindMatrixParameter(DirectX::XMMATRIX _w);
 
+	void BindSkyParameter();
+
 	void CreateBoneBuffer();
 	void BindBonesData(std::vector<RenderObject*>& bones, DirectX::XMMATRIX _worldTM);
 	void BindBonesData(std::vector<std::shared_ptr<ABone>>& bones, DirectX::XMMATRIX _worldTM);
@@ -254,7 +265,10 @@ public:
 
 	virtual void ChaptuerScreen(std::string _name) override;
 	virtual void ShowChaptueredImage(std::string _name, RECT _rect) override;
-	/// Effect OnOff functions
+
+	virtual void CreateSkyBox(std::string _name, std::string _path) override;
+	virtual void SetSkyBox(std::string _name) override;
+
 public:
 	virtual void SetFlashEffect(float deltaTime, bool _isOnOff) override;
 	void PlayFlashEffect();
@@ -278,9 +292,12 @@ private:
 	void CreateTextureDataFromWIC(std::wstring _path, ScratchImage* _image);
 
 	void CreateCameraBuffer();
+	void CreateSkyBuffer();
 	void CreateFinalPipeline();
 
 	std::vector<byte> Read(std::string File);
+
+	void RenderSkyBox();
 };
 
 template<typename V> void GraphicsEngine::CreateVertexBuffer(V* _verteies, UINT _size, ComPtr<ID3D11Buffer>& _vertexbuffer, std::string _name)

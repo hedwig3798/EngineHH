@@ -49,10 +49,12 @@ void DemoProcess::Initialize(HWND _hwnd)
 	this->camera = this->graphicsEngine->GetCamera();
 
 	Converter* convert1 = new Converter(graphicsEngine);
-	convert1->ReadAssetFile("testBox.fbx");
-	convert1->ExportMaterialData("testBox.fbx");
-	convert1->ExportModelData("testBox.fbx");
+	convert1->ReadAssetFile("pbrSphere.fbx");
+	convert1->ExportMaterialData("pbrSphere.fbx");
+	convert1->ExportModelData("pbrSphere.fbx");
 
+	this->graphicsEngine->CreateSkyBox("moring", "../AssimpData/SkyBox/skymap.dds");
+	this->graphicsEngine->SetSkyBox("moring");
 	// 	ICamera* tempcamera;
 	// 
 	// 	this->graphicsEngine->CreateCamera(

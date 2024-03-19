@@ -37,7 +37,7 @@ float4 PS(VOUT pin) : SV_Target
 	
 	Material mat;
 	mat.Ambient = float4(0.0f, 0.0f, 0.0f, 1.0f);
-	mat.Diffuse = float4(0.8f, 0.8f, 0.8f, 1.0f);
+	mat.Diffuse = float4(0.3f, 0.3f, 0.3f, 1.0f);
 	mat.Specular =  float4(0.8f, 0.8f, 0.8f, 16.0f);
 
 	dirLights[0].Ambient = float4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -83,7 +83,7 @@ float4 PS(VOUT pin) : SV_Target
             spec += specFactor * mat.Specular * dirLights[i].Specular;
         }
     }
-	litColor = albedo * (ambient + diffuse) + spec;
+	litColor = albedo * (ambient + diffuse + spec);
 
  	//float4 output;
  

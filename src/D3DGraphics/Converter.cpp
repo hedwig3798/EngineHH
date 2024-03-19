@@ -808,23 +808,23 @@ void Converter::ReadMaterialData()
 		srcMaterial->mProperties[0];
 
 		aiString file;
-		
+		aiReturn air;
 		// Diffuse Texture
-		srcMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &file);
+		air = srcMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &file);
 		material->diffuseFile = file.C_Str();
 
 		// Specular Texture
-		srcMaterial->GetTexture(aiTextureType_SPECULAR, 0, &file);
+		air = srcMaterial->GetTexture(aiTextureType_SPECULAR, 0, &file);
 		material->specularFile = file.C_Str();
 
 		// Normal Texture
-		srcMaterial->GetTexture(aiTextureType_NORMALS, 0, &file);
+		air = srcMaterial->GetTexture(aiTextureType_NORMALS, 0, &file);
 		material->normalFile = file.C_Str();
 
-		srcMaterial->GetTexture(aiTextureType_SHININESS, 0, &file);
+		air = srcMaterial->GetTexture(aiTextureType_SHININESS, 0, &file);
 		material->shininess = file.C_Str();
 
-		srcMaterial->GetTexture(aiTextureType_METALNESS, 0, &file);
+		air = srcMaterial->GetTexture(aiTextureType_METALNESS, 0, &file);
 		material->metalic = file.C_Str();
 
 		this->materials.push_back(material);
