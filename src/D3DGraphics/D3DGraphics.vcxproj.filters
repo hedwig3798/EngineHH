@@ -88,6 +88,9 @@
     <Filter Include="Assimp\Data\Material">
       <UniqueIdentifier>{fadf16c7-1e85-4d79-b69f-7c214092fec4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Geomatry">
+      <UniqueIdentifier>{9dbbf5b7-eac4-4b20-b0d4-6becbcdb9660}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GraphicsEngine.cpp">
@@ -161,6 +164,9 @@
     </ClCompile>
     <ClCompile Include="AssimpType.cpp">
       <Filter>Assimp</Filter>
+    </ClCompile>
+    <ClCompile Include="GeometryGenerator.cpp">
+      <Filter>Geomatry</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -248,6 +254,9 @@
     </ClInclude>
     <ClInclude Include="MapLoader.h">
       <Filter>Assimp\converter</Filter>
+    </ClInclude>
+    <ClInclude Include="GeometryGenerator.h">
+      <Filter>Geomatry</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

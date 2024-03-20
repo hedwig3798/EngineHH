@@ -33,6 +33,8 @@ class PostRenderer;
 class BackgroundRenderer;
 class ABone;
 class AObject;
+
+
 class GraphicsEngine
 	: public IGraphicsEngine
 {

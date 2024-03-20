@@ -19,7 +19,7 @@ struct SkyboxOutput
 SkyboxOutput VS(SkyboxInput _input)
 {
 	SkyboxOutput vout;
-    vout.PosH = mul(float4(_input.PosL, 1.0f), vp).xyww;
+    vout.PosH = mul(float4(_input.PosL * 2000, 1.0f), vp).xyww;
 
 	vout.PosL = _input.PosL; 
 

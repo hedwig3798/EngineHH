@@ -12,6 +12,7 @@
 #include <algorithm>
 #include "ABone.h"
 #include "Utils.h"
+#include "GeometryGenerator.h"
 
 GraphicsEngine::GraphicsEngine()
 	: featureLevel{}
@@ -162,6 +163,11 @@ void GraphicsEngine::Initialize(HWND _hwnd)
 	this->skyPipeline = this->finalPipeline;
 	CreatePixelShader(this->skyPipeline.pixelShader, L"../Shader/compiled/skyPs.cso");
 	CreateInputLayer(this->skyPipeline.inputLayout, VertexD::defaultInputLayerDECS, 2, this->skyPipeline.vertexShader, L"../Shader/compiled/skyVs.cso");
+
+	PipeLine tempPip = GeometryGenerator::CreateSphere(1, 10, 10, this);
+	this->skyPipeline.vertexBuffer = tempPip.vertexBuffer;
+	this->skyPipeline.IndexBuffer = tempPip.IndexBuffer;
+
 	CreateSkyBuffer();
 	BindSamplerState();
 }
@@ -609,9 +615,8 @@ void GraphicsEngine::RenderSkyBox()
 		BindPipeline(skyPipeline);
 		this->d3d11DeviceContext->PSSetShaderResources(0, 1, this->mainSkBox.GetAddressOf());
 		BindSkyParameter();
+		Render(skyPipeline, 540);
 
-
-		this->d3d11DeviceContext->DrawIndexed(6, 0, 0);
 	}
 }
 
