@@ -47,10 +47,12 @@ private:
 		DirectX::XMMATRIX worldInversTranspose;
 		Material material;
 	};
-
+	 
 	struct SkyBuffer
 	{
-		DirectX::XMMATRIX vp;
+		DirectX::SimpleMath::Matrix w;
+		DirectX::SimpleMath::Matrix v;
+		DirectX::SimpleMath::Matrix p;
 	};
 
 	struct LightingBufferType
@@ -163,6 +165,7 @@ public:
 
 	// 이거 하나를 돌려쓰는거 같아서 하나로 통합함.
 	ComPtr<ID3D11RasterizerState> rasterizerState;
+	ComPtr<ID3D11RasterizerState> reverseRasterizerState;
 
 	//최종 그림을 위한 ShaderResource
 	ComPtr <ID3D11RenderTargetView> finalRenderTartView;
@@ -224,6 +227,7 @@ public:
 
 	void CreateIndexBuffer(UINT* _indices, UINT _size, ComPtr<ID3D11Buffer>& _indexbuffer);
 	void CreateRasterizerState(ComPtr<ID3D11RasterizerState>& _rasterizerState);
+	void CreateReverseRasterizerState(ComPtr<ID3D11RasterizerState>& _rasterizerState);
 
 	void CreateMatrixBuffer();
 	void BindMatrixParameter(DirectX::XMMATRIX _w);

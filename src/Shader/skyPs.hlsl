@@ -1,6 +1,11 @@
 TextureCube FinalTexture : register(t0);
 
-SamplerState f_Sampler : register(s0);
+SamplerState samTriLinearSam
+{
+	Filter = MIN_MAG_MIP_LINEAR;
+	AddressU = Wrap;
+	AddressV = Wrap;
+};
 
 struct SkyboxOutput
 {
@@ -10,7 +15,7 @@ struct SkyboxOutput
 
 float4 PS(SkyboxOutput _input) : SV_Target
 {
-	float4 color = FinalTexture.Sample(f_Sampler, _input.PosL); 
+	float4 color = FinalTexture.Sample(samTriLinearSam, _input.PosL); 
 	
 	return color; 
 

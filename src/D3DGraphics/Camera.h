@@ -46,7 +46,7 @@ public:
 
 	const DirectX::XMMATRIX GetViewTM();
 	const DirectX::XMMATRIX GetProjectionTM();
-	const DirectX::XMFLOAT3 GetPositoin();
+	DirectX::XMFLOAT3 GetPositoin();
 	const DirectX::XMFLOAT3 GetLook();
 };
 

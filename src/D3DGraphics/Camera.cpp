@@ -133,7 +133,7 @@ const DirectX::XMMATRIX Camera::GetProjectionTM()
 	return this->projectionTM = DirectX::XMMatrixPerspectiveFovLH(this->FOV, this->screenWidth / this->screenHight, 1, 10000);
 }
 
-const DirectX::XMFLOAT3 Camera::GetPositoin()
+DirectX::XMFLOAT3 Camera::GetPositoin()
 {
 	return position;
 }

@@ -98,8 +98,9 @@ void GraphicsEngine::Initialize(HWND _hwnd)
 	CreateBoneBuffer();
 	CreateCameraBuffer();
 	CreateRasterizerState();
+	CreateReverseRasterizerState(this->reverseRasterizerState);
 
-	RECT windowSize = {0, 0, 0, 0};
+	RECT windowSize = { 0, 0, 0, 0 };
 	GetWindowRect(hwnd, &windowSize);
 	assert(GetWindowRect(hwnd, &windowSize) && "cannot get window rectangle");
 
@@ -528,7 +529,7 @@ void GraphicsEngine::SetMainCamera(std::string _name)
 	if (this->camearaMap.find(_name) == this->camearaMap.end())
 	{
 		assert(false && "no camera thier");
-		
+
 		return;
 	}
 	this->mainCamera = this->camearaMap[_name];
@@ -615,7 +616,9 @@ void GraphicsEngine::RenderSkyBox()
 		BindPipeline(skyPipeline);
 		this->d3d11DeviceContext->PSSetShaderResources(0, 1, this->mainSkBox.GetAddressOf());
 		BindSkyParameter();
+		this->d3d11DeviceContext->RSSetState(this->reverseRasterizerState.Get());
 		Render(skyPipeline, 540);
+		this->d3d11DeviceContext->RSSetState(this->rasterizerState.Get());
 
 	}
 }
@@ -741,6 +744,21 @@ void GraphicsEngine::CreateRasterizerState()
 	CreateRasterizerState(this->rasterizerState);
 }
 
+void GraphicsEngine::CreateReverseRasterizerState(ComPtr<ID3D11RasterizerState>& _rasterizerState)
+{
+	HRESULT hr = S_OK;
+
+	D3D11_RASTERIZER_DESC rsDesc;
+	ZeroMemory(&rsDesc, sizeof(D3D11_RASTERIZER_DESC));
+	rsDesc.FillMode = D3D11_FILL_SOLID;
+	rsDesc.CullMode = D3D11_CULL_FRONT;
+	rsDesc.FrontCounterClockwise = false;
+	rsDesc.DepthClipEnable = true;
+
+	hr = this->d3d11Device->CreateRasterizerState(&rsDesc, _rasterizerState.GetAddressOf());
+	assert(SUCCEEDED(hr) && "cannot create Rasterizser State");
+}
+
 void GraphicsEngine::CreateMatrixBuffer()
 {
 	D3D11_BUFFER_DESC mbd = {};
@@ -795,7 +813,17 @@ void GraphicsEngine::BindSkyParameter()
 
 	SkyBuffer* dataptr = (SkyBuffer*)mappedResource.pData;
 
-	dataptr->vp = this->mainCamera.lock()->GetViewTM() * this->mainCamera.lock()->GetProjectionTM();
+	auto pos = this->mainCamera.lock()->GetPositoin();
+	// SimpleMath::Vector3 p = pos;
+	SimpleMath::Matrix w = SimpleMath::Matrix::Identity;
+	SimpleMath::Matrix v = this->mainCamera.lock()->GetViewTM();
+	SimpleMath::Matrix p = this->mainCamera.lock()->GetProjectionTM();
+	w.Translation(pos);
+
+	v = w * v * p;
+	dataptr->w = w.Transpose();
+	dataptr->v = v.Transpose();
+
 
 	this->d3d11DeviceContext->VSSetConstantBuffers(0, 1, this->skyBuffer.GetAddressOf());
 	this->d3d11DeviceContext->Unmap(skyBuffer.Get(), 0);
@@ -1158,7 +1186,7 @@ void GraphicsEngine::CreateSkyBox(std::string _name, std::string _path)
 	{
 		return;
 	}
-	
+
 	ComPtr<ID3D11ShaderResourceView> skySRV;
 	LoadTexture(Utils::ToWString(_path), skySRV);
 
