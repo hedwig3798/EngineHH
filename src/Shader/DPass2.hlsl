@@ -78,29 +78,20 @@ float4 PS(VOUT pin) : SV_Target
 	
 
 		float3 h = GetHVector(lightVec, toEye);
-
-		float D = DistributionFuntion(roughness, max(0.01f, ndoth));
+		float D = DistributionFuntion(roughness, ndoth);
 		float G = GAF(roughness, ndotl, ndotv);
 		float3 F = FresnelReflection(vdoth, lerp(baseMetal, albedo.xzy, metailic));
-		
-		float3 kd = lerp(float3(1, 1, 1) - F, float3(0, 0, 0), metailic);
-		float3 diffuseBRDF = kd * albedo / 3.141592;
-
-		float3 specularBRDF = (F * D * G) / max(0.00001, 4.0 * ndotl * ndotv);
-
-// 		float3 approx = EnvBRDFApprox(lerp(baseMetal, albedo, metailic.x), roughness, ndotv);
-// 		//spec += approx;
-// 		spec +=  (D * F * G) / (4 * ndotl * ndotv);
-// 		//spec *= pow(dot(normal, toEye), roughness);
-// 
-// 		float3 diffuseColor = lerp(float3(0.0f, 0.0f, 0.0f), albedo.xyz, 1 - metailic);
-// 		diffuse += diffuseColor;
-
+		float3 approx = EnvBRDFApprox(lerp(baseMetal, albedo, metailic.x), roughness, ndotv);
+		//spec += approx;
+		spec +=  (D * F * G) / (4 * ndotl * ndotv);
+		//spec *= pow(dot(normal, toEye), roughness);
+		float3 diffuseColor = lerp(float3(0.0f, 0.0f, 0.0f), albedo.xyz, 1 - metailic);
+		diffuse += diffuseColor;	
 		// diffuse += diffuseColor * dot(normal, lightVec);	
 
-		color = (specularBRDF + diffuseBRDF) * ndotl * 5;
+		color = (spec + diffuse) * ndotl;
 		//color = pow(color * 0.4f, 1.0f / 2.2f);
-		test = float4(color, 1.0f);
+		test = float4(F, 1.0f);
 // 	    // Add ambient term.
 //         ambient += mat.Ambient * dirLights[i].Ambient;
 // 
