@@ -48,10 +48,10 @@ void DemoProcess::Initialize(HWND _hwnd)
 
 	this->camera = this->graphicsEngine->GetCamera();
 
-	Converter* convert1 = new Converter(graphicsEngine);
-	convert1->ReadAssetFile("pbrSphere.fbx");
-	convert1->ExportMaterialData("pbrSphere.fbx");
-	convert1->ExportModelData("pbrSphere.fbx");
+// 	Converter* convert1 = new Converter(graphicsEngine);
+// 	convert1->ReadAssetFile("sphere_sampleScene_1cm.fbx");
+// 	convert1->ExportMaterialData("sphere_sampleScene_1cm.fbx");
+// 	convert1->ExportModelData("sphere_sampleScene_1cm.fbx");
 
 	this->graphicsEngine->CreateSkyBox("moring", "../AssimpData/SkyBox/skymap.dds");
 	this->graphicsEngine->SetSkyBox("moring");
@@ -121,7 +121,7 @@ void DemoProcess::Render()
 
 void DemoProcess::CameraUpdate(float _dt)
 {
-	float speed = 100;
+	float speed = 10;
 
 	if (this->managers->keyManager->GetKeyState(KEY::W) == KEY_STATE::HOLD)
 	{

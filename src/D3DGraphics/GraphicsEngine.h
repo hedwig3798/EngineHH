@@ -63,6 +63,14 @@ private:
 		DirectX::XMFLOAT3 eyePosW;
 	};
 
+	struct PointLightBuffer
+	{
+		// 직사광선 (3종류)
+		PointLight dirLights[3];
+		UINT lightCount;
+		DirectX::XMFLOAT3 eyePosW;
+	};
+
 	struct CameraBufferType
 	{
 		DirectX::XMFLOAT4 lookDir;

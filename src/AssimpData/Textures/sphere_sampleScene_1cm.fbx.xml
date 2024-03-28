@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Materials>
+    <Material>
+        <Name>sphere</Name>
+        <DiffuseFile>sphere_Base_Color.png</DiffuseFile>
+        <SpecularFile>sphere_Mixed_AO.png</SpecularFile>
+        <NormalFile>sphere_Normal.png</NormalFile>
+        <ShininessFile>sphere_Roughness.png</ShininessFile>
+        <MetalnessFile>sphere_Metallic.png</MetalnessFile>
+        <Ambient R="0.588" G="0.588" B="0.588" A="1"/>
+        <Diffuse R="0.5" G="0.5" B="0.5" A="1"/>
+        <Specular R="0" G="0" B="0" A="2"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+</Materials>

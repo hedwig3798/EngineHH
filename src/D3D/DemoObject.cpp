@@ -15,7 +15,8 @@ DemoObject::DemoObject(IGraphicsEngine* _graphicsEngine, DemoProcess* _scene, Ma
  //	testFMesh = this->graphicsEngine->LoadFbxData("../Model/DeferredTestMesh/test5.fbx");
 // 	this->testFMesh->Initalize(this->graphicsEngine, path, texturePath, this->testFMesh->fData);
 
-	this->teatAssimp = new AObject("testBox.fbx", this->graphicsEngine, false, false, true);
+	this->teatAssimp = new AObject("sphere_sampleScene_1cm.fbx", this->graphicsEngine, false, false, true);
+	this->teatAssimp->AddScale(10.0f, 10.0f, 10.0f);
 }
 
 DemoObject::~DemoObject()
@@ -25,7 +26,7 @@ DemoObject::~DemoObject()
 
 void DemoObject::Update(float _dt)
 {
-	
+	this->teatAssimp->AddRotation(0.0f, 0.0f, _dt);
 }
 
 

@@ -1,5 +1,5 @@
-#include "../Shader/AssimpVS.hlsl"
-
+#include "AssimpVS.hlsl"
+#include "PBRHelper.hlsl"
 
 Texture2D diffuseMap : register(t0);
 Texture2D normalMap : register(t1);
