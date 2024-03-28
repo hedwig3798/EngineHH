@@ -26,7 +26,15 @@ DemoObject::~DemoObject()
 
 void DemoObject::Update(float _dt)
 {
-	this->teatAssimp->AddRotation(0.0f, 0.0f, _dt);
+	if (this->managers->keyManager->GetKeyState(KEY::N_1) == KEY_STATE::HOLD)
+	{
+		this->teatAssimp->AddRotation(0.0f, 0.0f, _dt);
+	}
+	if (this->managers->keyManager->GetKeyState(KEY::N_2) == KEY_STATE::HOLD)
+	{
+		this->teatAssimp->AddRotation(0.0f, 0.0f, -_dt);
+	}
+	
 }
 
 

@@ -1,53 +1,31 @@
-float saturate(float x)
+// GGX/Towbridge-Reitz normal distribution function.
+// Uses Disney's reparametrization of alpha = roughness^2.
+float ndfGGX(float cosLh, float roughness)
 {
-	return max(x, 0.0);
+	float alpha   = roughness * roughness;
+	float alphaSq = alpha * alpha;
+
+	float denom = (cosLh * cosLh) * (alphaSq - 1.0) + 1.0;
+	return alphaSq / (3.141592 * denom * denom);
 }
 
-float3 saturate(float3 x)
+// Single term for separable Schlick-GGX below.
+float gaSchlickG1(float cosTheta, float k)
 {
-	return max(x, float3(0.0f, 0.0f, 0.0f));
+	return cosTheta / (cosTheta * (1.0 - k) + k);
 }
 
-float getLen(float3 _v)
+// Schlick-GGX approximation of geometric attenuation function using Smith's method.
+float gaSchlickGGX(float cosLi, float cosLo, float roughness)
 {
-	return sqrt(_v.x * _v.x + _v.y * _v.y + _v.z * _v.z); 
+	float r = roughness + 1.0;
+	float k = (r * r) / 8.0; // Epic suggests using this roughness remapping for analytic lights.
+	return gaSchlickG1(cosLi, k) * gaSchlickG1(cosLo, k);
 }
 
-float3 GetHVector(float3 l, float3 v)
+// Shlick's approximation of the Fresnel factor. 최소값 F0 , 최대값은 1.0,1.0,1.0
+float3 fresnelSchlick(float3 F0, float cosTheta)
 {
-	float3 h = l + v;
-	return normalize(h);
-}
-
-float DistributionFuntion(float _roughness, float _ndoth)
-{
-	float r2 = _roughness * _roughness;
-	float d = (_ndoth * r2 - _ndoth) * _ndoth + 1.0;
-	float result = r2 / (d * d * 3.141592);
-	return result;
-}
-
-float3 FresnelReflection(float _vdoth, float3 _specColor)
-{
-	float3 result = _specColor + (1.0f - _specColor) * pow((1.0f - clamp(_vdoth, 0.0f, 1.0f)), 5.0f);
-	return result;
-}
-
-float3 EnvBRDFApprox(float3 _specColor, float _roughness, float _ndotv)
-{
-	const float4 c0 = float4(-1, -0.0275, -0.572, 0.022);
-	const float4 c1 = float4(1, 0.0425, 1.04, -0.04);
-	float4 r = _roughness * c0 + c1;
-	float a004 = min(r.x * r.x, exp2(-9.28 * _ndotv)) * r.x + r.y;
-	float2 AB = float2(-1.04, 1.04) * a004 + r.zw;
-	return _specColor * AB.x + AB.y;
-}
-
-float GAF(float _roughness, float _ndotl, float _ndotv)
-{
-	float r2 = _roughness * _roughness;
-	float gv = _ndotl * sqrt(_ndotv * (_ndotv - _ndotv * r2) + r2);
-	float gl = _ndotv * sqrt(_ndotl * (_ndotl - _ndotl * r2) + r2);
-	return 0.5 / max(gv + gl, 0.00001);
+	return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
