@@ -78,11 +78,9 @@ float4 PS(VOUT pin) : SV_Target
 	
 
 		float3 h = GetHVector(lightVec, toEye);
-
 		float D = DistributionFuntion(roughness, ndoth);
 		float G = GAF(roughness, ndotl, ndotv);
 		float3 F = FresnelReflection(vdoth, lerp(baseMetal, albedo.xzy, metailic));
-
 		float3 approx = EnvBRDFApprox(lerp(baseMetal, albedo, metailic.x), roughness, ndotv);
 		//spec += approx;
 		spec +=  (D * F * G) / (4 * ndotl * ndotv);
