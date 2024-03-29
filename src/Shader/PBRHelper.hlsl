@@ -29,3 +29,34 @@ float3 fresnelSchlick(float3 F0, float cosTheta)
 	return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
+
+/// 용준 버전
+float3 Fresnel(float HdotV, float3 F0)
+{   
+    float viewSeta = pow((1 - HdotV), 5);
+    float3 reflect = (1 - F0) * viewSeta;
+    
+    return F0 + reflect;
+}
+
+float NDF(float vNdotH, float roughness)
+{
+    float result = pow(roughness + 0.01f, 2);
+    float rough = pow((((result - 1) * pow(vNdotH,2)) + 1), 2) * 3.141592;
+    
+    return result / rough;
+}
+
+float GAF(float NdotL, float NdotV, float roughness)
+{
+    float kIBL = ((pow(roughness + 0.01f, 2) / 2) + (pow(roughness + 1.01f, 2) / 8)) / 2;
+    float GV = NdotV / (((NdotV) * (1 - kIBL)) + kIBL);
+    float GL = NdotL / (((NdotL) * (1 - kIBL)) + kIBL);
+    //return GV * GL;
+    return min(1, min(abs(GV), abs(GL)));
+}
+
+float GAF2(float NdotL, float NdotV, float NdotH,float VdotH)
+{
+    return min(1, min(abs(2 * NdotH * NdotV / VdotH), abs(2 * NdotH * NdotL / VdotH)));
+}

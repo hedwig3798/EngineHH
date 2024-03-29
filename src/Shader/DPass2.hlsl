@@ -38,7 +38,7 @@ float4 PS(VOUT pin) : SV_Target
 	float3 toEye = g_eyePosW-worldPos;
 	toEye = normalize(toEye);
 	// ±× ±æÀÌ
-	
+	metailic *= 0.3;
 	DirectionalLight dirLights[3];
 	
 	Material mat;

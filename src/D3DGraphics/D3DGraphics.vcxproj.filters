@@ -332,5 +332,8 @@
     <FxCompile Include="..\Shader\skyVs.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
+    <FxCompile Include="..\Shader\DPass2ByDragon.hlsl">
+      <Filter>Shader\Deferred</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

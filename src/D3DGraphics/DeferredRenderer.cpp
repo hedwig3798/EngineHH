@@ -182,7 +182,7 @@ void DeferredRenderer::DeferredRenderClearView()
 void DeferredRenderer::CreateDeferredPipeline()
 {
 	std::wstring vsPath = L"../Shader/compiled/DPass2VS.cso";
-	std::wstring psPath = L"../Shader/compiled/DPass2.cso";
+	std::wstring psPath = L"../Shader/compiled/DPass2ByDragon.cso";
 	gp->CreateInputLayer(this->DPipeline.inputLayout, VertexD::defaultInputLayerDECS, 2, this->DPipeline.vertexShader, vsPath);
 	gp->CreatePixelShader(this->DPipeline.pixelShader, psPath);
 	gp->CreateVertexBuffer<VertexD::Data>(this->DVdata, (UINT)(4 * VertexD::Size()), this->DPipeline.vertexBuffer, "DefferedVB");
